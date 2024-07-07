@@ -100,9 +100,9 @@ int main(void) {
 
 	Lcd_init();
 
-	Lcd_cadena(0, 0, "SD2");
+	Lcd_cadena(1, 1, "SD2 NOT FREERTOS");
 
-	Lcd_cadena(0, 1, "Lcd 16x2");
+	Lcd_cadena(2, 4, "Lcd 16x2");
 
 	Blocking_delay_ms(5000);
 
@@ -110,7 +110,7 @@ int main(void) {
 
 	while (1) {
 		sprintf(buffer, "Valor: %d", contador);
-		Lcd_cadena(0, 0, buffer);
+		Lcd_cadena(1, 1, buffer);
 		contador++;
 		Blocking_delay_ms(500);		/*< Podria hacerse uso del systick para no bloquear >*/
 	}
@@ -128,9 +128,11 @@ static void vtaskRtos_Print(void *pvParameters) {
 
 	Lcd_init();
 
-	Lcd_cadena(0, 0, "SD2");
+	Lcd_comando(CLEAR);
 
-	Lcd_cadena(0, 1, "Lcd 16x2");
+	Lcd_cadena(1, 1, "SD2 FREERTOS");
+
+	Lcd_cadena(2, 4, "Lcd 16x2");
 
 	vTaskDelay(pdMS_TO_TICKS(5000));
 
@@ -138,7 +140,8 @@ static void vtaskRtos_Print(void *pvParameters) {
 
 	for (;;) {
 		sprintf(buffer, "Valor: %d", contador);
-		Lcd_cadena(0, 0, buffer);
+		Lcd_cadena(1, 1, buffer);
+		Lcd_comando(HOME);
 		contador++;
 
 		vTaskDelay(pdMS_TO_TICKS(500));
@@ -152,7 +155,8 @@ static void vtaskRtos_Print(void *pvParameters) {
 #elif defined(USE_NOT_FREERTOS)
 static void Blocking_delay_ms(uint32_t ms) {
 	// Calcula el número de ciclos necesarios
-	uint32_t cycles = (CLOCK_GetCoreSysClkFreq() / 1000) * ms / 4;
+	uint32_t cycles = ms / ((100000.0/CLOCK_GetCoreSysClkFreq()) / 4.0);
+//	uint32_t cycles = (CLOCK_GetCoreSysClkFreq() / 1000) * ms / 4;
 
 	// Realiza el bucle para generar el retardo
 	for (uint32_t i = 0; i < cycles; i++) {

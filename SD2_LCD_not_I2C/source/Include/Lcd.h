@@ -80,17 +80,17 @@
 #define TIEMPO_CORRIMIENTO	250		//Tiempo de desplazamiento o corriemiento en ms
 
 //Definiciones de funciones
-#define Lcd_init        LCD_init
-#define Lcd_comando     LCD_command
-#define Lcd_cadena      LCD_array
-#define Lcd_posicion    LCD_xy
-#define Lcd_dato        LCD_date
-#define Lcd_corrimiento LCD_shift
-#define Lcd_caracter    LCD_character
+#define Lcd_init        								LCD_init
+#define Lcd_comando(comando)     						LCD_command(comando)
+#define Lcd_cadena(posx,posy,buffer)   					LCD_array(posx,posy,buffer)
+#define Lcd_posicion(posx,posy)    						LCD_xy(posx,posy)
+#define Lcd_dato(dato)        							LCD_date(dato)
+#define Lcd_corrimiento(direccion,num_desplazamientos)	LCD_shift(direccion,num_desplazamientos)
+#define Lcd_caracter(direccion,caracter)    			LCD_character(direccion,caracter)
 
 //Generacion de numero grandes
-#define JUST_RIGHT 0x10  //Numeros con justificacion derecha de la pantalla
-#define JUST_LEFT 0x11   //Numeros con justificacion izquierda de la pantalla
+#define JUST_RIGHT 	0x10  	//Numeros con justificacion derecha de la pantalla
+#define JUST_LEFT 	0x11   	//Numeros con justificacion izquierda de la pantalla
 
 /*------------------------------------------------------------------------------
  FUNCTION PROTOTYPES
