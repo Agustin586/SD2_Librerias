@@ -20,6 +20,11 @@
 //#define USE_FREERTOS
 #define USE_NOT_FREERTOS
 
+/*< Archivos >*/
+#include <stdint.h>
 
-
+/*< Funciones >*/
+extern void spi_init(void);
+extern void spi_write(uint8_t *tx_buffer);
+extern void spi_receive(uint8_t *rx_buffer);
 #endif /* INCLUDE_SPI_H_ */

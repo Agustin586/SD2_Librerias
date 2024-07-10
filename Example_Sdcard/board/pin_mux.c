@@ -143,7 +143,6 @@ BOARD_InitPins:
 - pin_list:
   - {pin_num: '16', peripheral: SPI0, signal: MISO, pin_signal: LCD_P57/ADC0_DP2/ADC0_SE2/PTE18/SPI0_MOSI/I2C0_SDA/SPI0_MISO/LCD_P57_Fault}
   - {pin_num: '17', peripheral: SPI0, signal: MOSI, pin_signal: LCD_P58/ADC0_DM2/ADC0_SE6a/PTE19/SPI0_MISO/I2C0_SCL/SPI0_MOSI/LCD_P58_Fault}
-  - {pin_num: '14', peripheral: SPI0, signal: PCS0, pin_signal: LCD_P55/ADC0_DP1/ADC0_SE1/PTE16/SPI0_PCS0/UART2_TX/TPM_CLKIN0/LCD_P55_Fault}
   - {pin_num: '15', peripheral: SPI0, signal: SCK, pin_signal: LCD_P56/ADC0_DM1/ADC0_SE5a/PTE17/SPI0_SCK/UART2_RX/TPM_CLKIN1/LPTMR0_ALT3/LCD_P56_Fault}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
@@ -159,9 +158,6 @@ void BOARD_InitPins(void)
 {
     /* Port E Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortE);
-
-    /* PORTE16 (pin 14) is configured as SPI0_PCS0 */
-    PORT_SetPinMux(PORTE, 16U, kPORT_MuxAlt2);
 
     /* PORTE17 (pin 15) is configured as SPI0_SCK */
     PORT_SetPinMux(PORTE, 17U, kPORT_MuxAlt2);
