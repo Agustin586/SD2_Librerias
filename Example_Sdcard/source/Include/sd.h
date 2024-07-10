@@ -123,6 +123,8 @@
 #define ILLEGAL_CMD(X)							X & 0b00000100
 #define ERASE_RESET(X)							X & 0b00000010
 #define IN_IDLE(X)								X & 0b00000001
+#define IDLE_STATE								0x01
+#define	IDLE_STATE_AND_ILLEGAL_CMD				0X05
 
 // R3 Response
 #define POWER_UP_STATUS(X)						X & 0x80
@@ -137,6 +139,12 @@
 #define VDD_3435(X)								X & 0b01000000
 #define VDD_3536(X)								X & 0b10000000
 
+#define R1_RESPONSE		0
+#define OCR_BYTE_nrm1	1	/*< MSB >*/
+#define OCR_BYTE_nrm2	2
+#define OCR_BYTE_nrm3	3
+#define OCR_BYTE_nrm4	4	/*< LSB >*/
+
 // R7 Response
 #define CMD_VER(X)								((X >> 4) & 0xF0) // command version
 #define VOL_ACC(X)								(X & 0x1F)	// voltage accepted
@@ -145,6 +153,9 @@
 #define VOLTAGE_ACC_RES1						0b00000100	// reserved
 #define VOLTAGE_ACC_RES2						0b00001000	// reserved
 
+#define R7_RESPONSE_VOLTAGE_ACCEPTED_BYTE	3
+#define R7_RESPONSE_CHECK_PATTERN_BYTE		4
+
 /*
  * PARAMETROS RAPIDOS
  *
@@ -152,8 +163,8 @@
 #define CMD0_CRC	0x94
 #define CMD0_ARG	0x00000000
 
-#define CHECK_PATTNER	0xAA
-#define CMD8_ARG		(VOLTAGE_ACC_27_36<<8) | CHECK_PATTNER
+#define CHECK_PATTERN	0xAA
+#define CMD8_ARG		(VOLTAGE_ACC_27_36<<8) | CHECK_PATTERN
 #define CMD8_CRC		0x86 // (1000011 << 1) //0x7C me da a mi
 #define CMD58_ARG		0x00000000
 #define CMD58_CRC		0x00
@@ -166,7 +177,7 @@
 #define SD_V2_SDHC_SDXC			3
 
 #define ACMD41					41
-#define ACMD41_ARG				0x40000000
+#define ACMD41_ARG				0x40000000	/* Setea el HCS */
 #define ACMD41_CRC				0x00
 
 /*

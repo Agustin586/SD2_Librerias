@@ -103,14 +103,14 @@ SD_RETURN_CODES_t sd_init(void) {
 	 *
 	 * */
 //	while (SD_Response[0] != 0x01) {
-	while (!IN_IDLE(SD_Response[0])) {
+	while (!IN_IDLE(SD_Response[R1_RESPONSE])) {
 		sd_assert_cs();
 
 		/*< Envia comando 0 >*/
 		sd_command(GO_IDLE_STATE, CMD0_ARG, CMD0_CRC);
 
 		/*< Lee respuesta de formato 1 >*/
-		SD_Response[0] = sd_read_response1();
+		SD_Response[R1_RESPONSE] = sd_read_response1();
 
 		/*< Envia dummy clocks y levanta el cs >*/
 		sd_deassert_cs();
@@ -138,8 +138,10 @@ SD_RETURN_CODES_t sd_init(void) {
 	 * Envia el comando 8
 	 * */
 	sd_command(SEND_IF_COND, CMD8_ARG, CMD8_CRC);
+
 	if (sd_read_response3_7(SD_Response))
-		PRINTF("Error: during send command 8\r\n");
+		PRINTF("Error: during send command 8 or "
+				"sd card is not v2\r\n");
 
 	sd_deassert_cs();
 
@@ -148,21 +150,28 @@ SD_RETURN_CODES_t sd_init(void) {
 	 * a la maxima posible.
 	 * */
 
-	// Select initialization sequence path
-	if (SD_Response[0] == 0x01) {
+	/*< Secuencia de inicializacion >*/
+	if (SD_Response[R1_RESPONSE] == IDLE_STATE) /*R1*/ {
 		// The card is Version 2.00 (or later) or SD memory card
-		// Check voltage range
-		if (SD_Response[3] != 0x01) {
+
+		/*< Byte 3 de R7. Chequea el rango de voltaje. >*/
+		if (SD_Response[R7_RESPONSE_VOLTAGE_ACCEPTED_BYTE] != VOLTAGE_ACC_27_36) {
 			return SD_NONCOMPATIBLE_VOLTAGE_RANGE;
 		}
 
-		// Check echo pattern
-		if (SD_Response[4] != 0xAA) {
+		/*< Byte 5. Chequea el echo de check pattern >*/
+		if (SD_Response[R7_RESPONSE_CHECK_PATTERN_BYTE] != CHECK_PATTERN) {
 			return SD_CHECK_PATTERN_MISMATCH;
 		}
 
+
 		// CMD58 - read OCR (Operation Conditions Register) - R3 response
-		// Reads the OCR register of a card
+		/*
+		 * LECTURA DE OCR DESDE LA TARJETA SD
+		 *
+		 * Se realiza para detectar si cumple con el HCS (memoria
+		 * de alta capacidad) y el rango de voltaje.
+		 *  */
 		sd_assert_cs();
 
 		sd_command(CMD58, CMD58_ARG, CMD58_CRC);
@@ -184,32 +193,48 @@ SD_RETURN_CODES_t sd_init(void) {
 
 		sd_deassert_cs();
 
-		// Check if the card is ready
-		// Read bit OCR 31 in R3
-		if (!(SD_Response[1] & 0x80)) {
+		/*
+		 * Verifica si la tarjeta ya realizó la inicializacion.
+		 * Para esto debe leer el bit 31 de R3.
+		 *
+		 * */
+//		if (!(SD_Response[OCR_BYTE_nrm1] & 0x80)) {
+		if (!POWER_UP_STATUS(SD_Response[OCR_BYTE_nrm1])) {
 			return SD_POWER_UP_BIT_NOT_SET;
 		}
 
-		// Read CCS bit OCR 30 in R3
-		if (SD_Response[1] & 0x40) {
+		/*
+		 * Chequea si se seteo correctamente el hcs en la memoria.
+		 * Se debe verificar el bit 30 del ocr.
+		 *
+		 * */
+		if (CCS_VAL(SD_Response[OCR_BYTE_nrm1])) {
 			// SDXC or SDHC card
 			SD_CardType = SD_V2_SDHC_SDXC;
 		} else {
 			// SDSC
 			SD_CardType = SD_V2_SDSC;
 		}
+		/*
+		 * ACA TERMINA LA INICIALIZACIÓN SI LA TARJETA ES DE
+		 * VERSIÓN V2 O SUPERIOR.
+		 * */
 
-	} else if (SD_Response[0] == 0x05) {
+	} else if (SD_Response[R1_RESPONSE] == IDLE_STATE_AND_ILLEGAL_CMD) {
 		// Response code 0x05 = Idle State + Illegal Command indicates
-		// the card is of first generation. SD or MMC card.
+
+		/*
+		 * Si ingresa aca significa que la tarjeta es de versión
+		 * v1 o anterior.
+		 * */
 		SD_CardType = SD_V1_SDSC;
 
 		// ACMD41
-		SD_Response[0] = sd_command_ACMD41();
+		SD_Response[R1_RESPONSE] = sd_command_ACMD41();
 
-		if (ILLEGAL_CMD(SD_Response[0]))
+		if (ILLEGAL_CMD(SD_Response[R1_RESPONSE]))
 			return SD_NOT_SD_CARD;
-		if (SD_Response[0])
+		if (SD_Response[R1_RESPONSE])
 			return SD_IDLE_STATE_TIMEOUT;
 
 	} else {
@@ -369,7 +394,7 @@ static SD_RETURN_CODES_t sd_command_ACMD41(void) {
 		 * Envia el comando hasta que la tarjeta se inicialice.
 		 * */
 		if (SD_CardType == SD_V1_SDSC)
-			sd_command(ACMD41, 0, ACMD41_CRC);	/*< Argumento = 0x00 para versiones v1 o anteriores >*/
+			sd_command(ACMD41, 0, ACMD41_CRC); /*< Argumento = 0x00 para versiones v1 o anteriores >*/
 		else
 			sd_command(ACMD41, ACMD41_ARG, ACMD41_CRC);
 
