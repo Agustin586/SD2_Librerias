@@ -107,9 +107,6 @@
 
 #define SD_BUFFER_SIZE							512 // CAUTION: only 512 bytes/block is implemented
 
-#define CMD0_CRC	0x94
-#define CMD0_ARG	0x00000000
-
 /*
  * RESPUESTAS DE LA SD
  *
@@ -143,10 +140,45 @@
 // R7 Response
 #define CMD_VER(X)								((X >> 4) & 0xF0) // command version
 #define VOL_ACC(X)								(X & 0x1F)	// voltage accepted
-#define VOLTAGE_ACC_27_33						0b00000001	// 2.7-3.6V
+#define VOLTAGE_ACC_27_36						0b00000001	// 2.7-3.6V
 #define VOLTAGE_ACC_LOW							0b00000010	// low voltage
 #define VOLTAGE_ACC_RES1						0b00000100	// reserved
 #define VOLTAGE_ACC_RES2						0b00001000	// reserved
+
+/*
+ * PARAMETROS RAPIDOS
+ *
+ * */
+#define CMD0_CRC	0x94
+#define CMD0_ARG	0x00000000
+
+#define CHECK_PATTNER	0xAA
+#define CMD8_ARG		(VOLTAGE_ACC_27_36<<8) | CHECK_PATTNER
+#define CMD8_CRC		0x86 // (1000011 << 1) //0x7C me da a mi
+#define CMD58_ARG		0x00000000
+#define CMD58_CRC		0x00
+#define CMD55_ARG				0x00000000
+#define CMD55_CRC				0x00
+
+// Card Type
+#define SD_V1_SDSC				1
+#define SD_V2_SDSC				2
+#define SD_V2_SDHC_SDXC			3
+
+#define ACMD41					41
+#define ACMD41_ARG				0x40000000
+#define ACMD41_CRC				0x00
+
+/*
+ * PAGINA PARA CALCULAR EL CRC
+ *
+ * NOTA: debe tenerse en cuenta que el polinomio es 10001001
+ *
+ * url : https://www.ghsi.de/pages/subpages/Online%20CRC%20Calculation/index.php?Polynom=10001001&Message=1100000900
+ *
+ * Se debe poner los 40 bits que se envian es decir 5 bytes (es decir lo que se envia
+ * sin incluir el byte del crc).
+ * */
 
 /*
  * ESTADOS DE SALIDA DE LA MEMORIA SD

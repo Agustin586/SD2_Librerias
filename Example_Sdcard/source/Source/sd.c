@@ -7,6 +7,7 @@
 
 #include "Include/sd.h"
 #include "Include/spi.h"
+#include "fsl_debug_console.h"
 
 #if (!defined(USE_FREERTOS) && !defined(USE_NOT_FREERTOS))
 #error "Se debe definir USE_FREERTOS o USE_NOT_FREERTOS"
@@ -37,12 +38,12 @@ static void Blocking_delay(uint8_t ms) {
 /*< VARIABLES >*/
 typedef union {
 	struct {
-		unsigned START_BIT:1;
-		unsigned TRANSMISION_BIT:1;
-		unsigned COMMAND_INDEX:6;
-		unsigned ARGUMENT:32;
-		unsigned CRC7:7;
-		unsigned END_BIT:1;
+		unsigned START_BIT :1;
+		unsigned TRANSMISION_BIT :1;
+		unsigned COMMAND_INDEX :6;
+		unsigned ARGUMENT :32;
+		unsigned CRC7 :7;
+		unsigned END_BIT :1;
 	};
 	struct {
 		uint32_t msb; // 4 bytes
@@ -50,11 +51,25 @@ typedef union {
 	};
 } Send_Command_t;
 
+typedef enum {
+	kStatus_Sd_PARAMETER_ERROR = 0,
+	kStatus_Sd_ADDRESS_ERROR,
+	kStatus_Sd_ERASE_SEQUENCE_ERROR,
+	kStatus_Sd_COM_CRC_ERROR,
+	kStatus_Sd_ILEGAL_COMMAND,
+	kStatus_Sd_ERASE_ERROR,
+	kStatus_Sd_IN_IDLE_STATE,
+} kStatus_Sd_t;
+
+static uint8_t SD_CardType;
+
 /*< FUNCIONES PRIVADAS >*/
 static void sd_assert_cs(void);
 static void sd_deassert_cs(void);
 static uint8_t sd_read_response1(void);
 static void sd_command(uint8_t cmd, uint32_t arg, uint8_t crc);
+static bool sd_read_response3_7(uint8_t *res);
+static SD_RETURN_CODES_t sd_command_ACMD41(void);
 
 SD_RETURN_CODES_t sd_init(void) {
 	uint8_t SD_Response[5]; // array to hold response
@@ -78,11 +93,6 @@ SD_RETURN_CODES_t sd_init(void) {
 
 	for (i = 0; i < 10; i++)
 		spi_write(0xFF);
-
-	// Card powers up in SD Bus protocol mode and switch to SPI
-	// when the Chip Select line is driven low and CMD0 is sent.
-	// In SPI mode CRCs are ignored but because they start in SD Bus mode
-	// a correct checksum must be provided.
 
 	/*
 	 * @brief	GO_IDLE_STATE (CMD0)
@@ -108,7 +118,7 @@ SD_RETURN_CODES_t sd_init(void) {
 		cmdAttempts++;
 
 		if (cmdAttempts > 10) {
-			CS_HIGH;	/*< Deshabilita el cs levantandolo >*/
+			CS_HIGH; /*< Deshabilita el cs levantandolo >*/
 			return SD_IDLE_STATE_TIMEOUT;
 		}
 	}
@@ -123,18 +133,20 @@ SD_RETURN_CODES_t sd_init(void) {
 	// Check Pattern argument is the recommended pattern '0b10101010'
 	// CRC is 0b1000011 and is precalculated
 	sd_assert_cs();
-	sd_command(CMD8, CMD8_ARG, CMD8_CRC);
-	sd_read_response3_7(SD_Response);
+
+	/*
+	 * Envia el comando 8
+	 * */
+	sd_command(SEND_IF_COND, CMD8_ARG, CMD8_CRC);
+	if (sd_read_response3_7(SD_Response))
+		PRINTF("Error: during send command 8\r\n");
+
 	sd_deassert_cs();
 
-	// Enable maximum SPI speed
-#if AVR_CLASS_SPI == 0
-	_SPSR = (1 << SPI2X); // set clock rate fosc/2
-	_SPCR &= ~(1 << SPR1);
-#else
-			SPI0.CTRLA &= ~SPI_PRESC_gm; // fosc/4
-			SPI0.CTRLA |= SPI_CLK2X_bm; // SPI speed (SCK frequency) is doubled in Master mode
-		#endif
+	/*
+	 * NOTA: en esta altura podriamos cambiar la velocidad del spi
+	 * a la maxima posible.
+	 * */
 
 	// Select initialization sequence path
 	if (SD_Response[0] == 0x01) {
@@ -152,8 +164,10 @@ SD_RETURN_CODES_t sd_init(void) {
 		// CMD58 - read OCR (Operation Conditions Register) - R3 response
 		// Reads the OCR register of a card
 		sd_assert_cs();
+
 		sd_command(CMD58, CMD58_ARG, CMD58_CRC);
 		sd_read_response3_7(SD_Response);
+
 		sd_deassert_cs();
 
 		// ACMD41 - starts the initialization process - R1 response
@@ -164,8 +178,10 @@ SD_RETURN_CODES_t sd_init(void) {
 
 		// CMD58 - read OCR (Operation Conditions Register) - R3 response
 		sd_assert_cs();
+
 		sd_command(CMD58, CMD58_ARG, CMD58_CRC);
 		sd_read_response3_7(SD_Response);
+
 		sd_deassert_cs();
 
 		// Check if the card is ready
@@ -190,6 +206,7 @@ SD_RETURN_CODES_t sd_init(void) {
 
 		// ACMD41
 		SD_Response[0] = sd_command_ACMD41();
+
 		if (ILLEGAL_CMD(SD_Response[0]))
 			return SD_NOT_SD_CARD;
 		if (SD_Response[0])
@@ -204,7 +221,6 @@ SD_RETURN_CODES_t sd_init(void) {
 	// For SDHC and SDXC cards the block length is always set to 512 bytes.
 
 	return SD_OK;
-
 }
 
 uint8_t sd_write_single_block(uint32_t addr, uint8_t *buf) {
@@ -245,6 +261,7 @@ static void sd_deassert_cs(void) {
  * @brief	Respuesta de formato 1
  * */
 static uint8_t sd_read_response1(void) {
+	kStatus_Sd_t error;
 	uint8_t i = 0, response = 0xFF;
 
 	/*< Toma los datos por polling >*/
@@ -259,6 +276,17 @@ static uint8_t sd_read_response1(void) {
 
 		spi_receive(&response);
 	}
+
+	if (PARAM_ERROR(response))
+		PRINTF("Error: param error %d", kStatus_Sd_PARAMETER_ERROR);
+	else if (ADDR_ERROR(responde))
+		PRINTF("Error: addr error %d", kStatus_Sd_ADDRESS_ERROR);
+	else if (CRC_ERROR(response))
+		PRINTF("Error: crc error %d", kStatus_Sd_COM_CRC_ERROR);
+	else if (ERASE_RESET(response))
+		PRINTF("Error: erase reset %d", kStatus_Sd_ERASE_ERROR);
+	else if (ILLEGAL_CMD(response))
+		PRINTF("Error: illgeal command %d", kStatus_Sd_ILEGAL_COMMAND);
 
 	return response;
 }
@@ -279,9 +307,9 @@ static void sd_command(uint8_t cmd, uint32_t arg, uint8_t crc) {
 	 * */
 	Format_cmd.START_BIT = 0;
 	Format_cmd.TRANSMISION_BIT = 1;
-	Format_cmd.COMMAND_INDEX = cmd & 0b00111111;	/*< Para que sea 6 bits >*/
+	Format_cmd.COMMAND_INDEX = cmd & 0b00111111; /*< Para que sea 6 bits >*/
 	Format_cmd.ARGUMENT = arg;
-	Format_cmd.CRC7 = crc & 0b01111111;			/*< Solo toma los primeros 7 bits >*/
+	Format_cmd.CRC7 = crc & 0b01111111; /*< Solo toma los primeros 7 bits >*/
 	Format_cmd.END_BIT = 1;
 
 	/*
@@ -295,5 +323,76 @@ static void sd_command(uint8_t cmd, uint32_t arg, uint8_t crc) {
 	spi_write(Format_cmd.lsb);
 
 	return;
+}
+
+/*
+ * @brief	Respuesta a 3 y 7
+ *
+ * @param	uint8_t* res	Respuesta
+ * */
+static bool sd_read_response3_7(uint8_t *res) {
+	*res = sd_read_response1();
+
+	if (*res > 1)
+		return true;
+
+	spi_receive((res + 1));
+
+	return false;
+}
+
+/*
+ * @brief	Envia el comando de ACMD41
+ *
+ * @return	SD_RETURN_CODES
+ * */
+static SD_RETURN_CODES_t sd_command_ACMD41(void) {
+	uint8_t response;
+	uint8_t i = 100;
+
+	/*
+	 * Proceso de inicializacion. Puede tomar al rededor de 1 segundo en finalizar.
+	 * */
+	do {
+		// CMD55 - APP_CMD - R1 response
+		sd_assert_cs();
+
+		sd_command(CMD55, CMD55_ARG, CMD55_CRC);
+		sd_read_response1();
+
+		sd_deassert_cs();
+
+		// ACMD41 - SD_SEND_OP_COND (Send Operating Condition) - R1 response
+		sd_assert_cs();
+
+		/*
+		 * Envia el comando hasta que la tarjeta se inicialice.
+		 * */
+		if (SD_CardType == SD_V1_SDSC)
+			sd_command(ACMD41, 0, ACMD41_CRC);	/*< Argumento = 0x00 para versiones v1 o anteriores >*/
+		else
+			sd_command(ACMD41, ACMD41_ARG, ACMD41_CRC);
+
+		/*< Respuesta desde la tarjeta sd >*/
+		response = sd_read_response1();
+
+		/*
+		 * Si response es 1 significa que la tarjeta todavía no se
+		 * inicializó. Debe esperarse hasta recivir un 0.
+		 * */
+
+		sd_deassert_cs();
+
+		i--;
+
+		_delay_ms(10);
+
+	} while ((response != 0) && (i > 0));
+
+	// Timeout
+	if (i == 0)
+		return SD_IDLE_STATE_TIMEOUT;
+
+	return response;
 }
 
