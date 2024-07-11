@@ -263,18 +263,27 @@ uint8_t sd_write_single_block(uint32_t addr, uint8_t *buf) {
 	/*< Habilita el chip select de la tarjeta >*/
 	sd_assert_cs();
 
-	sd_command(CMD24, addr, CMD24_CRC);
+	/*
+	 * El comando 24 indica que la escritura es de un solo bloque
+	 * simple. En vez el 25 indica que la escritura es de multiples
+	 * bloques, por tanto necesitará un comando que finalice la
+	 * escritura.
+	 * */
+	sd_command(CMD24, addr, CMD24_CRC);	// Envia el comando 24
 
 	/* Respuesta de formato R1 */
 	res1 = sd_read_response1();
 
-	// if no error
-	if (!res1) {
-		// send start token
-		spi_write(0xFE);
+	/*
+	 * Verifica que el dato recivido no sea con error.
+	 * */
+	if (res1 == SUCCESS_RESONSE_R1) {
+		/* Token de inicio */
+		spi_write(START_BLOCK_TOKEN);
 
 		/*< Envia el buffer >*/
-		spi_write(buf);			// Envia el buffer entero de 512 bytes. La funcion se encarga.
+		for (uint16_t i = 0; i < SD_BUFFER_SIZE; i++)
+			spi_write(buf[i]);// Envia el buffer entero de 512 bytes. La funcion se encarga.
 
 		// wait for a response (timeout = 250ms)
 		// maximum timeout is defined as 250 ms for all write operations
@@ -282,27 +291,106 @@ uint8_t sd_write_single_block(uint32_t addr, uint8_t *buf) {
 
 		while (++readAttempts < SD_MAX_WRITE_ATTEMPTS) {
 			spi_receive(&res1);
-			if (res1 != 0xFF)
+			if (res1 != BUSSY)
 				break;
 		}
 
-		// if data accepted
-		if ((res1 & 0x1F) == 0x05) {
+		/* Dato aceptado */
+		if ((res1 & MASK_DATA_RESPONSE) == DATA_ACCEPTED) {
 			// set token to data accepted
-			SD_ResponseToken = 0x05;
+			SD_ResponseToken = DATA_ACCEPTED;
 
 			// wait for write to finish (timeout = 250ms)
 			readAttempts = 0;
 
 			spi_receive(&res1);
 
-			while (!res1) {
+			while (res1 == SUCCESS_RESONSE_R1) {
 				if (++readAttempts > SD_MAX_WRITE_ATTEMPTS) {
 					SD_ResponseToken = 0x00;
 					break;
 				}
 			}
 		}
+	}
+
+	sd_deassert_cs();
+
+	return res1;
+}
+
+uint8_t sd_write_multiple_block(uint32_t addr, uint8_t *buf, uint8_t *count) {
+#define SD_MAX_WRITE_ATTEMPTS    0.25 * (1 / CLOCK_GetFreq((SPI0_CLK_SRC)))
+
+	uint8_t res1;
+	uint32_t readAttempts;
+
+	if (SD_CardType == SD_V1_SDSC)
+		addr *= 512;
+
+	// set token to none
+	SD_ResponseToken = 0xFF;
+
+	/*< Habilita el chip select de la tarjeta >*/
+	sd_assert_cs();
+
+	/*
+	 * El comando 24 indica que la escritura es de un solo bloque
+	 * simple. En vez el 25 indica que la escritura es de multiples
+	 * bloques, por tanto necesitará un comando que finalice la
+	 * escritura.
+	 * */
+	sd_command(CMD25, addr, CMD25_CRC);	// Envia el comando 24
+
+	/* Respuesta de formato R1 */
+	res1 = sd_read_response1();
+
+	/*
+	 * Verifica que el dato recivido no sea con error.
+	 * */
+	if (res1 == SUCCESS_RESONSE_R1) {
+		do {
+			/* Token de inicio */
+			spi_write(START_BLOCK_TOKEN_MULTIPLE_BLOCK);
+
+			/*< Envia el buffer >*/
+			for (uint16_t i = 0; i < SD_BUFFER_SIZE; i++)
+				spi_write(buf[i]);// Envia el buffer entero de 512 bytes. La funcion se encarga.
+
+			// wait for a response (timeout = 250ms)
+			// maximum timeout is defined as 250 ms for all write operations
+			readAttempts = 0;
+
+			while (++readAttempts < SD_MAX_WRITE_ATTEMPTS) {
+				spi_receive(&res1);
+				if (res1 != BUSSY)
+					break;
+			}
+
+			/* Dato aceptado */
+			if ((res1 & MASK_DATA_RESPONSE) == DATA_ACCEPTED) {
+				// set token to data accepted
+				SD_ResponseToken = DATA_ACCEPTED;
+
+				// wait for write to finish (timeout = 250ms)
+				readAttempts = 0;
+
+				spi_receive(&res1);
+
+				while (res1 == SUCCESS_RESONSE_R1) {
+					if (++readAttempts > SD_MAX_WRITE_ATTEMPTS) {
+						SD_ResponseToken = 0x00;
+						break;
+					}
+				}
+			}
+		} while (--(*count));
+
+		/*< Finaliza la transmisión de datos >*/
+		spi_write(STOP_TRANSMISSION_MULTIPLE_BLOCK);
+	}
+	else{
+		PRINTF("Error: during writting\r\n");
 	}
 
 	sd_deassert_cs();
@@ -360,6 +448,69 @@ uint8_t sd_read_single_block(uint32_t addr, uint8_t *buf) {
 
 		// set token to card response
 		SD_ResponseToken = read;
+	}
+
+	sd_deassert_cs();
+
+	return res1;
+}
+
+uint8_t sd_read_multiple_block(uint32_t addr, uint8_t *buf, uint8_t *count) {
+#define SD_MAX_READ_ATTEMPTS    0.1 * (1 / CLOCK_GetFreq((SPI0_CLK_SRC)))
+
+	uint8_t res1, read = 0;
+	uint8_t crc[2];
+	uint32_t readAttempts;
+
+	if (SD_CardType == SD_V1_SDSC)
+		addr *= 512;
+
+	/* Seteamos un token */
+	SD_ResponseToken = 0xFF;
+
+	/*< Habilita el chip select de la tarjeta sd >*/
+	sd_assert_cs();
+
+	/*< Comando para leer en multiples bloques CMD18 >*/
+	sd_command(CMD18, addr, CMD18_CRC);
+
+	/*< Lee el formato de R1 >*/
+	res1 = sd_read_response1();
+
+	/* Verifica que respondio algo distinto de bussy 0xFF */
+	if (res1 != BUSSY) {
+		do {
+			/*
+			 * Genera una espera de 100 ms. Sale de dicha espera cuando
+			 * recive algo distinto de bussy en read.
+			 * */
+			readAttempts = 0;
+			while (++readAttempts != SD_MAX_READ_ATTEMPTS) {
+				spi_receive(&read);
+				if (read != BUSSY)
+					break;
+			}
+
+			/* Da inicio a la recepcion de datos con el token 0xFE */
+			if (read == START_BLOCK_TOKEN) {
+				/*< Lee los 512 bytes de 1 byte >*/
+				for (uint16_t i = 0; i < SD_BUFFER_SIZE; i++)
+					spi_receive(buf), buf++;
+
+				/*< Lee el crc >*/
+				spi_receive(crc);
+				spi_receive(crc);
+			}
+
+			// set token to card response
+			SD_ResponseToken = read;
+		} while (--(*count));
+
+		/*< Pone un final de cadena '\0' = 0 >*/
+		*buf = 0;
+
+		/*< Detiene la lectura de datos con el comando CMD12 >*/
+		sd_command(CMD12, 0, 0x00);
 	}
 
 	sd_deassert_cs();

@@ -17,215 +17,132 @@
 #define DEV_MMC		1	/* Example: Map MMC/SD card to physical drive 1 */
 #define DEV_USB		2	/* Example: Map USB MSD to physical drive 2 */
 
-
 /*-----------------------------------------------------------------------*/
 /* Get Drive Status                                                      */
 /*-----------------------------------------------------------------------*/
 
-DSTATUS disk_status (
-	BYTE pdrv		/* Physical drive nmuber to identify the drive */
-)
-{
-	DSTATUS stat;
+DSTATUS disk_status(BYTE pdrv /* Physical drive nmuber to identify the drive */
+) {
+	DSTATUS stat = STA_NOINIT;
 	int result;
 
-	switch (pdrv) {
-	case DEV_RAM :
-		result = RAM_disk_status();
-
-		// translate the reslut code here
-
-		return stat;
-
-	case DEV_MMC :
-		result = MMC_disk_status();
-
-		// translate the reslut code here
-
-		return stat;
-
-	case DEV_USB :
-		result = USB_disk_status();
-
-		// translate the reslut code here
-
-		return stat;
-	}
-	return STA_NOINIT;
+	if (pdrv)
+		return STA_NOINIT; /* Supports only single drive */
+	return stat;
 }
-
-
 
 /*-----------------------------------------------------------------------*/
 /* Inidialize a Drive                                                    */
 /*-----------------------------------------------------------------------*/
 
-DSTATUS disk_initialize (
-	BYTE pdrv				/* Physical drive nmuber to identify the drive */
-)
-{
+DSTATUS disk_initialize(BYTE pdrv /* Physical drive nmuber to identify the drive */
+) {
 	DSTATUS stat;
 	int result;
 
-	switch (pdrv) {
-	case DEV_RAM :
-//		result = RAM_disk_initialize();
+	if (pdrv != 0)
+		return STA_NOINIT; /* Supports only single drive */
+//	if (Stat & STA_NODISK)
+//		return Stat; /* No card in the socket */
 
-		// translate the reslut code here
+	/*< Incializacion de la tarjeta sd >*/
+	result = sd_init();
 
-		return stat;
+	if (result == SD_OK)
+		PRINTF("Sd card init success\r\n");
+	else if (result == SD_GENERAL_ERROR)
+		PRINTF("Error: during init sd card\r\n");
 
-	case DEV_MMC :
-		result = sd_init();
-
-		if (result == SD_OK)
-			PRINTF("Sd card init success\r\n");
-		else if(result == SD_GENERAL_ERROR)
-			PRINTF("Error: during init sd card\r\n");
-
-		// translate the reslut code here
-
-		return stat;
-
-	case DEV_USB :
-//		result = USB_disk_initialize();
-
-		// translate the reslut code here
-
-		return stat;
-	}
-
-	return STA_NOINIT;
+	return stat;
 }
-
-
 
 /*-----------------------------------------------------------------------*/
 /* Read Sector(s)                                                        */
 /*-----------------------------------------------------------------------*/
 
-DRESULT disk_read (
-	BYTE pdrv,		/* Physical drive nmuber to identify the drive */
-	BYTE *buff,		/* Data buffer to store read data */
-	LBA_t sector,	/* Start sector in LBA */
-	UINT count		/* Number of sectors to read */
-)
-{
+DRESULT disk_read(BYTE pdrv, /* Physical drive nmuber to identify the drive */
+BYTE *buff, /* Data buffer to store read data */
+LBA_t sector, /* Start sector in LBA */
+UINT count /* Number of sectors to read */
+) {
 	DRESULT res;
 	int result;
 
-	switch (pdrv) {
-	case DEV_RAM :
-		// translate the arguments here
+	if (pdrv || !count)
+		return RES_PARERR;
+//	if (Stat & STA_NOINIT)
+//		return RES_NOTRDY;
 
-//		result = RAM_disk_read(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-
-	case DEV_MMC :
-		// translate the arguments here
-
+	if (count == 1) { /* Lectura de un bloque simple */
 		result = sd_read_single_block(sector, buff);
-
-		// translate the reslut code here
-
-		return res;
-
-	case DEV_USB :
-		// translate the arguments here
-
-//		result = USB_disk_read(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
+		count = 0;
+	} else { /* Lectura de multpiles bloques */
+		result = sd_read_multiple_block(sector, buff, &count);
 	}
 
-	return RES_PARERR;
+	return count ? RES_ERROR : RES_OK;
 }
-
-
 
 /*-----------------------------------------------------------------------*/
 /* Write Sector(s)                                                       */
 /*-----------------------------------------------------------------------*/
 
-#if FF_FS_READONLY == 0
+#if !FF_FS_READONLY
 
-DRESULT disk_write (
-	BYTE pdrv,			/* Physical drive nmuber to identify the drive */
-	const BYTE *buff,	/* Data to be written */
-	LBA_t sector,		/* Start sector in LBA */
-	UINT count			/* Number of sectors to write */
-)
-{
-	DRESULT res;
+DRESULT disk_write(BYTE pdrv, /* Physical drive nmuber to identify the drive */
+const BYTE *buff, /* Data to be written */
+LBA_t sector, /* Start sector in LBA */
+UINT count /* Number of sectors to write */
+) {
+	DRESULT res = STA_NOINIT;
 	int result;
 
-	switch (pdrv) {
-	case DEV_RAM :
-		// translate the arguments here
+	if (pdrv || !count)
+		return RES_PARERR;
+//	if (res & STA_NOINIT)
+//		return RES_NOTRDY;
+//	if (res & STA_PROTECT)
+//		return RES_WRPRT;
 
-//		result = RAM_disk_write(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-
-	case DEV_MMC :
-		// translate the arguments here
-
+	if (count == 1) {
 		result = sd_write_single_block(sector, buff);
-
-		// translate the reslut code here
-
-		return res;
-
-	case DEV_USB :
-		// translate the arguments here
-
-//		result = USB_disk_write(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
+		count = 0;
+	} else {
+		result = sd_multiple_block(sector, buff, &count);
 	}
 
-	return RES_PARERR;
+	return count ? RES_ERROR : RES_OK;
 }
 
 #endif
-
 
 /*-----------------------------------------------------------------------*/
 /* Miscellaneous Functions                                               */
 /*-----------------------------------------------------------------------*/
 
-DRESULT disk_ioctl (
-	BYTE pdrv,		/* Physical drive nmuber (0..) */
-	BYTE cmd,		/* Control code */
-	void *buff		/* Buffer to send/receive control data */
-)
-{
+#if _USE_IOCTL
+
+DRESULT disk_ioctl(BYTE pdrv, /* Physical drive nmuber (0..) */
+BYTE cmd, /* Control code */
+void *buff /* Buffer to send/receive control data */
+) {
 	DRESULT res;
 	int result;
 
 	switch (pdrv) {
-	case DEV_RAM :
+	case DEV_RAM:
 
 		// Process of the command for the RAM drive
 
 		return res;
 
-	case DEV_MMC :
+	case DEV_MMC:
 
 		// Process of the command for the MMC/SD card
 
 		return res;
 
-	case DEV_USB :
+	case DEV_USB:
 
 		// Process of the command the USB drive
 
@@ -235,3 +152,4 @@ DRESULT disk_ioctl (
 	return RES_PARERR;
 }
 
+#endif

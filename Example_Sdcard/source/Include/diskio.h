@@ -9,6 +9,8 @@
 extern "C" {
 #endif
 
+#define _USE_IOCTL 0
+
 /* Status of Disk Functions */
 typedef BYTE	DSTATUS;
 

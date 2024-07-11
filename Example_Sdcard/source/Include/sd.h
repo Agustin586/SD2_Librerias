@@ -172,7 +172,20 @@
 #define CMD55_ARG				0x00000000
 #define CMD55_CRC				0x00
 #define CMD17_CRC               0x00
+#define CMD18_CRC				0x00
 #define CMD24_CRC               0x00
+#define CMD25_CRC               0x00
+#define SUCCESS_RESONSE_R1		0x00
+
+/*
+ * WRITE BLOCKING
+ * */
+#define START_BLOCK_TOKEN	0xFE
+#define BUSSY				0xFF
+#define	MASK_DATA_RESPONSE	0x1F
+#define DATA_ACCEPTED		0x05
+#define START_BLOCK_TOKEN_MULTIPLE_BLOCK	0xFC
+#define STOP_TRANSMISSION_MULTIPLE_BLOCK	0xFD
 
 // Card Type
 #define SD_V1_SDSC				1
@@ -209,15 +222,15 @@ typedef enum {
 	SD_NONCOMPATIBLE_VOLTAGE_RANGE,
 	SD_POWER_UP_BIT_NOT_SET,
 	SD_NOT_SD_CARD,
-	//SD_OP_COND_TIMEOUT,
-	//SD_SET_BLOCKLEN_TIMEOUT,
-	//SD_WRITE_BLOCK_TIMEOUT,
-	//SD_WRITE_BLOCK_FAIL,
-	//SD_READ_BLOCK_TIMEOUT,
-	//SD_READ_BLOCK_DATA_TOKEN_MISSING,
-	//SD_DATA_TOKEN_TIMEOUT,
-	//SD_SELECT_CARD_TIMEOUT,
-	//SD_SET_RELATIVE_ADDR_TIMEOUT
+//SD_OP_COND_TIMEOUT,
+//SD_SET_BLOCKLEN_TIMEOUT,
+//SD_WRITE_BLOCK_TIMEOUT,
+//SD_WRITE_BLOCK_FAIL,
+//SD_READ_BLOCK_TIMEOUT,
+//SD_READ_BLOCK_DATA_TOKEN_MISSING,
+//SD_DATA_TOKEN_TIMEOUT,
+//SD_SELECT_CARD_TIMEOUT,
+//SD_SET_RELATIVE_ADDR_TIMEOUT
 } SD_RETURN_CODES_t;
 
 /*
@@ -225,7 +238,9 @@ typedef enum {
  * */
 SD_RETURN_CODES_t sd_init(void);
 uint8_t sd_write_single_block(uint32_t addr, uint8_t *buf);
+uint8_t sd_write_multiple_block(uint32_t addr, uint8_t *buf, uint8_t *count);
 uint8_t sd_read_single_block(uint32_t addr, uint8_t *buf);
+uint8_t sd_read_multiple_block(uint32_t addr, uint8_t *buf, uint8_t *count);
 bool sd_detected(void);
 
 #endif /* INCLUDE_SD_H_ */
