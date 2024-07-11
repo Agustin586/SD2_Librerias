@@ -9,6 +9,8 @@
 
 #include "Include/ff.h"			/* Obtains integer types */
 #include "Include/diskio.h"		/* Declarations of disk functions */
+#include "Include/sd.h"
+#include "fsl_debug_console.h"
 
 /* Definitions of physical drive number for each drive */
 #define DEV_RAM		0	/* Example: Map Ramdisk to physical drive 0 */
@@ -67,26 +69,32 @@ DSTATUS disk_initialize (
 
 	switch (pdrv) {
 	case DEV_RAM :
-		result = RAM_disk_initialize();
+//		result = RAM_disk_initialize();
 
 		// translate the reslut code here
 
 		return stat;
 
 	case DEV_MMC :
-		result = MMC_disk_initialize();
+		result = sd_init();
+
+		if (result == SD_OK)
+			PRINTF("Sd card init success\r\n");
+		else if(result == SD_GENERAL_ERROR)
+			PRINTF("Error: during init sd card\r\n");
 
 		// translate the reslut code here
 
 		return stat;
 
 	case DEV_USB :
-		result = USB_disk_initialize();
+//		result = USB_disk_initialize();
 
 		// translate the reslut code here
 
 		return stat;
 	}
+
 	return STA_NOINIT;
 }
 
@@ -110,7 +118,7 @@ DRESULT disk_read (
 	case DEV_RAM :
 		// translate the arguments here
 
-		result = RAM_disk_read(buff, sector, count);
+//		result = RAM_disk_read(buff, sector, count);
 
 		// translate the reslut code here
 
@@ -119,7 +127,7 @@ DRESULT disk_read (
 	case DEV_MMC :
 		// translate the arguments here
 
-		result = MMC_disk_read(buff, sector, count);
+		result = sd_read_single_block(sector, buff);
 
 		// translate the reslut code here
 
@@ -128,7 +136,7 @@ DRESULT disk_read (
 	case DEV_USB :
 		// translate the arguments here
 
-		result = USB_disk_read(buff, sector, count);
+//		result = USB_disk_read(buff, sector, count);
 
 		// translate the reslut code here
 
@@ -160,7 +168,7 @@ DRESULT disk_write (
 	case DEV_RAM :
 		// translate the arguments here
 
-		result = RAM_disk_write(buff, sector, count);
+//		result = RAM_disk_write(buff, sector, count);
 
 		// translate the reslut code here
 
@@ -169,7 +177,7 @@ DRESULT disk_write (
 	case DEV_MMC :
 		// translate the arguments here
 
-		result = MMC_disk_write(buff, sector, count);
+		result = sd_write_single_block(sector, buff);
 
 		// translate the reslut code here
 
@@ -178,7 +186,7 @@ DRESULT disk_write (
 	case DEV_USB :
 		// translate the arguments here
 
-		result = USB_disk_write(buff, sector, count);
+//		result = USB_disk_write(buff, sector, count);
 
 		// translate the reslut code here
 

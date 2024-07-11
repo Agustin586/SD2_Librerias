@@ -249,13 +249,72 @@ SD_RETURN_CODES_t sd_init(void) {
 }
 
 uint8_t sd_write_single_block(uint32_t addr, uint8_t *buf) {
+#define SD_MAX_WRITE_ATTEMPTS    0.25 * (1 / CLOCK_GetFreq((SPI0_CLK_SRC)))
 
+	uint8_t res1;
+	uint32_t readAttempts;
+
+	if (SD_CardType == SD_V1_SDSC)
+		addr *= 512;
+
+	// set token to none
+	SD_ResponseToken = 0xFF;
+
+	/*< Habilita el chip select de la tarjeta >*/
+	sd_assert_cs();
+
+	sd_command(CMD24, addr, CMD24_CRC);
+
+	/* Respuesta de formato R1 */
+	res1 = sd_read_response1();
+
+	// if no error
+	if (!res1) {
+		// send start token
+		spi_write(0xFE);
+
+		/*< Envia el buffer >*/
+		spi_write(buf);			// Envia el buffer entero de 512 bytes. La funcion se encarga.
+
+		// wait for a response (timeout = 250ms)
+		// maximum timeout is defined as 250 ms for all write operations
+		readAttempts = 0;
+
+		while (++readAttempts < SD_MAX_WRITE_ATTEMPTS) {
+			spi_receive(&res1);
+			if (res1 != 0xFF)
+				break;
+		}
+
+		// if data accepted
+		if ((res1 & 0x1F) == 0x05) {
+			// set token to data accepted
+			SD_ResponseToken = 0x05;
+
+			// wait for write to finish (timeout = 250ms)
+			readAttempts = 0;
+
+			spi_receive(&res1);
+
+			while (!res1) {
+				if (++readAttempts > SD_MAX_WRITE_ATTEMPTS) {
+					SD_ResponseToken = 0x00;
+					break;
+				}
+			}
+		}
+	}
+
+	sd_deassert_cs();
+
+	return res1;
 }
 
 uint8_t sd_read_single_block(uint32_t addr, uint8_t *buf) {
 #define SD_MAX_READ_ATTEMPTS    0.1 * (1 / CLOCK_GetFreq((SPI0_CLK_SRC)))
 
 	uint8_t res1, read = 0;
+	uint8_t crc[2];
 	uint32_t readAttempts;
 
 	if (SD_CardType == SD_V1_SDSC)
@@ -273,28 +332,30 @@ uint8_t sd_read_single_block(uint32_t addr, uint8_t *buf) {
 	/*< Lee el formato de R1 >*/
 	res1 = sd_read_response1();
 
-	// if response received from card
+	/* Verifica que respondio algo */
 	if (res1 != 0xFF) {
 		// wait for a response token (timeout = 100ms)
 		// The host should use 100ms timeout (minimum) for single and multiple read operations
 		readAttempts = 0;
+
 		while (++readAttempts != SD_MAX_READ_ATTEMPTS) {
-			if ((read = SPI_ReceiveByte()) != 0xFF)
+			spi_receive(&read);
+			if (read != 0xFF)
 				break;
 		}
 
 		// if response token is 0xFE
 		if (read == 0xFE) {
-			// read 512 byte block
+			/*< Lee los 512 bytes >*/
 			for (uint16_t i = 0; i < SD_BUFFER_SIZE; i++)
-				*buf++ = SPI_ReceiveByte();
+				spi_receive(buf), buf++;
 
-			// add null to the end
+			/*< Pone un final de cadena '\0' = 0 >*/
 			*buf = 0;
 
-			// read and discard 16-bit CRC
-			SPI_ReceiveByte();
-			SPI_ReceiveByte();
+			/*< Lee el crc >*/
+			spi_receive(crc);
+			spi_receive(crc);
 		}
 
 		// set token to card response

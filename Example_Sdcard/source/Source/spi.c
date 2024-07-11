@@ -107,7 +107,7 @@ extern void spi_receive(uint8_t *rx_buffer) {
 
 	masterXfer.txData = NULL;
 	masterXfer.rxData = rx_buffer;
-	masterXfer.dataSize = BUFFER_SIZE;
+	masterXfer.dataSize = 1;
 
 #ifdef USE_FREERTOS
 	status = SPI_RTOS_Transfer(&master_rtos_handle, &masterXfer);

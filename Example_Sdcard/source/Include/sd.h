@@ -172,6 +172,7 @@
 #define CMD55_ARG				0x00000000
 #define CMD55_CRC				0x00
 #define CMD17_CRC               0x00
+#define CMD24_CRC               0x00
 
 // Card Type
 #define SD_V1_SDSC				1
