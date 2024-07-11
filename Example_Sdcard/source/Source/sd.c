@@ -8,6 +8,7 @@
 #include "Include/sd.h"
 #include "Include/spi.h"
 #include "fsl_debug_console.h"
+#include "clock_config.h"
 
 #if (!defined(USE_FREERTOS) && !defined(USE_NOT_FREERTOS))
 #error "Se debe definir USE_FREERTOS o USE_NOT_FREERTOS"
@@ -151,7 +152,7 @@ SD_RETURN_CODES_t sd_init(void) {
 	 * */
 
 	/*< Secuencia de inicializacion >*/
-	if (SD_Response[R1_RESPONSE] == IDLE_STATE) /*R1*/ {
+	if (SD_Response[R1_RESPONSE] == IDLE_STATE) /*R1*/{
 		// The card is Version 2.00 (or later) or SD memory card
 
 		/*< Byte 3 de R7. Chequea el rango de voltaje. >*/
@@ -163,7 +164,6 @@ SD_RETURN_CODES_t sd_init(void) {
 		if (SD_Response[R7_RESPONSE_CHECK_PATTERN_BYTE] != CHECK_PATTERN) {
 			return SD_CHECK_PATTERN_MISMATCH;
 		}
-
 
 		// CMD58 - read OCR (Operation Conditions Register) - R3 response
 		/*
@@ -253,7 +253,57 @@ uint8_t sd_write_single_block(uint32_t addr, uint8_t *buf) {
 }
 
 uint8_t sd_read_single_block(uint32_t addr, uint8_t *buf) {
+#define SD_MAX_READ_ATTEMPTS    0.1 * (1 / CLOCK_GetFreq((SPI0_CLK_SRC)))
 
+	uint8_t res1, read = 0;
+	uint32_t readAttempts;
+
+	if (SD_CardType == SD_V1_SDSC)
+		addr *= 512;
+
+	// set token to none
+	SD_ResponseToken = 0xFF;
+
+	/*< Habilita el chip select de la tarjeta sd >*/
+	sd_assert_cs();
+
+	/*< Comando para escribir en un bloque simple >*/
+	sd_command(CMD17, addr, CMD17_CRC);
+
+	/*< Lee el formato de R1 >*/
+	res1 = sd_read_response1();
+
+	// if response received from card
+	if (res1 != 0xFF) {
+		// wait for a response token (timeout = 100ms)
+		// The host should use 100ms timeout (minimum) for single and multiple read operations
+		readAttempts = 0;
+		while (++readAttempts != SD_MAX_READ_ATTEMPTS) {
+			if ((read = SPI_ReceiveByte()) != 0xFF)
+				break;
+		}
+
+		// if response token is 0xFE
+		if (read == 0xFE) {
+			// read 512 byte block
+			for (uint16_t i = 0; i < SD_BUFFER_SIZE; i++)
+				*buf++ = SPI_ReceiveByte();
+
+			// add null to the end
+			*buf = 0;
+
+			// read and discard 16-bit CRC
+			SPI_ReceiveByte();
+			SPI_ReceiveByte();
+		}
+
+		// set token to card response
+		SD_ResponseToken = read;
+	}
+
+	sd_deassert_cs();
+
+	return res1;
 }
 
 bool sd_detected(void) {

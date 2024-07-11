@@ -7,6 +7,7 @@
 
 #include "Include/spi.h"
 #include "fsl_debug_console.h"
+#include "clock_config.h"
 
 #if (!defined(USE_FREERTOS) && !defined(USE_NOT_FREERTOS))
 #error "Se debe definir USE_FREERTOS o USE_NOT_FREERTOS"
