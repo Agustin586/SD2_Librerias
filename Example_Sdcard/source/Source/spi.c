@@ -8,6 +8,7 @@
 #include "Include/spi.h"
 #include "fsl_debug_console.h"
 #include "clock_config.h"
+#include <string.h>
 
 #if (!defined(USE_FREERTOS) && !defined(USE_NOT_FREERTOS))
 #error "Se debe definir USE_FREERTOS o USE_NOT_FREERTOS"
@@ -19,6 +20,8 @@
 #include "fsl_spi_freertos.h"
 #include "FreeRTOS.h"
 #include "task.h"
+
+static spi_rtos_handle_t master_rtos_handle;
 #endif
 
 /*< Definiciones >*/
@@ -33,13 +36,14 @@
 /*< Variables >*/
 //static uint8_t srcBuff[BUFFER_SIZE];
 static uint8_t destBuff[BUFFER_SIZE];
-static spi_rtos_handle_t master_rtos_handle;
 
 /*< Funciones>*/
 extern void spi_init(void) {
 	spi_master_config_t masterConfig;
 	uint32_t sourceClock;
+#ifdef USE_FREERTOS
 	status_t status;
+#endif
 
 	NVIC_SetPriority(SPI_MASTER_IRQN, SPI_NVIC_PRIO);
 
@@ -63,15 +67,15 @@ extern void spi_init(void) {
 #ifdef	USE_FREERTOS
 	status = SPI_RTOS_Init(&master_rtos_handle, SPI_MASTER_BASEADDR,
 			&masterConfig, sourceClock);
-#elif defined(USE_NOT_FREERTOS)
-	status = SPI_MasterInit(SPI_MASTER_BASEADDR, &masterConfig, sourceClock);
-#endif
 
 	if (status != kStatus_Success) {
 		PRINTF("DSPI master: error during initialization. \r\n");
 		while (1)
 			;
 	}
+#elif defined(USE_NOT_FREERTOS)
+	SPI_MasterInit(SPI_MASTER_BASEADDR, &masterConfig, sourceClock);
+#endif
 
 	return;
 }
@@ -82,7 +86,7 @@ extern void spi_write(uint8_t *tx_buffer) {
 
 	masterXfer.txData = tx_buffer;
 	masterXfer.rxData = NULL;
-	masterXfer.dataSize = strlen(tx_buffer);
+	masterXfer.dataSize = 1;
 
 #ifdef USE_FREERTOS
 	status = SPI_RTOS_Transfer(&master_rtos_handle, &masterXfer);

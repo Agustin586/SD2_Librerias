@@ -45,7 +45,7 @@
 #define SPI_SCK_PORT	PORTE
 
 #define CS_LOW	GPIO_ClearPinsOutput(SPI_CS_GPIO, 1U << SPI_CS_PIN)
-#define CS_HIGH	GPIO_SetPinsOutput(SPI_CS_GPIO, 1U << CS_PSPI_CS_PININ)
+#define CS_HIGH	GPIO_SetPinsOutput(SPI_CS_GPIO, 1U << SPI_CS_PIN)
 
 /*
  * NOTA: Si bien la utilidad de definir los parametros anteriores

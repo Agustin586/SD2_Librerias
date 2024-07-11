@@ -47,8 +47,12 @@ typedef union {
 		unsigned END_BIT :1;
 	};
 	struct {
-		uint32_t msb; // 4 bytes
-		uint16_t lsb; // 2 bytes
+		uint8_t byte1; // 4 bytes
+		uint8_t byte2;
+		uint8_t byte3;
+		uint8_t byte4;
+		uint8_t byte5; // 2 bytes
+		uint8_t byte6;
 	};
 } Send_Command_t;
 
@@ -63,6 +67,7 @@ typedef enum {
 } kStatus_Sd_t;
 
 static uint8_t SD_CardType;
+uint8_t SD_ResponseToken;
 
 /*< FUNCIONES PRIVADAS >*/
 static void sd_assert_cs(void);
@@ -75,6 +80,7 @@ static SD_RETURN_CODES_t sd_command_ACMD41(void);
 SD_RETURN_CODES_t sd_init(void) {
 	uint8_t SD_Response[5]; // array to hold response
 	uint8_t cmdAttempts = 0;
+	uint8_t buffer_aux;
 
 	/*< Inicializacion del spi >*/
 	spi_init();
@@ -92,8 +98,10 @@ SD_RETURN_CODES_t sd_init(void) {
 	 * */
 	sd_deassert_cs();
 
-	for (i = 0; i < 10; i++)
-		spi_write(0xFF);
+	buffer_aux = 0xFF;
+	for (uint8_t i = 0; i < 10; i++) {
+		spi_write(&buffer_aux);
+	}
 
 	/*
 	 * @brief	GO_IDLE_STATE (CMD0)
@@ -198,8 +206,9 @@ SD_RETURN_CODES_t sd_init(void) {
 		 * Para esto debe leer el bit 31 de R3.
 		 *
 		 * */
-//		if (!(SD_Response[OCR_BYTE_nrm1] & 0x80)) {
-		if (!POWER_UP_STATUS(SD_Response[OCR_BYTE_nrm1])) {
+
+
+		if (!(POWER_UP_STATUS(SD_Response[OCR_BYTE_nrm1]))) {
 			return SD_POWER_UP_BIT_NOT_SET;
 		}
 
@@ -252,6 +261,7 @@ uint8_t sd_write_single_block(uint32_t addr, uint8_t *buf) {
 #define SD_MAX_WRITE_ATTEMPTS    0.25 * (1 / CLOCK_GetFreq((SPI0_CLK_SRC)))
 
 	uint8_t res1;
+	uint8_t aux;
 	uint32_t readAttempts;
 
 	if (SD_CardType == SD_V1_SDSC)
@@ -279,11 +289,12 @@ uint8_t sd_write_single_block(uint32_t addr, uint8_t *buf) {
 	 * */
 	if (res1 == SUCCESS_RESONSE_R1) {
 		/* Token de inicio */
-		spi_write(START_BLOCK_TOKEN);
+		aux = START_BLOCK_TOKEN;
+		spi_write(&aux);
 
 		/*< Envia el buffer >*/
 		for (uint16_t i = 0; i < SD_BUFFER_SIZE; i++)
-			spi_write(buf[i]);// Envia el buffer entero de 512 bytes. La funcion se encarga.
+			spi_write(buf),buf++;// Envia el buffer entero de 512 bytes. La funcion se encarga.
 
 		// wait for a response (timeout = 250ms)
 		// maximum timeout is defined as 250 ms for all write operations
@@ -323,6 +334,7 @@ uint8_t sd_write_multiple_block(uint32_t addr, uint8_t *buf, uint8_t *count) {
 #define SD_MAX_WRITE_ATTEMPTS    0.25 * (1 / CLOCK_GetFreq((SPI0_CLK_SRC)))
 
 	uint8_t res1;
+	uint8_t aux;
 	uint32_t readAttempts;
 
 	if (SD_CardType == SD_V1_SDSC)
@@ -351,11 +363,12 @@ uint8_t sd_write_multiple_block(uint32_t addr, uint8_t *buf, uint8_t *count) {
 	if (res1 == SUCCESS_RESONSE_R1) {
 		do {
 			/* Token de inicio */
-			spi_write(START_BLOCK_TOKEN_MULTIPLE_BLOCK);
+			aux = START_BLOCK_TOKEN_MULTIPLE_BLOCK;
+			spi_write(&aux);
 
 			/*< Envia el buffer >*/
 			for (uint16_t i = 0; i < SD_BUFFER_SIZE; i++)
-				spi_write(buf[i]);// Envia el buffer entero de 512 bytes. La funcion se encarga.
+				spi_write(buf),buf++;// Envia el buffer entero de 512 bytes. La funcion se encarga.
 
 			// wait for a response (timeout = 250ms)
 			// maximum timeout is defined as 250 ms for all write operations
@@ -387,9 +400,9 @@ uint8_t sd_write_multiple_block(uint32_t addr, uint8_t *buf, uint8_t *count) {
 		} while (--(*count));
 
 		/*< Finaliza la transmisión de datos >*/
-		spi_write(STOP_TRANSMISSION_MULTIPLE_BLOCK);
-	}
-	else{
+		aux = STOP_TRANSMISSION_MULTIPLE_BLOCK;
+		spi_write(&aux);
+	} else {
 		PRINTF("Error: during writting\r\n");
 	}
 
@@ -518,17 +531,17 @@ uint8_t sd_read_multiple_block(uint32_t addr, uint8_t *buf, uint8_t *count) {
 	return res1;
 }
 
-bool sd_detected(void) {
-
-}
-
 /*
  * @brief	Afirma la linea de chip select
  * */
 static void sd_assert_cs(void) {
-	spi_write(0xFF);
+	uint8_t buffer;
+
+	buffer = 0xFF;
+
+	spi_write(&buffer);
 	CS_LOW;
-	spi_write(0xFF);
+	spi_write(&buffer);
 
 	return;
 }
@@ -537,9 +550,13 @@ static void sd_assert_cs(void) {
  * @brief	De-selecciona la tarjeta
  * */
 static void sd_deassert_cs(void) {
-	spi_write(0xFF);
+	uint8_t buffer;
+
+	buffer = 0xFF;
+
+	spi_write(&buffer);
 	CS_HIGH;
-	spi_write(0xFF);
+	spi_write(&buffer);
 
 	return;
 }
@@ -548,7 +565,6 @@ static void sd_deassert_cs(void) {
  * @brief	Respuesta de formato 1
  * */
 static uint8_t sd_read_response1(void) {
-	kStatus_Sd_t error;
 	uint8_t i = 0, response = 0xFF;
 
 	/*< Toma los datos por polling >*/
@@ -566,7 +582,7 @@ static uint8_t sd_read_response1(void) {
 
 	if (PARAM_ERROR(response))
 		PRINTF("Error: param error %d", kStatus_Sd_PARAMETER_ERROR);
-	else if (ADDR_ERROR(responde))
+	else if (ADDR_ERROR(response))
 		PRINTF("Error: addr error %d", kStatus_Sd_ADDRESS_ERROR);
 	else if (CRC_ERROR(response))
 		PRINTF("Error: crc error %d", kStatus_Sd_COM_CRC_ERROR);
@@ -586,7 +602,7 @@ static uint8_t sd_read_response1(void) {
  * 			uint8_t crc		CRC
  * */
 static void sd_command(uint8_t cmd, uint32_t arg, uint8_t crc) {
-	volatile static Send_Command_t Format_cmd;
+	static Send_Command_t Format_cmd;
 	/*
 	 * @brief	volatile para que no se optimize y pueda ver si se encuentra
 	 * escrita de manera adecuada en el debugger. En el desarrollo puede sacarse
@@ -606,8 +622,12 @@ static void sd_command(uint8_t cmd, uint32_t arg, uint8_t crc) {
 	 * */
 
 	// Transmit command
-	spi_write(Format_cmd.msb);
-	spi_write(Format_cmd.lsb);
+	spi_write(&Format_cmd.byte1);
+	spi_write(&Format_cmd.byte2);
+	spi_write(&Format_cmd.byte3);
+	spi_write(&Format_cmd.byte4);
+	spi_write(&Format_cmd.byte5);
+	spi_write(&Format_cmd.byte6);
 
 	return;
 }
