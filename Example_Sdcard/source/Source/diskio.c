@@ -24,7 +24,6 @@
 DSTATUS disk_status(BYTE pdrv /* Physical drive nmuber to identify the drive */
 ) {
 	DSTATUS stat = STA_NOINIT;
-	int result;
 
 	if (pdrv)
 		return STA_NOINIT; /* Supports only single drive */
@@ -37,7 +36,6 @@ DSTATUS disk_status(BYTE pdrv /* Physical drive nmuber to identify the drive */
 
 DSTATUS disk_initialize(BYTE pdrv /* Physical drive nmuber to identify the drive */
 ) {
-	DSTATUS stat;
 	int result;
 
 	if (pdrv != 0)
@@ -53,7 +51,7 @@ DSTATUS disk_initialize(BYTE pdrv /* Physical drive nmuber to identify the drive
 	else if (result == SD_GENERAL_ERROR)
 		PRINTF("Error: during init sd card\r\n");
 
-	return stat;
+	return result;
 }
 
 /*-----------------------------------------------------------------------*/
@@ -65,7 +63,6 @@ BYTE *buff, /* Data buffer to store read data */
 LBA_t sector, /* Start sector in LBA */
 UINT count /* Number of sectors to read */
 ) {
-	DRESULT res;
 	int result;
 
 	if (pdrv || !count)
@@ -77,7 +74,7 @@ UINT count /* Number of sectors to read */
 		result = sd_read_single_block(sector, buff);
 		count = 0;
 	} else { /* Lectura de multpiles bloques */
-		result = sd_read_multiple_block(sector, buff, &count);
+		result = sd_read_multiple_block(sector, (uint8_t *)buff, &count);
 	}
 
 	return count ? RES_ERROR : RES_OK;
@@ -94,9 +91,6 @@ const BYTE *buff, /* Data to be written */
 LBA_t sector, /* Start sector in LBA */
 UINT count /* Number of sectors to write */
 ) {
-	DRESULT res = STA_NOINIT;
-	int result;
-
 	if (pdrv || !count)
 		return RES_PARERR;
 //	if (res & STA_NOINIT)
@@ -105,10 +99,10 @@ UINT count /* Number of sectors to write */
 //		return RES_WRPRT;
 
 	if (count == 1) {
-		result = sd_write_single_block(sector, buff);
+		sd_write_single_block(sector, (uint8_t *)buff);
 		count = 0;
 	} else {
-		result = sd_multiple_block(sector, buff, &count);
+		sd_write_multiple_block(sector, (uint8_t *)buff, &count);
 	}
 
 	return count ? RES_ERROR : RES_OK;

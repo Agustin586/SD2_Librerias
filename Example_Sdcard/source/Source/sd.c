@@ -206,8 +206,6 @@ SD_RETURN_CODES_t sd_init(void) {
 		 * Para esto debe leer el bit 31 de R3.
 		 *
 		 * */
-
-
 		if (!(POWER_UP_STATUS(SD_Response[OCR_BYTE_nrm1]))) {
 			return SD_POWER_UP_BIT_NOT_SET;
 		}

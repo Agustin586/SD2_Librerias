@@ -39,26 +39,38 @@
 #include "clock_config.h"
 #include "MKL46Z4.h"
 #include "fsl_debug_console.h"
+#include "Include/ff.h"
 /* TODO: insert other include files here. */
 
 /* TODO: insert other definitions and declarations here. */
+
+static FATFS FatFs;// Area de trabajo
+static FIL Fil;// File Txt
 
 /*
  * @brief   Application entry point.
  */
 int main(void) {
-    /* Init board hardware. */
-    BOARD_InitBootPins();
-    BOARD_InitBootClocks();
-    BOARD_InitBootPeripherals();
+	UINT bx;
+
+	/* Init board hardware. */
+	BOARD_InitBootPins();
+	BOARD_InitBootClocks();
+	BOARD_InitBootPeripherals();
 #ifndef BOARD_INIT_DEBUG_CONSOLE_PERIPHERAL
-    /* Init FSL debug console. */
-    BOARD_InitDebugConsole();
+	/* Init FSL debug console. */
+	BOARD_InitDebugConsole();
 #endif
 
+	if (f_mount(&FatFs, "", 1) == FR_OK) {
+		if (f_open(&Fil, "hola.txt", FA_OPEN_ALWAYS | FA_WRITE) == FR_OK) {
+			f_write(&Fil, "Suscribete al canal :D! ", 24, &bx);
+			f_close(&Fil);
+		}
+	}
 
+	while (1)
+		;
 
-    while(1);
-
-    return 0 ;
+	return 0;
 }
