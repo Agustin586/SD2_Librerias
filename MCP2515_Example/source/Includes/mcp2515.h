@@ -12,6 +12,20 @@
 #include <stdbool.h>
 
 /*
+ * =============
+ * IMPORTANTE!!!
+ * =============
+ *
+ * Debe definirse el siguiente uso de del sistema. Si se utiliza
+ * freertos entonces debe setearse en '1', si no se utiliza debe
+ * configurarse en '0'. De esto dependerá que tipo de delay se va
+ * a utilizar. Si se no se utiliza freertos el delay consistirá en
+ * un bulce for de tipo bloqueante. Si se utiliza freertos el delay
+ * consistirá en el típico vtaskDelay.
+ * */
+#define USE_FREERTOS	0
+
+/*
  *  Speed 8M
  */
 #define MCP_8MHz_1000kBPS_CFG1 (0x00)

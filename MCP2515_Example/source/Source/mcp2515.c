@@ -6,6 +6,13 @@
  */
 
 #include "Includes/mcp2515.h"
+#include <string.h>
+
+#if USE_FREERTOS
+
+#elif
+
+#endif
 
 static const uint8_t CANCTRL_REQOP = 0xE0;
 static const uint8_t CANCTRL_ABAT = 0x10;
@@ -76,4 +83,84 @@ static void mcp2515_setRegisters(const REGISTER_t reg, const uint8_t values[], c
 static void mcp2515_modifyRegister(const REGISTER_t reg, const uint8_t mask, const uint8_t data);
 
 static void mcp2515_prepareId(uint8_t *buffer, const bool ext, const uint32_t id);
+
+const struct TXBn_REGS MCP2515_TXB[N_TXBUFFERS] = {
+    {MCP_TXB0CTRL, MCP_TXB0SIDH, MCP_TXB0DATA},
+    {MCP_TXB1CTRL, MCP_TXB1SIDH, MCP_TXB1DATA},
+    {MCP_TXB2CTRL, MCP_TXB2SIDH, MCP_TXB2DATA}
+};
+
+const struct RXBn_REGS RXB[N_RXBUFFERS] = {
+    {MCP_RXB0CTRL, MCP_RXB0SIDH, MCP_RXB0DATA, CANINTF_RX0IF},
+    {MCP_RXB1CTRL, MCP_RXB1SIDH, MCP_RXB1DATA, CANINTF_RX1IF}
+};
+
+extern void mcp2515_init(const uint8_t _CS, const uint32_t _SPI_CLOCK = DEFAULT_SPI_CLOCK){
+	/*< Configura los pines >*/
+
+	/*< Inicializa el spi >*/
+
+
+	return;
+}
+
+extern ERROR_t mcp2515_reset(void)
+{
+    startSPI();
+    SPIn->transfer(INSTRUCTION_RESET);
+    endSPI();
+
+    /*< Reinicia el modulo >*/
+
+
+    delay(10);
+
+    uint8_t zeros[14];
+    memset(zeros, 0, sizeof(zeros));
+    mcp2515_setRegisters(MCP_TXB0CTRL, zeros, 14);
+    mcp2515_setRegisters(MCP_TXB1CTRL, zeros, 14);
+    mcp2515_setRegisters(MCP_TXB2CTRL, zeros, 14);
+
+    mcp2515_setRegister(MCP_RXB0CTRL, 0);
+    mcp2515_setRegister(MCP_RXB1CTRL, 0);
+
+    mcp2515_setRegister(MCP_CANINTE, CANINTF_RX0IF | CANINTF_RX1IF | CANINTF_ERRIF | CANINTF_MERRF);
+
+    // receives all valid messages using either Standard or Extended Identifiers that
+    // meet filter criteria. RXF0 is applied for RXB0, RXF1 is applied for RXB1
+    mcp2515_modifyRegister(MCP_RXB0CTRL,
+                   RXBnCTRL_RXM_MASK | RXB0CTRL_BUKT | RXB0CTRL_FILHIT_MASK,
+                   RXBnCTRL_RXM_STDEXT | RXB0CTRL_BUKT | RXB0CTRL_FILHIT);
+    mcp2515_modifyRegister(MCP_RXB1CTRL,
+                   RXBnCTRL_RXM_MASK | RXB1CTRL_FILHIT_MASK,
+                   RXBnCTRL_RXM_STDEXT | RXB1CTRL_FILHIT);
+
+    // clear filters and masks
+    // do not filter any standard frames for RXF0 used by RXB0
+    // do not filter any extended frames for RXF1 used by RXB1
+    RXF filters[] = {RXF0, RXF1, RXF2, RXF3, RXF4, RXF5};
+    for (int i=0; i<6; i++) {
+        bool ext = (i == 1);
+        ERROR_t result = mcp2515_setFilter(filters[i], ext, 0);
+        if (result != ERROR_OK) {
+            return result;
+        }
+    }
+
+    MASK masks[] = {MASK0, MASK1};
+    for (int i=0; i<2; i++) {
+        ERROR_t result = mcp2515_setFilterMask(masks[i], true, 0);
+        if (result != ERROR_OK) {
+            return result;
+        }
+    }
+
+    return ERROR_OK;
+}
+
+
+
+
+
+
 
