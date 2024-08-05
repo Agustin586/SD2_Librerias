@@ -13,20 +13,6 @@
 #include "can.h"
 
 /*
- * =============
- * IMPORTANTE!!!
- * =============
- *
- * Debe definirse el siguiente uso de del sistema. Si se utiliza
- * freertos entonces debe setearse en '1', si no se utiliza debe
- * configurarse en '0'. De esto dependerá que tipo de delay se va
- * a utilizar. Si se no se utiliza freertos el delay consistirá en
- * un bulce for de tipo bloqueante. Si se utiliza freertos el delay
- * consistirá en el típico vtaskDelay.
- * */
-#define USE_FREERTOS	0
-
-/*
  *  Speed 8M
  */
 #define MCP_8MHz_1000kBPS_CFG1 (0x00)
@@ -397,7 +383,8 @@ uint8_t SPICS;
 uint32_t SPI_CLOCK;
 
 /*< Funciones publicas >*/
-extern void mcp2515_init(const uint8_t _CS, const uint32_t _SPI_CLOCK = DEFAULT_SPI_CLOCK);
+extern void mcp2515_init(const uint8_t _CS, const uint32_t _SPI_CLOCK =
+		DEFAULT_SPI_CLOCK);
 extern ERROR_t mcp2515_reset(void);
 extern ERROR_t mcp2515_setConfigMode();
 extern ERROR_t mcp2515_setListenOnlyMode();
@@ -406,10 +393,14 @@ extern ERROR_t mcp2515_setLoopbackMode();
 extern ERROR_t mcp2515_setNormalMode();
 extern ERROR_t mcp2515_setClkOut(const CAN_CLKOUT divisor);
 extern ERROR_t mcp2515_setBitrate(const CAN_SPEED canSpeed);
-extern ERROR_t mcp2515_setBitrate(const CAN_SPEED canSpeed, const CAN_CLOCK canClock);
-extern ERROR_t mcp2515_setFilterMask(const MASK num, const bool ext, const uint32_t ulData);
-extern ERROR_t mcp2515_setFilter(const RXF num, const bool ext, const uint32_t ulData);
-extern ERROR_t mcp2515_sendMessage(const TXBn txbn, const struct can_frame *frame);
+extern ERROR_t mcp2515_setBitrate(const CAN_SPEED canSpeed,
+		const CAN_CLOCK canClock);
+extern ERROR_t mcp2515_setFilterMask(const MASK num, const bool ext,
+		const uint32_t ulData);
+extern ERROR_t mcp2515_setFilter(const RXF num, const bool ext,
+		const uint32_t ulData);
+extern ERROR_t mcp2515_sendMessage(const TXBn txbn,
+		const struct can_frame *frame);
 extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame);
 extern ERROR_t mcp2515_readMessage(const RXBn rxbn, struct can_frame *frame);
 extern ERROR_t mcp2515_readMessage(struct can_frame *frame);
