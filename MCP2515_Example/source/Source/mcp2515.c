@@ -103,6 +103,30 @@ typedef union {
 	uint8_t data;
 } CANCTRL_t;
 
+typedef union {
+	struct {
+		unsigned RESERVED :1;
+		unsigned RXM :2;
+		unsigned RESERVED2 :1;
+		unsigned RXRTR :1;
+		unsigned BUKT :1;
+		unsigned BUKT1 :1;
+		unsigned FILGIT0 :1;
+	};
+	uint8_t data;
+} RXB0CTRL_t;
+
+typedef union {
+	struct {
+		unsigned RESERVED :1;
+		unsigned RXM :2;
+		unsigned RESERVED2 :1;
+		unsigned RXRTR :1;
+		unsigned FILHIT :3;
+	};
+	uint8_t data;
+} RXB1CTRL_t;
+
 typedef struct {
 	const REGISTER_t reg;
 	const uint8_t mask;
@@ -195,7 +219,7 @@ static void endSPI(void);
 
 static ERROR_t mcp2515_setMode(const uint8_t mode);
 
-static uint8_t mcp2515_readRegister(const REGISTER_t reg);
+static uint8_t mcp2515_readRegister(ReadReg_t *_readReg);
 static void mcp2515_readRegisters(const REGISTER_t reg, uint8_t values[],
 		const uint8_t n);
 static void mcp2515_setRegister(const REGISTER_t reg, const uint8_t value);
@@ -340,29 +364,63 @@ extern ERROR_t mcp2515_reset(void) {
 	/* Configuro los registros de control de Rx */
 	// receives all valid messages using either Standard or Extended Identifiers that
 	// meet filter criteria. RXF0 is applied for RXB0, RXF1 is applied for RXB1
+	ModifyReg_t _modifyReg = { 0 };
+	RXB0CTRL_t _rxb0Ctrl = { 0 };
+	RXB1CTRL_t _rxb1Ctrl = { 0 };
+
+	/* RXB0 control */
 	_register = MCP_RXB0CTRL;
-	mcp2515_modifyRegister(_register,
-			RXBnCTRL_RXM_MASK | RXB0CTRL_BUKT | RXB0CTRL_FILHIT_MASK,
-			RXBnCTRL_RXM_STDEXT | RXB0CTRL_BUKT | RXB0CTRL_FILHIT);
+
+	_rxb0Ctrl.BUKT = 1;	/*< Permite el roll over del RXB0 al RXB1.*/
+
+	_modifyReg.reg = _register;
+	_modifyReg.mask = RXBnCTRL_RXM_MASK | RXB0CTRL_BUKT | RXB0CTRL_FILHIT_MASK;
+	_modifyReg.data = _rxb0Ctrl.data;
+
+	mcp2515_modifyRegister(_modifyReg.reg,/*< Envia el registro que va a modificar.*/
+	_modifyReg.mask,/*< Envia la mascara.*/
+	_modifyReg.data /*< Setea unicamente el BUKT(roll over).*/);
+
+	/* RXB1 control */
 	_register = MCP_RXB1CTRL;
-	mcp2515_modifyRegister(_register, RXBnCTRL_RXM_MASK | RXB1CTRL_FILHIT_MASK,
-			RXBnCTRL_RXM_STDEXT | RXB1CTRL_FILHIT);
+
+	_rxb1Ctrl.data = RXBnCTRL_RXM_STDEXT | RXB1CTRL_FILHIT;	/*< FILHIT1 = 1.*/
+
+	_modifyReg.reg = _register;
+	_modifyReg.mask = RXBnCTRL_RXM_MASK | RXB1CTRL_FILHIT_MASK;
+
+	mcp2515_modifyRegister(_modifyReg.reg, _modifyReg.mask, _modifyReg.data);
 
 	// clear filters and masks
 	// do not filter any standard frames for RXF0 used by RXB0
 	// do not filter any extended frames for RXF1 used by RXB1
+	/**
+	 * Limpiamos los registros del id y mask.
+	 *
+	 * Seteamos en cero el filtro para el id standart y el extendido. Tambien
+	 * seteamos en cero la mascara. Luego se configurara mas adelante el
+	 * filtro y mascara correspondiente.
+	 * */
 	RXF filters[] = { RXF0, RXF1, RXF2, RXF3, RXF4, RXF5 };
+
+#define FILTER_CLEAR	0
+#define MASK_CLEAR		0
+
 	for (int i = 0; i < 6; i++) {
 		bool ext = (i == 1);
-		ERROR_t result = mcp2515_setFilter(filters[i], ext, 0);
+
+		ERROR_t result = mcp2515_setFilter(filters[i], ext, FILTER_CLEAR);
+
 		if (result != ERROR_OK) {
 			return result;
 		}
 	}
 
 	MASK masks[] = { MASK0, MASK1 };
+
 	for (int i = 0; i < 2; i++) {
-		ERROR_t result = mcp2515_setFilterMask(masks[i], true, 0);
+		ERROR_t result = mcp2515_setFilterMask(masks[i], true, MASK_CLEAR);
+
 		if (result != ERROR_OK) {
 			return result;
 		}
@@ -371,19 +429,18 @@ extern ERROR_t mcp2515_reset(void) {
 	return ERROR_OK;
 }
 
-static uint8_t mcp2515_readRegister(ReadReg_t* _readReg) {
+static uint8_t mcp2515_readRegister(ReadReg_t *_readReg) {
+	uint8_t nro_brytes;
+
 	*_readReg->instruction = INSTRUCTION_READ;
 
 	startSPI();
 	spi_write(_readReg->instruction, 1);
 	spi_write(_readReg->reg, 1);
-
-	SPIn->transfer(INSTRUCTION_READ);
-	SPIn->transfer(reg);
-	uint8_t ret = SPIn->transfer(0x00);
+	spi_receive(_readReg->data, &nro_brytes);
 	endSPI();
 
-	return ret;
+	return;
 }
 
 extern void mcp2515_readRegisters(const REGISTER_t reg, uint8_t values[],
@@ -509,7 +566,7 @@ extern ERROR_t mcp2515_setMode(const uint8_t mode) {
 	ReadReg_t _readReg;
 
 	_readReg.reg = MCP_CANSTAT;
-	_readReg.data = mcp2515_readRegister(_readReg.reg);
+	mcp2515_readRegister(&_readReg);
 
 	_readReg.data &= CANSTAT_OPMOD;
 	modeMatch = (_readReg.data == mode);
@@ -849,19 +906,25 @@ extern void mcp2515_prepareId(uint8_t *buffer, const bool ext,
 		buffer[MCP_EID0] = 0;
 		buffer[MCP_EID8] = 0;
 	}
+
+	return;
 }
 
 extern ERROR_t mcp2515_setFilterMask(const MASK mask, const bool ext,
 		const uint32_t ulData) {
+	/* Setea al modulo en modo de configuracion */
 	ERROR_t res = mcp2515_setConfigMode();
+
 	if (res != ERROR_OK) {
 		return res;
 	}
 
 	uint8_t tbufdata[4];
+
 	mcp2515_prepareId(tbufdata, ext, ulData);
 
 	REGISTER_t reg;
+
 	switch (mask) {
 	case MASK0:
 		reg = MCP_RXM0SIDH;
@@ -873,6 +936,15 @@ extern ERROR_t mcp2515_setFilterMask(const MASK mask, const bool ext,
 		return ERROR_FAIL;
 	}
 
+	/* Limpia los registros de la mascara */
+	/**
+	 * Tenemos los siguiente registros para la mascara para RX0:
+	 * 		1. RXM0SIDH.
+	 * 		2. RXM0SIDL.
+	 * 		3. RXM0EID8.
+	 * 		4. RXM0EID0.
+	 * Para RX1 lo mismo.
+	 * */
 	mcp2515_setRegisters(reg, tbufdata, 4);
 
 	return ERROR_OK;
@@ -880,7 +952,9 @@ extern ERROR_t mcp2515_setFilterMask(const MASK mask, const bool ext,
 
 extern ERROR_t mcp2515_setFilter(const RXF num, const bool ext,
 		const uint32_t ulData) {
+	/* Configura el modo de configuracion */
 	ERROR_t res = mcp2515_setConfigMode();
+
 	if (res != ERROR_OK) {
 		return res;
 	}
@@ -910,9 +984,10 @@ extern ERROR_t mcp2515_setFilter(const RXF num, const bool ext,
 		return ERROR_FAIL;
 	}
 
-	uint8_t tbufdata[4];
-	mcp2515_prepareId(tbufdata, ext, ulData);
-	mcp2515_setRegisters(reg, tbufdata, 4);
+	uint8_t tbufdata[4]; /*< Utilizado para modificar los registros sid y eid del modulo.*/
+
+	mcp2515_prepareId(tbufdata, ext, ulData); /*< Configuramos el id de acuerdo al formato extendido o no.*/
+	mcp2515_setRegisters(reg, tbufdata, 4); /*< Cargamos el id configurado.*/
 
 	return ERROR_OK;
 }
