@@ -23,6 +23,6 @@
 /*< Funciones >*/
 extern void spi_init(void);
 extern void spi_write(uint8_t *tx_buffer, uint16_t n);
-extern void spi_receive(uint8_t *rx_buffer);
+extern void spi_receive(uint8_t *rx_buffer, uint8_t *n);
 
 #endif /* INCLUDE_SPI_H_ */

@@ -92,6 +92,29 @@ typedef union {
 	uint8_t data;
 } CANINTE_t;
 
+typedef union {
+	struct {
+		unsigned REQ0P :3;
+		unsigned ABAT :1;
+		unsigned OSM :1;
+		unsigned CLKEN :1;
+		unsigned CLKPRE :2;
+	};
+	uint8_t data;
+} CANCTRL_t;
+
+typedef struct {
+	const REGISTER_t reg;
+	const uint8_t mask;
+	const uint8_t data;
+} ModifyReg_t;
+
+typedef struct {
+	const REGISTER_t reg;
+	const INSTRUCTION_t instruction;
+	uint8_t data;
+} ReadReg_t;
+
 #if USE_FREERTOS
 
 #elif (!USE_FREERTOS)
@@ -170,7 +193,7 @@ static const struct RXBn_REGS {
 static void startSPI(void);
 static void endSPI(void);
 
-static ERROR_t mcp2515_setMode(const CANCTRL_REQOP_MODE_t mode);
+static ERROR_t mcp2515_setMode(const uint8_t mode);
 
 static uint8_t mcp2515_readRegister(const REGISTER_t reg);
 static void mcp2515_readRegisters(const REGISTER_t reg, uint8_t values[],
@@ -286,6 +309,9 @@ extern ERROR_t mcp2515_reset(void) {
 	memset(zeros, 0, sizeof(zeros)); /**< Inicia con un vector en 0.*/
 
 	/* Resetea todos los registros seteandolos en 0 */
+	/**
+	 * Registros de control de TX.
+	 * */
 	_register = MCP_TXB0CTRL;
 	mcp2515_setRegisters(_register, zeros, 14);
 	_register = MCP_TXB1CTRL;
@@ -293,11 +319,17 @@ extern ERROR_t mcp2515_reset(void) {
 	_register = MCP_TXB2CTRL;
 	mcp2515_setRegisters(_register, zeros, 14);
 
+	/**
+	 * Registros de control de Rx.
+	 * */
 	_register = MCP_RXB0CTRL;
 	mcp2515_setRegister(_register, 0);
 	_register = MCP_RXB1CTRL;
 	mcp2515_setRegister(_register, 0);
 
+	/**
+	 * Registro de interrupcion.
+	 * */
 	_register = MCP_CANINTE;
 	_caninte.RX0IE = 1;
 	_caninte.RX1IE = 1;
@@ -305,6 +337,7 @@ extern ERROR_t mcp2515_reset(void) {
 	_caninte.MERRE = 1;
 	mcp2515_setRegister(_register, _caninte.data);
 
+	/* Configuro los registros de control de Rx */
 	// receives all valid messages using either Standard or Extended Identifiers that
 	// meet filter criteria. RXF0 is applied for RXB0, RXF1 is applied for RXB1
 	_register = MCP_RXB0CTRL;
@@ -312,8 +345,7 @@ extern ERROR_t mcp2515_reset(void) {
 			RXBnCTRL_RXM_MASK | RXB0CTRL_BUKT | RXB0CTRL_FILHIT_MASK,
 			RXBnCTRL_RXM_STDEXT | RXB0CTRL_BUKT | RXB0CTRL_FILHIT);
 	_register = MCP_RXB1CTRL;
-	mcp2515_modifyRegister(_register,
-			RXBnCTRL_RXM_MASK | RXB1CTRL_FILHIT_MASK,
+	mcp2515_modifyRegister(_register, RXBnCTRL_RXM_MASK | RXB1CTRL_FILHIT_MASK,
 			RXBnCTRL_RXM_STDEXT | RXB1CTRL_FILHIT);
 
 	// clear filters and masks
@@ -339,8 +371,13 @@ extern ERROR_t mcp2515_reset(void) {
 	return ERROR_OK;
 }
 
-static uint8_t mcp2515_readRegister(const REGISTER_t reg) {
+static uint8_t mcp2515_readRegister(ReadReg_t* _readReg) {
+	*_readReg->instruction = INSTRUCTION_READ;
+
 	startSPI();
+	spi_write(_readReg->instruction, 1);
+	spi_write(_readReg->reg, 1);
+
 	SPIn->transfer(INSTRUCTION_READ);
 	SPIn->transfer(reg);
 	uint8_t ret = SPIn->transfer(0x00);
@@ -402,9 +439,9 @@ static void mcp2515_modifyRegister(const REGISTER_t reg, const uint8_t mask,
 
 	startSPI();
 	spi_write(&_instruction, 1);
-	spi_write(&reg,1);
-	spi_write(&mask,1);
-	spi_write(&data,1);
+	spi_write(&reg, 1);
+	spi_write(&mask, 1);
+	spi_write(&data, 1);
 	endSPI();
 
 	return;
@@ -420,7 +457,21 @@ extern uint8_t mcp2515_getStatus(void) {
 }
 
 extern ERROR_t mcp2515_setConfigMode() {
-	return mcp2515_setMode(CANCTRL_REQOP_CONFIG);
+	CANCTRL_t _canctrl;
+
+	/* Modificamos el modo del trabajo del modulo */
+	/**
+	 * El modulo puede trabajar en 5 modos distintos.
+	 * 		1. Modo de configuracion.	--> En particular trabajamos en este durante la incializacion.
+	 * 		2. Modo normal.
+	 * 		3. Modo sleep.
+	 * 		4. Modo de solo escucha.
+	 * 		5. Modo de loopback.
+	 * */
+	_canctrl.data = 0; /*< Nos aseguramos de que se encuentra limpia.*/
+	_canctrl.REQ0P = 0b100; /*< El modulo entra en modo de configuracion.*/
+
+	return mcp2515_setMode(_canctrl.data);
 }
 
 extern ERROR_t mcp2515_setListenOnlyMode() {
@@ -439,21 +490,29 @@ extern ERROR_t mcp2515_setNormalMode() {
 	return mcp2515_setMode(CANCTRL_REQOP_NORMAL);
 }
 
-extern ERROR_t mcp2515_setMode(const CANCTRL_REQOP_MODE mode) {
-	mcp2515_modifyRegister(MCP_CANCTRL, CANCTRL_REQOP, mode);
+extern ERROR_t mcp2515_setMode(const uint8_t mode) {
+	const REGISTER_t _register = MCP_CANCTRL;
+	ModifyReg_t _modifyReg;
 
-	unsigned long endTime = millis() + 10;
+	/* Configura el modo de operacion del modulo */
+	_modifyReg.reg = _register; /*< Registro de can control.*/
+	_modifyReg.mask = CANCTRL_REQOP; /*< Corresponde a REQ0P[2:0].*/
+	_modifyReg.data = mode; /*< Modo de operacion del modulo.*/
+
+	mask = mcp2515_modifyRegister(_modifyReg.reg, _modifyReg.mask,
+			_modifyReg.data);
+
+	/* Verifica que se cargo correctamente */
+	__delay_ms(10);
+
 	bool modeMatch = false;
-	while (millis() < endTime) {
-		uint8_t newmode = mcp2515_readRegister(MCP_CANSTAT);
-		newmode &= CANSTAT_OPMOD;
+	ReadReg_t _readReg;
 
-		modeMatch = newmode == mode;
+	_readReg.reg = MCP_CANSTAT;
+	_readReg.data = mcp2515_readRegister(_readReg.reg);
 
-		if (modeMatch) {
-			break;
-		}
-	}
+	_readReg.data &= CANSTAT_OPMOD;
+	modeMatch = (_readReg.data == mode);
 
 	return modeMatch ? ERROR_OK : ERROR_FAIL;
 }

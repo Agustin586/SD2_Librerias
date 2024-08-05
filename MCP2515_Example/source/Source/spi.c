@@ -104,7 +104,7 @@ extern void spi_write(uint8_t *tx_buffer, uint16_t n) {
 	return;
 }
 
-extern void spi_receive(uint8_t *rx_buffer) {
+extern void spi_receive(uint8_t *rx_buffer, uint8_t *n) {
 	spi_transfer_t masterXfer = { 0 };
 	status_t status;
 
@@ -117,6 +117,8 @@ extern void spi_receive(uint8_t *rx_buffer) {
 #elif (!USE_FREERTOS)
 	status = SPI_MasterTransferBlocking(SPI_MASTER_BASE, &masterXfer);
 #endif
+
+	*n = masterXfer.dataSize;
 
 	if (status == kStatus_Success) {
 		PRINTF("SPI transfer completed successfully. \r\n");
