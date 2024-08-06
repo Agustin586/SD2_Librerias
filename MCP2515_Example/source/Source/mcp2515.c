@@ -201,9 +201,9 @@ static const int N_TXBUFFERS = 3;
 static const int N_RXBUFFERS = 2;
 
 static const struct TXBn_REGS {
-	REGISTER CTRL;
-	REGISTER SIDH;
-	REGISTER DATA;
+	REGISTER_t CTRL;
+	REGISTER_t SIDH;
+	REGISTER_t DATA;
 } TXB[N_TXBUFFERS];
 
 static const struct RXBn_REGS {
@@ -371,7 +371,7 @@ extern ERROR_t mcp2515_reset(void) {
 	/* RXB0 control */
 	_register = MCP_RXB0CTRL;
 
-	_rxb0Ctrl.BUKT = 1;	/*< Permite el roll over del RXB0 al RXB1.*/
+	_rxb0Ctrl.BUKT = 1; /*< Permite el roll over del RXB0 al RXB1.*/
 
 	_modifyReg.reg = _register;
 	_modifyReg.mask = RXBnCTRL_RXM_MASK | RXB0CTRL_BUKT | RXB0CTRL_FILHIT_MASK;
@@ -384,7 +384,7 @@ extern ERROR_t mcp2515_reset(void) {
 	/* RXB1 control */
 	_register = MCP_RXB1CTRL;
 
-	_rxb1Ctrl.data = RXBnCTRL_RXM_STDEXT | RXB1CTRL_FILHIT;	/*< FILHIT1 = 1.*/
+	_rxb1Ctrl.data = RXBnCTRL_RXM_STDEXT | RXB1CTRL_FILHIT; /*< FILHIT1 = 1.*/
 
 	_modifyReg.reg = _register;
 	_modifyReg.mask = RXBnCTRL_RXM_MASK | RXB1CTRL_FILHIT_MASK;
@@ -505,9 +505,12 @@ static void mcp2515_modifyRegister(const REGISTER_t reg, const uint8_t mask,
 }
 
 extern uint8_t mcp2515_getStatus(void) {
+	INSTRUCTION_t _instruction = INSTRUCTION_READ_STATUS;
+	uint8_t i, n;
+
 	startSPI();
-	SPIn->transfer(INSTRUCTION_READ_STATUS);
-	uint8_t i = SPIn->transfer(0x00);
+	spi_write(&_instruction, 1);
+	spi_receive(&i, &n);
 	endSPI();
 
 	return i;
@@ -532,19 +535,35 @@ extern ERROR_t mcp2515_setConfigMode() {
 }
 
 extern ERROR_t mcp2515_setListenOnlyMode() {
-	return mcp2515_setMode(CANCTRL_REQOP_LISTENONLY);
+	CANCTRL_t _canctrl = { 0 };
+
+	_canctrl.REQ0P = 0b011; /*< Modo de solo escucha.*/
+
+	return mcp2515_setMode(_canctrl.data);
 }
 
 extern ERROR_t mcp2515_setSleepMode() {
-	return mcp2515_setMode(CANCTRL_REQOP_SLEEP);
+	CANCTRL_t _canctrl = { 0 };
+
+	_canctrl.REQ0P = 0b001; /*< Modo sleep de operacion.*/
+
+	return mcp2515_setMode(_canctrl.data);
 }
 
 extern ERROR_t mcp2515_setLoopbackMode() {
-	return mcp2515_setMode(CANCTRL_REQOP_LOOPBACK);
+	CANCTRL_t _canctrl = { 0 };
+
+	_canctrl.REQ0P = 0b010; /*< Modo loopback de operacion.*/
+
+	return mcp2515_setMode(_canctrl.data);
 }
 
 extern ERROR_t mcp2515_setNormalMode() {
-	return mcp2515_setMode(CANCTRL_REQOP_NORMAL);
+	CANCTRL_t _canctrl = { 0 };
+
+	_canctrl.REQ0P = 0b000; /*< Modo normal de operacion.*/
+
+	return mcp2515_setMode(_canctrl.data);
 }
 
 extern ERROR_t mcp2515_setMode(const uint8_t mode) {
@@ -574,18 +593,22 @@ extern ERROR_t mcp2515_setMode(const uint8_t mode) {
 	return modeMatch ? ERROR_OK : ERROR_FAIL;
 }
 
-extern ERROR_t mcp2515_setBitrate(const CAN_SPEED canSpeed) {
-	return mcp2515_setBitrate(canSpeed, MCP_16MHZ);
-}
-
 extern ERROR_t mcp2515_setBitrate(const CAN_SPEED canSpeed, CAN_CLOCK canClock) {
+	/* Entra en modo de configuracion */
 	ERROR_t error = mcp2515_setConfigMode();
+
 	if (error != ERROR_OK) {
 		return error;
 	}
 
+	/* Elije la frecuencia y bits por segundos */
+	/**
+	 * Por ejemplo: 16 Mhz y 125 kBps.
+	 * */
 	uint8_t set, cfg1, cfg2, cfg3;
+
 	set = 1;
+
 	switch (canClock) {
 	case (MCP_8MHZ):
 		switch (canSpeed) {
@@ -856,10 +879,18 @@ extern ERROR_t mcp2515_setBitrate(const CAN_SPEED canSpeed, CAN_CLOCK canClock) 
 		break;
 	}
 
+	CNF1_t _cnf1;
+	CNF2_t _cnf2;
+	CNF3_t _cnf3;
+
+	_cnf1.data = cfg1;
+	_cnf2.data = cfg2;
+	_cnf3.data = cfg3;
+
 	if (set) {
-		mcp2515_setRegister(MCP_CNF1, cfg1);
-		mcp2515_setRegister(MCP_CNF2, cfg2);
-		mcp2515_setRegister(MCP_CNF3, cfg3);
+		mcp2515_setRegister(MCP_CNF1, _cnf1.data);
+		mcp2515_setRegister(MCP_CNF2, _cnf2.data);
+		mcp2515_setRegister(MCP_CNF3, _cnf3.data);
 		return ERROR_OK;
 	} else {
 		return ERROR_FAIL;
@@ -994,10 +1025,12 @@ extern ERROR_t mcp2515_setFilter(const RXF num, const bool ext,
 
 extern ERROR_t mcp2515_sendMessage(const TXBn txbn,
 		const struct can_frame *frame) {
+	/* Verifica que no se supere la cantidad maxima de datos */
 	if (frame->can_dlc > CAN_MAX_DLEN) {
 		return ERROR_FAILTX;
 	}
 
+	/* Envia la informacion */
 	const struct TXBn_REGS *txbuf = &TXB[txbn];
 
 	uint8_t data[13];
@@ -1016,30 +1049,37 @@ extern ERROR_t mcp2515_sendMessage(const TXBn txbn,
 
 	mcp2515_modifyRegister(txbuf->CTRL, TXB_TXREQ, TXB_TXREQ);
 
-	uint8_t ctrl = mcp2515_readRegister(txbuf->CTRL);
-	if ((ctrl & (TXB_ABTF | TXB_MLOA | TXB_TXERR)) != 0) {
+	/* Verifica la informacion enviada */
+	ReadReg_t _readReg;
+
+	_readReg.reg = *txbuf->CTRL;
+
+	mcp2515_readRegister(&_readReg);
+
+	if ((_readReg.data & (TXB_ABTF | TXB_MLOA | TXB_TXERR)) != 0) {
 		return ERROR_FAILTX;
 	}
+
 	return ERROR_OK;
 }
 
-extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame) {
-	if (frame->can_dlc > CAN_MAX_DLEN) {
-		return ERROR_FAILTX;
-	}
-
-	TXBn txBuffers[N_TXBUFFERS] = { TXB0, TXB1, TXB2 };
-
-	for (int i = 0; i < N_TXBUFFERS; i++) {
-		const struct TXBn_REGS *txbuf = &TXB[txBuffers[i]];
-		uint8_t ctrlval = mcp2515_readRegister(txbuf->CTRL);
-		if ((ctrlval & TXB_TXREQ) == 0) {
-			return mcp2515_sendMessage(txBuffers[i], frame);
-		}
-	}
-
-	return ERROR_ALLTXBUSY;
-}
+//extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame) {
+//	if (frame->can_dlc > CAN_MAX_DLEN) {
+//		return ERROR_FAILTX;
+//	}
+//
+//	TXBn txBuffers[N_TXBUFFERS] = { TXB0, TXB1, TXB2 };
+//
+//	for (int i = 0; i < N_TXBUFFERS; i++) {
+//		const struct TXBn_REGS *txbuf = &TXB[txBuffers[i]];
+//		uint8_t ctrlval = mcp2515_readRegister(txbuf->CTRL);
+//		if ((ctrlval & TXB_TXREQ) == 0) {
+//			return mcp2515_sendMessage(txBuffers[i], frame);
+//		}
+//	}
+//
+//	return ERROR_ALLTXBUSY;
+//}
 
 extern ERROR_t mcp2515_readMessage(const RXBn rxbn, struct can_frame *frame) {
 	const struct RXBn_REGS *rxb = &RXB[rxbn];
