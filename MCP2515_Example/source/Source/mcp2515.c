@@ -998,23 +998,23 @@ extern ERROR_t mcp2515_setClkOut(const CAN_CLKOUT divisor) {
 
 extern void mcp2515_prepareId(uint8_t *buffer, const bool ext,
 		const uint32_t id) {
-	uint16_t canid = (uint16_t) (id & 0x0FFFF);	/*< Extrae los 16 bits menos significativos del ID.*/
+	uint16_t canid = (uint16_t) (id & 0x0FFFF); /*< Extrae los 16 bits menos significativos del ID.*/
 
 	if (ext) {
-		buffer[MCP_EID0] = (uint8_t) (canid & 0xFF);	/*< Primeros 8 bits bajos en EID0.*/
-		buffer[MCP_EID8] = (uint8_t) (canid >> 8);		/*< Segundos 8 bits altos en EID8.*/
+		buffer[MCP_EID0] = (uint8_t) (canid & 0xFF); /*< Primeros 8 bits bajos en EID0.*/
+		buffer[MCP_EID8] = (uint8_t) (canid >> 8); /*< Segundos 8 bits altos en EID8.*/
 		canid = (uint16_t) (id >> 16);
-		buffer[MCP_SIDL] = (uint8_t) (canid & 0x03);	/*< Bits 16 y 17 del id extendido.*/
+		buffer[MCP_SIDL] = (uint8_t) (canid & 0x03); /*< Bits 16 y 17 del id extendido.*/
 		buffer[MCP_SIDL] += (uint8_t) ((canid & 0x1C) << 3);
-		buffer[MCP_SIDL] |= TXB_EXIDE_MASK;	/*< Pone en '1' el bit EXIDE.*/
-		buffer[MCP_SIDH] = (uint8_t) (canid >> 5);	/*< Obtiene los ultimos 5 bits de la parte alta.*/
+		buffer[MCP_SIDL] |= TXB_EXIDE_MASK; /*< Pone en '1' el bit EXIDE.*/
+		buffer[MCP_SIDH] = (uint8_t) (canid >> 5); /*< Obtiene los ultimos 5 bits de la parte alta.*/
 		/**
 		 * El formato de SIDL queda como sigue: SID2 SID1 SID0 - EXIDE - EID17 EID16,
 		 * donde '-' corresponde a un bit reservado. --> Esto se carga en TXBnSIDL.
 		 * */
 	} else {
-		buffer[MCP_SIDH] = (uint8_t) (canid >> 3);	/*< Bits del 3-10.*/
-		buffer[MCP_SIDL] = (uint8_t) ((canid & 0x07) << 5);	/*< Bits del 0-2.*/
+		buffer[MCP_SIDH] = (uint8_t) (canid >> 3); /*< Bits del 3-10.*/
+		buffer[MCP_SIDL] = (uint8_t) ((canid & 0x07) << 5); /*< Bits del 0-2.*/
 		buffer[MCP_EID0] = 0;
 		buffer[MCP_EID8] = 0;
 	}
@@ -1115,18 +1115,31 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 	const struct TXBn_REGS *txbuf = &TXB[txbn];
 
 	uint8_t data[13];
+	/**
+	 * Formato de data[13]:
+	 * 		byte 0: SIDH
+	 * 		byte 1: SIDL
+	 * 		byte 2: EID8
+	 * 		byte 3: EID0
+	 * 		byte 4: TXBnDLC
+	 * 		byte 5-13: Data frame
+	 * */
 
-	bool ext = (frame->can_id & CAN_EFF_FLAG);	/*< Determina si es de formato extendido.*/
-	bool rtr = (frame->can_id & CAN_RTR_FLAG);	/*< Determina si RTR se encuentra en '1'.*/
+	bool ext = (frame->can_id & CAN_EFF_FLAG); /*< Determina si es de formato extendido.*/
+	bool rtr = (frame->can_id & CAN_RTR_FLAG); /*< Determina si RTR se encuentra en '1'.*/
 
 	uint32_t id = (frame->can_id & (ext ? CAN_EFF_MASK : CAN_SFF_MASK));
 
-	mcp2515_prepareId(data, ext, id);	/*< Le da el formato adecuado.*/
+	/* Cargo los bytes del 0 al 3 */
+	mcp2515_prepareId(data, ext, id); /*< Le da el formato adecuado.*/
 
+	/* Cargo el byte 4 */
 	data[MCP_DLC] = rtr ? (frame->can_dlc | RTR_MASK) : frame->can_dlc;
 
+	/* Cargos los bytes del 5 al 13 */
 	memcpy(&data[MCP_DATA], frame->data, frame->can_dlc);
 
+	/* Envia los datos */
 	mcp2515_setRegisters(txbuf->SIDH, data, 5 + frame->can_dlc);
 
 	mcp2515_modifyRegister(txbuf->CTRL, TXB_TXREQ, TXB_TXREQ);
@@ -1138,7 +1151,9 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 
 	mcp2515_readRegister(&_readReg);
 
-	if ((_readReg.data & (TXB_ABTF | TXB_MLOA | TXB_TXERR)) != 0) {
+	if ((_readReg.data & (TXB_ABTF /*< Message aborted flag bit.*/
+	| TXB_MLOA /*< Message lost arbitration bit.*/
+	| TXB_TXERR /*< Transmission error detected bit.*/)) != 0) {
 		return ERROR_FAILTX;
 	}
 
