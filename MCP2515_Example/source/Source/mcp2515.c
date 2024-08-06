@@ -72,7 +72,8 @@ typedef union {
 		unsigned ABTF :1;
 		unsigned MLOA :1;
 		unsigned TXERR :1;
-		unsigned RESERVED :1;
+		unsigned TXREQ :1;
+		unsigned RESERVED2 :1;
 		unsigned TXP :2;
 	};
 	uint8_t data;
@@ -126,6 +127,82 @@ typedef union {
 	};
 	uint8_t data;
 } RXB1CTRL_t;
+
+typedef union {
+	struct {
+		unsigned RESERVED :1;
+		unsigned ABTF :1;
+		unsigned MLOA :1;
+		unsigned TXERR :1;
+		unsigned TXREQ :1;
+		unsigned RESERVED2 :1;
+		unsigned TXP :2;
+	};
+	uint8_t data;
+} TXBnCTRL_t;
+
+typedef union {
+	struct {
+		unsigned RESERVED :1;
+		unsigned RESERVED2 :1;
+		unsigned B2RTS :1;
+		unsigned B1RTS :1;
+		unsigned B0RTS :1;
+		unsigned B2RTSM :1;
+		unsigned B1RTSM :1;
+		unsigned B0RTSM :1;
+	};
+	uint8_t data;
+} TXRTSCTRL_t;
+
+typedef union {
+	struct {
+		unsigned SID :8;
+	};
+	uint8_t data;
+} TXBnSIDH_t;
+
+typedef union {
+	struct {
+		unsigned SID :3;
+		unsigned RESERVED :1;
+		unsigned EXIDE :1;
+		unsigned RESERVED2 :1;
+		unsigned EID :2;
+	};
+	uint8_t data;
+} TXBnSIDL_t;
+
+typedef union {
+	struct {
+		unsigned EID :8;
+	};
+	uint8_t data;
+} TXBnEID8_t;
+
+typedef union {
+	struct {
+		unsigned EID :8;
+	};
+	uint8_t data;
+} TXBnEID0_t;
+
+typedef union {
+	struct {
+		unsigned RESERVED :1;
+		unsigned RTR :1;
+		unsigned RESERVED2 :2;
+		unsigned DLC :4;
+	};
+	uint8_t data;
+} TXBnDLC_t;
+
+typedef union {
+	struct {
+		unsigned TXBnDm :8;
+	};
+	uint8_t data;
+} TXBnDm_t;
 
 typedef struct {
 	const REGISTER_t reg;
@@ -921,19 +998,23 @@ extern ERROR_t mcp2515_setClkOut(const CAN_CLKOUT divisor) {
 
 extern void mcp2515_prepareId(uint8_t *buffer, const bool ext,
 		const uint32_t id) {
-	uint16_t canid = (uint16_t) (id & 0x0FFFF);
+	uint16_t canid = (uint16_t) (id & 0x0FFFF);	/*< Extrae los 16 bits menos significativos del ID.*/
 
 	if (ext) {
-		buffer[MCP_EID0] = (uint8_t) (canid & 0xFF);
-		buffer[MCP_EID8] = (uint8_t) (canid >> 8);
+		buffer[MCP_EID0] = (uint8_t) (canid & 0xFF);	/*< Primeros 8 bits bajos en EID0.*/
+		buffer[MCP_EID8] = (uint8_t) (canid >> 8);		/*< Segundos 8 bits altos en EID8.*/
 		canid = (uint16_t) (id >> 16);
-		buffer[MCP_SIDL] = (uint8_t) (canid & 0x03);
+		buffer[MCP_SIDL] = (uint8_t) (canid & 0x03);	/*< Bits 16 y 17 del id extendido.*/
 		buffer[MCP_SIDL] += (uint8_t) ((canid & 0x1C) << 3);
-		buffer[MCP_SIDL] |= TXB_EXIDE_MASK;
-		buffer[MCP_SIDH] = (uint8_t) (canid >> 5);
+		buffer[MCP_SIDL] |= TXB_EXIDE_MASK;	/*< Pone en '1' el bit EXIDE.*/
+		buffer[MCP_SIDH] = (uint8_t) (canid >> 5);	/*< Obtiene los ultimos 5 bits de la parte alta.*/
+		/**
+		 * El formato de SIDL queda como sigue: SID2 SID1 SID0 - EXIDE - EID17 EID16,
+		 * donde '-' corresponde a un bit reservado. --> Esto se carga en TXBnSIDL.
+		 * */
 	} else {
-		buffer[MCP_SIDH] = (uint8_t) (canid >> 3);
-		buffer[MCP_SIDL] = (uint8_t) ((canid & 0x07) << 5);
+		buffer[MCP_SIDH] = (uint8_t) (canid >> 3);	/*< Bits del 3-10.*/
+		buffer[MCP_SIDL] = (uint8_t) ((canid & 0x07) << 5);	/*< Bits del 0-2.*/
 		buffer[MCP_EID0] = 0;
 		buffer[MCP_EID8] = 0;
 	}
@@ -1023,7 +1104,7 @@ extern ERROR_t mcp2515_setFilter(const RXF num, const bool ext,
 	return ERROR_OK;
 }
 
-extern ERROR_t mcp2515_sendMessage(const TXBn txbn,
+extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 		const struct can_frame *frame) {
 	/* Verifica que no se supere la cantidad maxima de datos */
 	if (frame->can_dlc > CAN_MAX_DLEN) {
@@ -1035,11 +1116,12 @@ extern ERROR_t mcp2515_sendMessage(const TXBn txbn,
 
 	uint8_t data[13];
 
-	bool ext = (frame->can_id & CAN_EFF_FLAG);
-	bool rtr = (frame->can_id & CAN_RTR_FLAG);
+	bool ext = (frame->can_id & CAN_EFF_FLAG);	/*< Determina si es de formato extendido.*/
+	bool rtr = (frame->can_id & CAN_RTR_FLAG);	/*< Determina si RTR se encuentra en '1'.*/
+
 	uint32_t id = (frame->can_id & (ext ? CAN_EFF_MASK : CAN_SFF_MASK));
 
-	mcp2515_prepareId(data, ext, id);
+	mcp2515_prepareId(data, ext, id);	/*< Le da el formato adecuado.*/
 
 	data[MCP_DLC] = rtr ? (frame->can_dlc | RTR_MASK) : frame->can_dlc;
 
@@ -1063,23 +1145,47 @@ extern ERROR_t mcp2515_sendMessage(const TXBn txbn,
 	return ERROR_OK;
 }
 
-//extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame) {
-//	if (frame->can_dlc > CAN_MAX_DLEN) {
-//		return ERROR_FAILTX;
-//	}
-//
-//	TXBn txBuffers[N_TXBUFFERS] = { TXB0, TXB1, TXB2 };
-//
-//	for (int i = 0; i < N_TXBUFFERS; i++) {
-//		const struct TXBn_REGS *txbuf = &TXB[txBuffers[i]];
-//		uint8_t ctrlval = mcp2515_readRegister(txbuf->CTRL);
-//		if ((ctrlval & TXB_TXREQ) == 0) {
-//			return mcp2515_sendMessage(txBuffers[i], frame);
-//		}
-//	}
-//
-//	return ERROR_ALLTXBUSY;
-//}
+extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame) {
+	/* Verifica que no supera la cantidad maxima de bytes */
+	if (frame->can_dlc > CAN_MAX_DLEN) {
+		return ERROR_FAILTX;
+	}
+
+	/* Verificamos que exista lugar disponible en algun buffer (0,1,2) */
+	TXBn txBuffers[N_TXBUFFERS] = { TXB0, TXB1, TXB2 };
+	TXBnCTRL_t _txbnCtrl[N_TXBUFFERS] = { 0, 0, 0 };
+	ReadReg_t _readReg[N_TXBUFFERS] = { 0, 0, 0 };
+
+	_readReg[TXB0].reg = MCP_TXB0CTRL; /*< Cargamos el registro de control.*/
+	_readReg[TXB1].reg = MCP_TXB1CTRL; /*< Idem.*/
+	_readReg[TXB2].reg = MCP_TXB2CTRL; /*< Idem.*/
+
+	for (int i = 0; i < N_TXBUFFERS; i++) {
+		/* Verifica que el TXBnCTRL --> TXREQ == 1 */
+		/**
+		 * TXREQ: verifica que el registro este libre para poder
+		 * cargar un dato y luego transmitirlo.
+		 *
+		 * Recordar: existen 3 buffers de transmisión por tanto
+		 * si uno se encuentra pendiente para transmitir el TXREQ
+		 * se setea en '0', y luego se carga el mensaje en el siguiente
+		 * buffer (donde se vuelve a verificar que TXREQ == 1). Esto
+		 * se realiza 3 buffer, iterando entre los 3 que existen.
+		 * Si todos los buffers estan pendientes para transmitir
+		 * se emite un mensaje de error.
+		 * */
+		mcp2515_readRegister(&_readReg[i]);
+
+		_txbnCtrl[i].data = _readReg[i].data; /*< Carga la lectura en _txbnCtrl.*/
+
+		if (!_txbnCtrl[i].TXREQ) {
+			return mcp2515_sendMessageWithBufferId(txBuffers[i], frame);
+		}
+	}
+
+	/* Solo si los 3 buffers estan ocupados */
+	return ERROR_ALLTXBUSY;
+}
 
 extern ERROR_t mcp2515_readMessage(const RXBn rxbn, struct can_frame *frame) {
 	const struct RXBn_REGS *rxb = &RXB[rxbn];
