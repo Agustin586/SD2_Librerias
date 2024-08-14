@@ -11,18 +11,31 @@
  * Autor: Zuliani, Agustin.
  *
  * Version:
-* 			v1.0
+ * 			v1.0
  */
 
 #ifndef INCLUDE_SPI_H_
 #define INCLUDE_SPI_H_
 
-/*< Archivos >*/
+/* Archivos */
 #include <stdint.h>
 
-/*< Funciones >*/
+/* Funciones */
+/**
+ * @brief Inicializacion del spi
+ */
 extern void spi_init(void);
+/**
+ * @brief Escritura de datos
+ * @param[in] tx_buffer buffer donde se manda la informacion
+ * @param[in] n numeros de bytes de datos
+ */
 extern void spi_write(uint8_t *tx_buffer, uint16_t n);
+/**
+ * @brief Recepcion de datos
+ * @param[out] rx_buffer buffer donde se cargan los datos
+ * @param[in] n numeros de bytes
+ */
 extern void spi_receive(uint8_t *rx_buffer, uint8_t *n);
 
 #endif /* INCLUDE_SPI_H_ */
