@@ -1,8 +1,20 @@
 /*
  * mcp2515.h
  *
+ *
  *  Created on: 3 ago. 2024
  *      Author: agustin
+ */
+
+/**
+ * @file mcp2515.h
+ *
+ * @brief Liberia del modulo CAN MCP2515, utilizada para la placa de desarrollo KL46Z.
+ * Realizada como parte de la adcripcion de la materia de Sistemas digitales II.
+ *
+ * @author Zuliani, Agustin.
+ *
+ * @date 03/08/24
  */
 
 #ifndef INCLUDES_MCP2515_H_
@@ -12,8 +24,11 @@
 #include <stdbool.h>
 #include "can.h"
 
-/*
- *  Speed 8M
+/**
+ * @def Speed 8M
+ * @brief Valores calculados para la velocidad de bits por segundo.
+ * Tales valores son cargamos en los registros de configuración del
+ * modulo.
  */
 #define MCP_8MHz_1000kBPS_CFG1 (0x00)
 #define MCP_8MHz_1000kBPS_CFG2 (0x80)
@@ -71,8 +86,9 @@
 #define MCP_8MHz_5kBPS_CFG2 (0xBF)
 #define MCP_8MHz_5kBPS_CFG3 (0x87)
 
-/*
- *  speed 16M
+/**
+ * @def Speed 16M.
+ * @brief Configuraciones para 16 MHz.
  */
 #define MCP_16MHz_1000kBPS_CFG1 (0x00)
 #define MCP_16MHz_1000kBPS_CFG2 (0xD0)
@@ -134,8 +150,9 @@
 #define MCP_16MHz_5kBPS_CFG2 (0xFF)
 #define MCP_16MHz_5kBPS_CFG3 (0x87)
 
-/*
- *  speed 20M
+/**
+ * @def Speed 20M.
+ * @brief Configuraciones para 20MHz.
  */
 #define MCP_20MHz_1000kBPS_CFG1 (0x00)
 #define MCP_20MHz_1000kBPS_CFG2 (0xD9)
@@ -181,11 +198,15 @@
 #define MCP_20MHz_33k3BPS_CFG2 (0xFF)
 #define MCP_20MHz_33k3BPS_CFG3 (0x87)
 
-enum CAN_CLOCK {
-	MCP_20MHZ, MCP_16MHZ, MCP_8MHZ,
+enum CAN_CLOCK
+{
+	MCP_20MHZ,
+	MCP_16MHZ,
+	MCP_8MHZ,
 };
 
-enum CAN_SPEED {
+enum CAN_SPEED
+{
 	CAN_5KBPS,
 	CAN_10KBPS,
 	CAN_20KBPS,
@@ -204,7 +225,8 @@ enum CAN_SPEED {
 	CAN_1000KBPS,
 };
 
-enum CAN_CLKOUT {
+enum CAN_CLKOUT
+{
 	CLKOUT_DISABLE = -1,
 	CLKOUT_DIV1 = 0x0,
 	CLKOUT_DIV2 = 0x1,
@@ -212,7 +234,12 @@ enum CAN_CLKOUT {
 	CLKOUT_DIV8 = 0x3,
 };
 
-typedef enum {
+/**
+ * @enum Errores
+ * @brief Manejo de errores al enviar, recibir mensajes.
+ */
+typedef enum
+{
 	ERROR_OK = 0,
 	ERROR_FAIL = 1,
 	ERROR_ALLTXBUSY = 2,
@@ -221,23 +248,53 @@ typedef enum {
 	ERROR_NOMSG = 5
 } ERROR_t;
 
-enum MASK {
-	MASK0, MASK1
+/**
+ * @enum Mascara para ID
+ */
+enum MASK
+{
+	MASK0,
+	MASK1
 };
 
-enum RXF {
-	RXF0 = 0, RXF1 = 1, RXF2 = 2, RXF3 = 3, RXF4 = 4, RXF5 = 5
+/**
+ * @enum Filtros para ID
+ */
+enum RXF
+{
+	RXF0 = 0,
+	RXF1 = 1,
+	RXF2 = 2,
+	RXF3 = 3,
+	RXF4 = 4,
+	RXF5 = 5
 };
 
-enum RXBn {
-	RXB0 = 0, RXB1 = 1
+/**
+ * @enum Referencia al buffer de recepcion
+ */
+enum RXBn
+{
+	RXB0 = 0,
+	RXB1 = 1
 };
 
-enum TXBn {
-	TXB0 = 0, TXB1 = 1, TXB2 = 2
+/**
+ * @enum Referencia al buffer de transmision
+ */
+enum TXBn
+{
+	TXB0 = 0,
+	TXB1 = 1,
+	TXB2 = 2
 };
 
-typedef enum {
+/**
+ * @enum Interrupciones del modulo can
+ * @brief Configuraciones del registros de interrupcion.
+ */
+typedef enum
+{
 	CANINTF_RX0IF = 0x01,
 	CANINTF_RX1IF = 0x02,
 	CANINTF_TX0IF = 0x04,
@@ -248,7 +305,8 @@ typedef enum {
 	CANINTF_MERRF = 0x80,
 } CANINTF_t;
 
-typedef enum {
+typedef enum
+{
 	EFLG_RX1OVR = (1 << 7),
 	EFLG_RX0OVR = (1 << 6),
 	EFLG_TXBO = (1 << 5),
@@ -259,7 +317,8 @@ typedef enum {
 	EFLG_EWARN = (1 << 0),
 } EFLG_t;
 
-typedef enum {
+typedef enum
+{
 	CANCTRL_REQOP_NORMAL = 0x00,
 	CANCTRL_REQOP_SLEEP = 0x20,
 	CANCTRL_REQOP_LOOPBACK = 0x40,
@@ -268,11 +327,14 @@ typedef enum {
 	CANCTRL_REQOP_POWERUP = 0xE0
 } CANCTRL_REQOP_MODE_t;
 
-typedef enum {
-	STAT_RX0IF = (1 << 0), STAT_RX1IF = (1 << 1),
+typedef enum
+{
+	STAT_RX0IF = (1 << 0),
+	STAT_RX1IF = (1 << 1),
 } STAT_t;
 
-typedef enum {
+typedef enum
+{
 	TXB_ABTF = 0x40,
 	TXB_MLOA = 0x20,
 	TXB_TXERR = 0x10,
@@ -281,7 +343,13 @@ typedef enum {
 	TXB_TXP = 0x03,
 } TXBnCTRL_t;
 
-typedef enum {
+/**
+ * @enum Intrucciones
+ * @brief Utilizadas para decirle al modulo que tipo de informacion
+ * vamos a mandarle.
+ */
+typedef enum
+{
 	INSTRUCTION_WRITE = 0x02,
 	INSTRUCTION_READ = 0x03,
 	INSTRUCTION_BITMOD = 0x05,
@@ -299,7 +367,13 @@ typedef enum {
 	INSTRUCTION_RESET = 0xC0
 } INSTRUCTION_t;
 
-typedef enum {
+/**
+ * @enum Registros
+ * @brief Utilizamos para cargarlo en la transmision del spi y decirle al
+ * modulo donde queremos modificar algo.
+ */
+typedef enum
+{
 	MCP_RXF0SIDH = 0x00,
 	MCP_RXF0SIDL = 0x01,
 	MCP_RXF0EID8 = 0x02,
@@ -382,30 +456,117 @@ typedef enum {
 uint8_t SPICS;
 uint32_t SPI_CLOCK;
 
-/*< Funciones publicas >*/
+/**
+ * @brief Funciones publicas.
+ * @{
+ */
+
+/**
+ * @brief Inicializa el modulo mcp2515.
+ * @param[in] _CS chip select.
+ * @param[in] _SPI_CLOCK reloj del spi.
+ *
+ * @note En esta funcion ya se realiza la inicializacion del modulo de spi.
+ */
 extern void mcp2515_init(const uint8_t _CS, const uint32_t _SPI_CLOCK =
-		DEFAULT_SPI_CLOCK);
+												DEFAULT_SPI_CLOCK);
+/**
+ * @brief Resetea el modulo.
+ */
 extern ERROR_t mcp2515_reset(void);
+/**
+ * @brief Setea el modo de configuracion.
+ */
 extern ERROR_t mcp2515_setConfigMode();
+/**
+ * @brief Setea el modo de solo escucha.
+ */
 extern ERROR_t mcp2515_setListenOnlyMode();
+/**
+ * @brief Setea el modo sleep.
+ */
 extern ERROR_t mcp2515_setSleepMode();
+/**
+ * @brief Setea el modo de loopback.
+ */
 extern ERROR_t mcp2515_setLoopbackMode();
+/**
+ * @brief Setea el modo normal de trabajo.
+ */
 extern ERROR_t mcp2515_setNormalMode();
+/**
+ * @brief Hay que ver que hace.
+ */
 extern ERROR_t mcp2515_setClkOut(const CAN_CLKOUT divisor);
-extern ERROR_t mcp2515_setBitrate(const CAN_SPEED canSpeed);
+/**
+ * @brief Setea el baud rate.
+ *
+ * @param[in] canSpeed velocidad en baudios.
+ * @param[in] canClock velocidad del reloj.
+ */
 extern ERROR_t mcp2515_setBitrate(const CAN_SPEED canSpeed,
-		const CAN_CLOCK canClock);
+								  const CAN_CLOCK canClock);
+/**
+ * @brief Setea el filtro y la mascara.
+ * Se configuran dichos datos en los registros del propio modulo.
+ *
+ * @param[in] num mascara.
+ * @param[in] ext formato extendido.
+ * @param[in] ulData id.
+ */
 extern ERROR_t mcp2515_setFilterMask(const MASK num, const bool ext,
-		const uint32_t ulData);
+									 const uint32_t ulData);
+/**
+ * @brief Se configura el filtro.
+ *
+ * @param[in] num filtro de rx.
+ * @param[in] ext formato extendido.
+ * @param[in] ulData id.
+ */
 extern ERROR_t mcp2515_setFilter(const RXF num, const bool ext,
-		const uint32_t ulData);
-extern ERROR_t mcp2515_sendMessage(const TXBn txbn,
-		const struct can_frame *frame);
+								 const uint32_t ulData);
+/**
+ * @brief Envio de mensaje con el buffer.
+ *
+ * @param[in] txbn Buffer en el que se carga la informacion.
+ * @param[in] frame informacion a transmitir.
+ */
+extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
+											   const struct can_frame *frame);
+/**
+ * @brief Envio de mensaje.
+ *
+ * @param[in] frame informacion a transmitir.
+ */
 extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame);
-extern ERROR_t mcp2515_readMessage(const RXBn rxbn, struct can_frame *frame);
+/**
+ * @brief Lee mensaje con el buffer indicado.
+ *
+ * @param[in] rxbn buffer de recepcion.
+ * @param[out] frame lugar donde carga la informacion.
+ */
+extern ERROR_t mcp2515_readMessageWithBufferId(const RXBn rxbn, struct can_frame *frame);
+/**
+ * @brief Lee mensaje.
+ *
+ * @param[out] frame lugar donde carga la informacion.
+ */
 extern ERROR_t mcp2515_readMessage(struct can_frame *frame);
+/**
+ * @brief Chequea la recepcion de los datos.
+ *
+ * @return Estado de la recepcion.
+ */
 extern bool mcp2515_checkReceive(void);
+/**
+ * @brief Chequea los errores informados desde el modulo.
+ *
+ * @return Estado del error.
+ */
 extern bool mcp2515_checkError(void);
+/**
+ *
+ */
 extern uint8_t mcp2515_getErrorFlags(void);
 extern void mcp2515_clearRXnOVRFlags(void);
 extern uint8_t mcp2515_getInterrupts(void);
@@ -418,5 +579,9 @@ extern void mcp2515_clearMERR();
 extern void mcp2515_clearERRIF();
 extern uint8_t mcp2515_errorCountRX(void);
 extern uint8_t mcp2515_errorCountTX(void);
+
+/**
+ * @}
+ */
 
 #endif /* INCLUDES_MCP2515_H_ */

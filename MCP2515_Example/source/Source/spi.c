@@ -110,7 +110,7 @@ extern void spi_receive(uint8_t *rx_buffer, uint8_t *n) {
 
 	masterXfer.txData = NULL;
 	masterXfer.rxData = rx_buffer;
-	masterXfer.dataSize = 1;
+	masterXfer.dataSize = *n;
 
 #if	USE_FREERTOS
 	status = SPI_RTOS_Transfer(&master_rtos_handle, &masterXfer);
@@ -118,7 +118,7 @@ extern void spi_receive(uint8_t *rx_buffer, uint8_t *n) {
 	status = SPI_MasterTransferBlocking(SPI_MASTER_BASE, &masterXfer);
 #endif
 
-	*n = masterXfer.dataSize;
+//	*n = masterXfer.dataSize;
 
 	if (status == kStatus_Success) {
 		PRINTF("SPI transfer completed successfully. \r\n");
