@@ -57,7 +57,7 @@
  * Si definimos USE_FREERTOS 1 entonces estamos utilizando el sistema en tiempo real de freertos
  * Si definimos USE_FREERTOS 0 entonces estamos utilizando el sistema de baremetal.
  */
-#define USE_FREERTOS 0
+#define USE_FREERTOS 1
 
 /**
  * @union Registro de configuracion 1

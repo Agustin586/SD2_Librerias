@@ -25,6 +25,17 @@
 #include "can.h"
 
 /**
+ * @def Tipo de sistema a utilizar
+ * @brief Se debe definir si se utiliza el sistema de tiempo real freertos o
+ * se utiliza el sistema de baremetal.
+ *
+ * @example
+ * Si definimos USE_FREERTOS 1 entonces estamos utilizando el sistema en tiempo real de freertos
+ * Si definimos USE_FREERTOS 0 entonces estamos utilizando el sistema de baremetal.
+ */
+#define USE_FREERTOS 0
+
+/**
  * @def Speed 8M
  * @brief Valores calculados para la velocidad de bits por segundo.
  * Tales valores son cargamos en los registros de configuración del
