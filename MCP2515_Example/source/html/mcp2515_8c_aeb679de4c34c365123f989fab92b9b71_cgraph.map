@@ -1,0 +1,6 @@
+<map id="mcp2515_clearRXnOVR" name="mcp2515_clearRXnOVR">
+<area shape="rect" id="node1" title="Limpia la bandera de overflow de los buffers de rx." alt="" coords="5,56,180,83"/>
+<area shape="rect" id="node2" href="$mcp2515_8c.html#a584ccc859e4ab5430492f526cd77c0ed" title="Limpia las banderas de interrupcion." alt="" coords="241,5,425,32"/>
+<area shape="rect" id="node3" href="$mcp2515_8c.html#ae96902bcbdb6e764a65cbe35f942dd7a" title="Limpia la bandera de overflow de los buffer de rx." alt="" coords="228,56,439,83"/>
+<area shape="rect" id="node4" href="$mcp2515_8c.html#ac3d500cb17c7da9f83aeb38c96e78a05" title="Obtiene el estado de error de modulo can." alt="" coords="245,107,421,133"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="Includes/mcp2515.h" name="Includes/mcp2515.h">
+<area shape="rect" id="node1" title="Liberia del modulo CAN MCP2515, utilizada para la placa de desarrollo KL46Z. Realizada como parte de ..." alt="" coords="183,5,335,32"/>
+<area shape="rect" id="node2" href="$_m_c_p2515___example_8c.html" title="Application entry point." alt="" coords="5,80,164,107"/>
+<area shape="rect" id="node3" href="$mcp2515_8c.html" title="Libreria para manipulacion del modulo can mcp2515." alt="" coords="189,80,330,107"/>
+<area shape="rect" id="node4" href="$spi_8c.html" title="Libreria del spi para manipular con freertos o con baremetal." alt="" coords="355,80,455,107"/>
+</map>

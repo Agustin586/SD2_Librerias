@@ -1,0 +1,5 @@
+<map id="mcp2515_getStatus" name="mcp2515_getStatus">
+<area shape="rect" id="node1" title="Obtiene los estados solicitados de lectura." alt="" coords="232,31,383,57"/>
+<area shape="rect" id="node2" href="$mcp2515_8h.html#a679684df91e2a18e578e81c7be7af67f" title="Chequea la recepcion de los datos." alt="" coords="5,5,184,32"/>
+<area shape="rect" id="node3" href="$mcp2515_8h.html#a98f361e58e9c16ec15a1469172a80547" title="Lee mensaje." alt="" coords="7,56,183,83"/>
+</map>

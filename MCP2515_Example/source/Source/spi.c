@@ -35,7 +35,7 @@ static spi_rtos_handle_t master_rtos_handle;
 
 /* Definiciones >*/
 #define BUFFER_SIZE 25
-#define SPI_MASTER_BASE SPI0_BASE
+#define SPI_MASTER_BASE SPI0
 #define SPI_MASTER_IRQN SPI0_IRQn
 #define SPI_MASTER_CLK_SRC SPI0_CLK_SRC
 #define SPI_MASTER_CLK_FREQ CLOCK_GetFreq((SPI0_CLK_SRC))
@@ -44,14 +44,14 @@ static spi_rtos_handle_t master_rtos_handle;
 
 /* Variables */
 // static uint8_t srcBuff[BUFFER_SIZE];
-static uint8_t destBuff[BUFFER_SIZE];
+//static uint8_t destBuff[BUFFER_SIZE];
 
 /* Funciones */
 extern void spi_init(void)
 {
 	spi_master_config_t masterConfig;
 	uint32_t sourceClock;
-#ifdef USE_FREERTOS
+#if USE_FREERTOS
 	status_t status;
 #endif
 
@@ -118,14 +118,14 @@ extern void spi_write(uint8_t *tx_buffer, uint16_t n)
 	return;
 }
 
-extern void spi_receive(uint8_t *rx_buffer, uint8_t *n)
+extern void spi_receive(uint8_t *rx_buffer, uint8_t n)
 {
 	spi_transfer_t masterXfer = {0};
 	status_t status;
 
 	masterXfer.txData = NULL;
 	masterXfer.rxData = rx_buffer;
-	masterXfer.dataSize = *n;
+	masterXfer.dataSize = n;
 
 #if USE_FREERTOS
 	status = SPI_RTOS_Transfer(&master_rtos_handle, &masterXfer);

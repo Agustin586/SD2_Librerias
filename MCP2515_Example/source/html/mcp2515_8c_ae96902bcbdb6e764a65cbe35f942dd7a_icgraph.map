@@ -1,0 +1,4 @@
+<map id="mcp2515_clearRXnOVRFlags" name="mcp2515_clearRXnOVRFlags">
+<area shape="rect" id="node1" title="Limpia la bandera de overflow de los buffer de rx." alt="" coords="228,5,439,32"/>
+<area shape="rect" id="node2" href="$mcp2515_8h.html#aeb679de4c34c365123f989fab92b9b71" title="Limpia la bandera de overflow de los buffers de rx." alt="" coords="5,5,180,32"/>
+</map>

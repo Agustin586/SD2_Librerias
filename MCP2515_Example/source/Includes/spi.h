@@ -36,6 +36,6 @@ extern void spi_write(uint8_t *tx_buffer, uint16_t n);
  * @param[out] rx_buffer buffer donde se cargan los datos
  * @param[in] n numeros de bytes
  */
-extern void spi_receive(uint8_t *rx_buffer, uint8_t *n);
+extern void spi_receive(uint8_t *rx_buffer, uint8_t n);
 
 #endif /* INCLUDE_SPI_H_ */

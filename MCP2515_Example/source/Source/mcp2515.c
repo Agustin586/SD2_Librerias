@@ -15,6 +15,7 @@
 #include "Includes/spi.h"
 #include "fsl_gpio.h"
 #include "pin_mux.h"
+#include "fsl_port.h"
 #include <string.h>
 
 /*
@@ -29,11 +30,11 @@
 /**
  * @def Chip select en estado alto
  */
-#define CS_HIGH GPIO_SetPinsOutput(BOARD_Cs_mcp2515_PORT, BOARD_Cs_mcp2515_PIN0)
+#define CS_HIGH GPIO_SetPinsOutput(GPIOE, BOARD_Cs_mcp2515_PIN)
 /**
  * @def Chip select en estado bajo
  */
-#define CS_LOW GPIO_ClearPinsOutput(BOARD_Cs_mcp2515_PORT, BOARD_Cs_mcp2515_PIN0)
+#define CS_LOW GPIO_ClearPinsOutput(GPIOE, BOARD_Cs_mcp2515_PIN)
 
 /*
  * =============
@@ -49,19 +50,9 @@
  * */
 
 /**
- * @def Tipo de sistema a utilizar
- * @brief Se debe definir si se utiliza el sistema de tiempo real freertos o
- * se utiliza el sistema de baremetal.
+ * @brief Registro de configuracion 1
  *
- * @example
- * Si definimos USE_FREERTOS 1 entonces estamos utilizando el sistema en tiempo real de freertos
- * Si definimos USE_FREERTOS 0 entonces estamos utilizando el sistema de baremetal.
- */
-#define USE_FREERTOS 1
-
-/**
- * @union Registro de configuracion 1
- * @brief Utilizado para manejar a nivel de bits el registro
+ * Utilizado para manejar a nivel de bits el registro
  * de configuracion 1 del modulo.
  */
 typedef union
@@ -75,7 +66,7 @@ typedef union
 } CNF1_t;
 
 /**
- * @union Registro de configuracion 2
+ * @brief Registro de configuracion 2
  */
 typedef union
 {
@@ -90,7 +81,7 @@ typedef union
 } CNF2_t;
 
 /**
- * @union Registro de configuracion 3
+ * @brief Registro de configuracion 3
  */
 typedef union
 {
@@ -105,63 +96,85 @@ typedef union
 } CNF3_t;
 
 /**
- * @union Registro de control de transimision
+ * @brief Registro de control de transimision
  */
 typedef union
 {
 	struct
 	{
 		unsigned RESERVED : 1;
+		/** @brief message aborted flag bit */
 		unsigned ABTF : 1;
+		/** @brief messsage lost arbitration bit */
 		unsigned MLOA : 1;
+		/** @brief transmission error detected bit */
 		unsigned TXERR : 1;
+		/** @brief message transmit request bit */
 		unsigned TXREQ : 1;
+
 		unsigned RESERVED2 : 1;
+		/** @brief transmit buffer priority bits */
 		unsigned TXP : 2;
 	};
 	uint8_t data;
 } TXBnCTRL_t;
 
 /**
- * @union Registro de interrupciones
+ * @brief Registro de interrupciones
  */
 typedef union
 {
 	struct
 	{
-		unsigned MERRE : 1; /** @brief Message error interrupt enable */
-		unsigned WAKIE : 1; /** @brief Wake-up interupt enable */
-		unsigned ERRIE : 1; /** @brief Error interrupt enable bit */
-		unsigned TX2IE : 1; /** @brief Transmit buffer 2 empty interrupt enable bit */
-		unsigned TX1IE : 1; /** @brief Transmit buffer 1 empty interrupt enable bit */
-		unsigned TX0IE : 1; /** @brief Transmit buffer 0 empty interrupt enable bit */
-		unsigned RX1IE : 1; /** @brief Receive buffer 1 full interrupt enable bit */
-		unsigned RX0IE : 1; /** @brief Receive buffer 0 full interrupt enable bit */
+		/** @brief Message error interrupt enable */
+		unsigned MERRE : 1;
+		/** @brief Wake-up interupt enable */
+		unsigned WAKIE : 1;
+		/** @brief Error interrupt enable bit */
+		unsigned ERRIE : 1;
+		/** @brief Transmit buffer 2 empty interrupt enable bit */
+		unsigned TX2IE : 1;
+		/** @brief Transmit buffer 1 empty interrupt enable bit */
+		unsigned TX1IE : 1;
+		/** @brief Transmit buffer 0 empty interrupt enable bit */
+		unsigned TX0IE : 1;
+		/** @brief Receive buffer 1 full interrupt enable bit */
+		unsigned RX1IE : 1;
+		/** @brief Receive buffer 0 full interrupt enable bit */
+		unsigned RX0IE : 1;
 	};
 	uint8_t data;
 } CANINTE_t;
 
 /**
- * @union Registro CAN INTERRUPT FLAG
+ * @brief Registro CAN INTERRUPT FLAG
  */
 typedef union
 {
 	struct
 	{
-		unsigned MERRF : 1; /** @brief Message error interrupt flag bit */
-		unsigned WAKIF : 1; /** @brief Wake-up interrupt flag bit */
-		unsigned ERRIF : 1; /** @brief Error interrupt flag bit */
-		unsigned TX2IF : 1; /** @brief Transmit buffer 2 empty interrupt flag bit */
-		unsigned TX1IF : 1; /** @brief Transmit buffer 1 empty interrupt flag bit */
-		unsigned TX0IF : 1; /** @brief Transmit buffer 0 empty interrupt flag bit */
-		unsigned RX1IF : 1; /** @brief Receive buffer 1 full interrupt flag bit */
-		unsigned RX0IF : 1; /** @brief Receive buffer 0 full interrupt flag bit */
+		/** @brief Message error interrupt flag bit */
+		unsigned MERRF : 1;
+		/** @brief Wake-up interrupt flag bit */
+		unsigned WAKIF : 1;
+		/** @brief Error interrupt flag bit */
+		unsigned ERRIF : 1;
+		/** @brief Transmit buffer 2 empty interrupt flag bit */
+		unsigned TX2IF : 1;
+		/** @brief Transmit buffer 1 empty interrupt flag bit */
+		unsigned TX1IF : 1;
+		/** @brief Transmit buffer 0 empty interrupt flag bit */
+		unsigned TX0IF : 1;
+		/** @brief Receive buffer 1 full interrupt flag bit */
+		unsigned RX1IF : 1;
+		/** @brief Receive buffer 0 full interrupt flag bit */
+		unsigned RX0IF : 1;
 	};
 	uint8_t data;
 } CANINTF_t;
 
 /**
- * @union Registro de control de can
+ * @brief Registro de control de can
  */
 typedef union
 {
@@ -177,27 +190,35 @@ typedef union
 } CANCTRL_t;
 
 /**
- * @struct Registro ERROR FLAG
+ * @brief Registro ERROR FLAG
  */
 typedef union
 {
 	struct
 	{
-		unsigned RX1OVR : 1; /** @brief Receive buffer 1 overflow */
-		unsigned RX0OVR : 1; /** @brief Receive buffer 0 overflow */
-		unsigned TXBO : 1;	 /** @brief bus-off error flag */
-		unsigned TXEP : 1;	 /** @brief transmit error-passive flag */
-		unsigned RXEP : 1;	 /** @brief receive error-passive flag */
-		unsigned TXWAR : 1;	 /** @brief transmit error warning flag */
-		unsigned RXWAR : 1;	 /** @brief receive error warning flag */
-		unsigned EWARN : 1;	 /** @brief error warning flag */
+		/** @brief Receive buffer 1 overflow */
+		unsigned RX1OVR : 1;
+		/** @brief Receive buffer 0 overflow */
+		unsigned RX0OVR : 1;
+		/** @brief bus-off error flag */
+		unsigned TXBO : 1;
+		/** @brief transmit error-passive flag */
+		unsigned TXEP : 1;
+		/** @brief receive error-passive flag */
+		unsigned RXEP : 1;
+		/** @brief transmit error warning flag */
+		unsigned TXWAR : 1;
+		/** @brief receive error warning flag */
+		unsigned RXWAR : 1;
+		/** @brief error warning flag */
+		unsigned EWARN : 1;
 	};
 	uint8_t data;
 
 } EFLG_t;
 
 /**
- * @union Registro de control de rxb0
+ * @brief Registro de control de rxb0
  */
 typedef union
 {
@@ -215,7 +236,7 @@ typedef union
 } RXB0CTRL_t;
 
 /**
- * @union Registro de control de rxb1
+ * @brief Registro de control de rxb1
  */
 typedef union
 {
@@ -231,25 +252,7 @@ typedef union
 } RXB1CTRL_t;
 
 /**
- * @union Registro de control de buffer de transmision
- */
-typedef union
-{
-	struct
-	{
-		unsigned RESERVED : 1;
-		unsigned ABTF : 1;
-		unsigned MLOA : 1;
-		unsigned TXERR : 1;
-		unsigned TXREQ : 1;
-		unsigned RESERVED2 : 1;
-		unsigned TXP : 2;
-	};
-	uint8_t data;
-} TXBnCTRL_t;
-
-/**
- * @union Registro de pin control y estado
+ * @brief Registro de pin control y estado
  */
 typedef union
 {
@@ -268,7 +271,7 @@ typedef union
 } TXRTSCTRL_t;
 
 /**
- * @union Registro de id parte alta
+ * @brief Registro de id parte alta
  */
 typedef union
 {
@@ -280,7 +283,7 @@ typedef union
 } TXBnSIDH_t;
 
 /**
- * @union Registro de id parte baja
+ * @brief Registro de id parte baja
  */
 typedef union
 {
@@ -296,7 +299,7 @@ typedef union
 } TXBnSIDL_t;
 
 /**
- * @union Registro de id extendida parte alta
+ * @brief Registro de id extendida parte alta
  */
 typedef union
 {
@@ -308,7 +311,7 @@ typedef union
 } TXBnEID8_t;
 
 /**
- * @union Registro de id extendida parte baja
+ * @brief Registro de id extendida parte baja
  */
 typedef union
 {
@@ -320,7 +323,7 @@ typedef union
 } TXBnEID0_t;
 
 /**
- * @union Registro de longitud de datos
+ * @brief Registro de longitud de datos
  */
 typedef union
 {
@@ -335,7 +338,7 @@ typedef union
 } TXBnDLC_t;
 
 /**
- * @union Registro de datos
+ * @brief Registro de datos
  */
 typedef union
 {
@@ -347,8 +350,9 @@ typedef union
 } TXBnDm_t;
 
 /**
- * @struct Modificar registro
- * @brief Se carga todo lo necesario en los campos para modificar
+ * @brief Modificar registro
+ *
+ * Se carga todo lo necesario en los campos para modificar
  * en el registro determinado. Se debe cargar el registro, la mascara
  * y el dato nuevo.
  */
@@ -361,31 +365,46 @@ typedef struct
 	/**
 	 * @brief Mascara.
 	 */
-	const uint8_t mask;
+	uint8_t mask;
 	/**
 	 * @brief Dato a modificar.
 	 */
 	const uint8_t data;
 } ModifyReg_t;
 
+/**
+ * @brief Registros de lectura de datos
+ *
+ * Utilizada antes de leer sobre un registro en particular.
+ * */
 typedef struct
 {
+	/** @brief Registro a leer. */
 	const REGISTER_t reg;
+	/** @brief Instruccion de lectura. */
 	INSTRUCTION_t instruction;
+	/** @brief Datos a cargar. */
 	uint8_t data;
 } ReadReg_t;
 
 #define MAX_DATA_readREG 10
 
 /**
- * @struct Lectura de registros
+ * @brief Estructura para la lectura de registros.
+ *
+ * Esta estructura se utiliza para leer registros especificos
+ * con una instruccion asociada y almacenar los datos leidos.
  */
 typedef struct
 {
-	const REGISTER_t reg;			  /**< Registro en el que se lee.*/
-	const INSTRUCTION_t instruction;  /**< Instruccion.*/
-	uint8_t values[MAX_DATA_readREG]; /**< Datos leidos.*/
-	uint8_t n;						  /**< Longitud de la cadena.*/
+	/** @brief Registro en el que se lee.*/
+	const REGISTER_t reg;
+	/** @brief Instruccion.*/
+	const INSTRUCTION_t instruction;
+	/** @brief Datos leidos.*/
+	uint8_t values[MAX_DATA_readREG];
+	/** @brief Longitud de la cadena.*/
+	uint8_t n;
 } ReadRegs_t;
 
 #if USE_FREERTOS
@@ -395,6 +414,8 @@ typedef struct
 #define __delay_ms(ms) vTaskDelay(pdMS_TO_TICKS(ms))
 #elif (!USE_FREERTOS)
 #define __delay_ms(x) delay_ms(x)
+
+static void delay_ms(uint16_t ms);
 
 static void delay_ms(uint16_t ms)
 {
@@ -412,13 +433,13 @@ static void delay_ms(uint16_t ms)
 #endif
 
 static const uint8_t CANCTRL_REQOP = 0xE0;
-static const uint8_t CANCTRL_ABAT = 0x10;
-static const uint8_t CANCTRL_OSM = 0x08;
+// static const uint8_t CANCTRL_ABAT = 0x10;
+// static const uint8_t CANCTRL_OSM = 0x08;
 static const uint8_t CANCTRL_CLKEN = 0x04;
 static const uint8_t CANCTRL_CLKPRE = 0x03;
 
 static const uint8_t CANSTAT_OPMOD = 0xE0;
-static const uint8_t CANSTAT_ICOD = 0x0E;
+// static const uint8_t CANSTAT_ICOD = 0x0E;
 
 static const uint8_t CNF3_SOF = 0x80;
 
@@ -426,15 +447,15 @@ static const uint8_t TXB_EXIDE_MASK = 0x08;
 static const uint8_t DLC_MASK = 0x0F;
 static const uint8_t RTR_MASK = 0x40;
 
-static const uint8_t RXBnCTRL_RXM_STD = 0x20;
-static const uint8_t RXBnCTRL_RXM_EXT = 0x40;
+// static const uint8_t RXBnCTRL_RXM_STD = 0x20;
+// static const uint8_t RXBnCTRL_RXM_EXT = 0x40;
 static const uint8_t RXBnCTRL_RXM_STDEXT = 0x00;
 static const uint8_t RXBnCTRL_RXM_MASK = 0x60;
 static const uint8_t RXBnCTRL_RTR = 0x08;
 static const uint8_t RXB0CTRL_BUKT = 0x04;
 static const uint8_t RXB0CTRL_FILHIT_MASK = 0x03;
 static const uint8_t RXB1CTRL_FILHIT_MASK = 0x07;
-static const uint8_t RXB0CTRL_FILHIT = 0x00;
+// static const uint8_t RXB0CTRL_FILHIT = 0x00;
 static const uint8_t RXB1CTRL_FILHIT = 0x01;
 
 static const uint8_t MCP_SIDH = 0;
@@ -448,10 +469,8 @@ static const uint8_t STAT_RXIF_MASK = STAT_RX0IF | STAT_RX1IF;
 
 static const uint8_t EFLG_ERRORMASK = EFLG_RX1OVR | EFLG_RX0OVR | EFLG_TXBO | EFLG_TXEP | EFLG_RXEP;
 
-static const uint32_t DEFAULT_SPI_CLOCK = 10000000; // 10MHz
-
-static const int N_TXBUFFERS = 3;
-static const int N_RXBUFFERS = 2;
+#define N_TXBUFFERS 3
+#define N_RXBUFFERS 2
 
 static const struct TXBn_REGS
 {
@@ -462,10 +481,10 @@ static const struct TXBn_REGS
 
 static const struct RXBn_REGS
 {
-	REGISTER CTRL;
-	REGISTER SIDH;
-	REGISTER DATA;
-	CANINTF CANINTF_RXnIF;
+	REGISTER_t CTRL;
+	REGISTER_t SIDH;
+	REGISTER_t DATA;
+	CANINTF_enum CANINTF_RXnIF;
 } RXB[N_RXBUFFERS];
 
 /**
@@ -524,19 +543,18 @@ static void mcp2515_prepareId(uint8_t *buffer, const bool ext,
  * @}
  */
 
-const struct TXBn_REGS MCP2515_TXB[N_TXBUFFERS] = {{MCP_TXB0CTRL,
-													MCP_TXB0SIDH, MCP_TXB0DATA},
-												   {MCP_TXB1CTRL, MCP_TXB1SIDH, MCP_TXB1DATA},
-												   {MCP_TXB2CTRL,
-													MCP_TXB2SIDH, MCP_TXB2DATA}};
+// static const struct TXBn_REGS MCP2515_TXB[N_TXBUFFERS] = {
+//	{MCP_TXB0CTRL, MCP_TXB0SIDH, MCP_TXB0DATA},
+//	{MCP_TXB1CTRL, MCP_TXB1SIDH, MCP_TXB1DATA},
+//	{MCP_TXB2CTRL, MCP_TXB2SIDH, MCP_TXB2DATA},
+// };
 
-const struct RXBn_REGS RXB[N_RXBUFFERS] = {{MCP_RXB0CTRL, MCP_RXB0SIDH,
-											MCP_RXB0DATA, CANINTF_RX0IF},
-										   {MCP_RXB1CTRL, MCP_RXB1SIDH,
-											MCP_RXB1DATA, CANINTF_RX1IF}};
+static const struct RXBn_REGS RXB[N_RXBUFFERS] = {
+	{MCP_RXB0CTRL, MCP_RXB0SIDH, MCP_RXB0DATA, CANINTF_RX0IF},
+	{MCP_RXB1CTRL, MCP_RXB1SIDH, MCP_RXB1DATA, CANINTF_RX1IF},
+};
 
-extern void mcp2515_init(const uint8_t _CS, const uint32_t _SPI_CLOCK =
-												DEFAULT_SPI_CLOCK)
+extern void mcp2515_init(void)
 {
 	/*
 	 * Inicializacion de pines.
@@ -573,9 +591,9 @@ extern void mcp2515_init(const uint8_t _CS, const uint32_t _SPI_CLOCK =
 	/* PORTE19 (pin 17) is configured as SPI0_MISO */
 	PORT_SetPinMux(PORTE, 19U, kPORT_MuxAlt2);
 
-	CS_HIGH; /*< Deselecciona el modulo mcp2515.*/
+	CS_HIGH; /* Deselecciona el modulo mcp2515.*/
 
-	/**
+	/*
 	 * Configuracion del spi.
 	 *
 	 * Se configura el spi para trabajar con/sin freertos. Ver las configuraciones
@@ -613,7 +631,7 @@ static void endSPI(void)
 
 extern ERROR_t mcp2515_reset(void)
 {
-	INSTRUCTION_t _instruction = INSTRUCTION_RESET;
+	INSTRUCTION_t instruction = INSTRUCTION_RESET;
 	REGISTER_t _register;
 	CANINTE_t _caninte;
 
@@ -623,10 +641,10 @@ extern ERROR_t mcp2515_reset(void)
 	 * necesarios antes de utilizarlo en el can bus.
 	 * */
 	startSPI();
-	spi_write(&_instruction);
+	spi_write(&instruction, 1);
 	endSPI();
 
-	__delay_ms(10); /**< Espera a que reinicie el modulo.*/
+	__delay_ms(10); /* Espera a que reinicie el modulo.*/
 
 	uint8_t zeros[14];
 
@@ -747,8 +765,8 @@ static void mcp2515_readRegister(ReadReg_t *readReg)
 
 	startSPI();
 	spi_write(&readReg->instruction, 1);
-	spi_write(&readReg->reg, 1);
-	spi_receive(&readReg->data, &nro_brytes);
+	spi_write((uint8_t *)&readReg->reg, 1);
+	spi_receive(&readReg->data, nro_brytes);
 	endSPI();
 
 	return;
@@ -757,13 +775,13 @@ static void mcp2515_readRegister(ReadReg_t *readReg)
 static void mcp2515_readRegisters(ReadRegs_t *readRegs)
 {
 	startSPI();
-	spi_write(&readRegs->instruction, 1);
-	spi_write(&readRegs->reg, 1);
+	spi_write((uint8_t *)&readRegs->instruction, 1);
+	spi_write((uint8_t *)&readRegs->reg, 1);
 	/* No estoy seguro si enviando un valor de 5 en n ya
 	 * es sufiente para tomar 5 datos desde la recepcion.
 	 * Hay que probar.
 	 * */
-	spi_receive(&readRegs->values, &readRegs->n);
+	spi_receive(readRegs->values, readRegs->n);
 	endSPI();
 
 	return;
@@ -771,13 +789,13 @@ static void mcp2515_readRegisters(ReadRegs_t *readRegs)
 
 static void mcp2515_setRegister(const REGISTER_t reg, const uint8_t value)
 {
-	const INSTRUCTION_t _instruction = INSTRUCTION_WRITE;
+	INSTRUCTION_t instruction = INSTRUCTION_WRITE;
 
 	/* Envia los datos al modulo mediante spi */
 	startSPI();
-	spi_write(&_instruction, 1);
-	spi_write(&reg, 1);
-	spi_write(&value, 1);
+	spi_write(&instruction, 1);
+	spi_write((uint8_t *)&reg, 1);
+	spi_write((uint8_t *)&value, 1);
 	endSPI();
 
 	return;
@@ -786,13 +804,13 @@ static void mcp2515_setRegister(const REGISTER_t reg, const uint8_t value)
 static void mcp2515_setRegisters(const REGISTER_t reg, const uint8_t values[],
 								 const uint8_t n)
 {
-	const INSTRUCTION_t _instruction = INSTRUCTION_WRITE;
+	INSTRUCTION_t _instruction = INSTRUCTION_WRITE;
 
 	/* Envia los datos al modulo mediante spi */
 	startSPI();
 	spi_write(&_instruction, 1);
-	spi_write(&reg, 1);
-	spi_write(values, n);
+	spi_write((uint8_t *)&reg, 1);
+	spi_write((uint8_t *)values, n);
 	endSPI();
 
 	return;
@@ -801,13 +819,13 @@ static void mcp2515_setRegisters(const REGISTER_t reg, const uint8_t values[],
 static void mcp2515_modifyRegister(const REGISTER_t reg, const uint8_t mask,
 								   const uint8_t data)
 {
-	const INSTRUCTION_t _instruction = INSTRUCTION_BITMOD;
+	INSTRUCTION_t _instruction = INSTRUCTION_BITMOD;
 
 	startSPI();
 	spi_write(&_instruction, 1);
-	spi_write(&reg, 1);
-	spi_write(&mask, 1);
-	spi_write(&data, 1);
+	spi_write((uint8_t *)&reg, 1);
+	spi_write((uint8_t *)&mask, 1);
+	spi_write((uint8_t *)&data, 1);
 	endSPI();
 
 	return;
@@ -816,11 +834,11 @@ static void mcp2515_modifyRegister(const REGISTER_t reg, const uint8_t mask,
 extern uint8_t mcp2515_getStatus(void)
 {
 	INSTRUCTION_t _instruction = INSTRUCTION_READ_STATUS;
-	uint8_t i, n;
+	uint8_t i, n = 1;
 
 	startSPI();
 	spi_write(&_instruction, 1);
-	spi_receive(&i, &n);
+	spi_receive(&i, n);
 	endSPI();
 
 	return i;
@@ -828,10 +846,10 @@ extern uint8_t mcp2515_getStatus(void)
 
 extern ERROR_t mcp2515_setConfigMode()
 {
-	CANCTRL_t _canctrl;
+	CANCTRL_t canctrl;
 
 	/* Modificamos el modo del trabajo del modulo */
-	/**
+	/*
 	 * El modulo puede trabajar en 5 modos distintos.
 	 * 		1. Modo de configuracion.	--> En particular trabajamos en este durante la incializacion.
 	 * 		2. Modo normal.
@@ -839,28 +857,28 @@ extern ERROR_t mcp2515_setConfigMode()
 	 * 		4. Modo de solo escucha.
 	 * 		5. Modo de loopback.
 	 * */
-	_canctrl.data = 0;		/*< Nos aseguramos de que se encuentra limpia.*/
-	_canctrl.REQ0P = 0b100; /*< El modulo entra en modo de configuracion.*/
+	canctrl.data = 0;	   /*< Nos aseguramos de que se encuentra limpia.*/
+	canctrl.REQ0P = 0b100; /*< El modulo entra en modo de configuracion.*/
 
-	return mcp2515_setMode(_canctrl.data);
+	return mcp2515_setMode(canctrl.data);
 }
 
 extern ERROR_t mcp2515_setListenOnlyMode()
 {
-	CANCTRL_t _canctrl = {0};
+	CANCTRL_t canctrl = {0};
 
-	_canctrl.REQ0P = 0b011; /*< Modo de solo escucha.*/
+	canctrl.REQ0P = 0b011; /*< Modo de solo escucha.*/
 
-	return mcp2515_setMode(_canctrl.data);
+	return mcp2515_setMode(canctrl.data);
 }
 
 extern ERROR_t mcp2515_setSleepMode()
 {
-	CANCTRL_t _canctrl = {0};
+	CANCTRL_t canctrl = {0};
 
-	_canctrl.REQ0P = 0b001; /*< Modo sleep de operacion.*/
+	canctrl.REQ0P = 0b001; /*< Modo sleep de operacion.*/
 
-	return mcp2515_setMode(_canctrl.data);
+	return mcp2515_setMode(canctrl.data);
 }
 
 extern ERROR_t mcp2515_setLoopbackMode()
@@ -883,31 +901,31 @@ extern ERROR_t mcp2515_setNormalMode()
 
 extern ERROR_t mcp2515_setMode(const uint8_t mode)
 {
-	const REGISTER_t _register = MCP_CANCTRL;
+	const REGISTER_t reg = MCP_CANCTRL;
 
-	ModifyReg_t _modifyReg = {
-		.reg = _register,	   /* Registro de can control.*/
+	ModifyReg_t modifyReg = {
+		.reg = reg,			   /* Registro de can control.*/
 		.mask = CANCTRL_REQOP, /* Corresponde a REQ0P[2:0].*/
 		.data = mode,		   /* Modo de operacion del modulo.*/
 	};
 
 	/* Configura el modo de operacion del modulo */
-	mcp2515_modifyRegister(_modifyReg.reg, _modifyReg.mask,
-						   _modifyReg.data);
+	mcp2515_modifyRegister(modifyReg.reg, modifyReg.mask,
+						   modifyReg.data);
 
 	/* Verifica que se cargo correctamente */
 	__delay_ms(10);
 
 	bool modeMatch = false;
 
-	ReadReg_t _readReg = {
+	ReadReg_t readReg = {
 		.reg = MCP_CANSTAT,
 	};
 
-	mcp2515_readRegister(&_readReg); /* Lee el registro para corroborar la informacion. */
+	mcp2515_readRegister(&readReg); /* Lee el registro para corroborar la informacion. */
 
-	_readReg.data &= CANSTAT_OPMOD;
-	modeMatch = (_readReg.data == mode);
+	readReg.data &= CANSTAT_OPMOD;
+	modeMatch = (readReg.data == mode);
 
 	return modeMatch ? ERROR_OK : ERROR_FAIL;
 }
@@ -1381,7 +1399,7 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 	const struct TXBn_REGS *txbuf = &TXB[txbn];
 
 	uint8_t data[13];
-	/**
+	/*
 	 * Formato de data[13]:
 	 * 		byte 0: SIDH
 	 * 		byte 1: SIDL
@@ -1411,15 +1429,15 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 	mcp2515_modifyRegister(txbuf->CTRL, TXB_TXREQ, TXB_TXREQ);
 
 	/* Verifica la informacion enviada */
-	ReadReg_t _readReg;
+	ReadReg_t readReg = {
+		.reg = txbuf->CTRL,
+	};
 
-	_readReg.reg = *txbuf->CTRL;
+	mcp2515_readRegister(&readReg);
 
-	mcp2515_readRegister(&_readReg);
-
-	if ((_readReg.data & (TXB_ABTF	 /*< Message aborted flag bit.*/
-						  | TXB_MLOA /*< Message lost arbitration bit.*/
-						  | TXB_TXERR /*< Transmission error detected bit.*/)) != 0)
+	if ((readReg.data & (TXB_ABTF	/*< Message aborted flag bit.*/
+						 | TXB_MLOA /*< Message lost arbitration bit.*/
+						 | TXB_TXERR /*< Transmission error detected bit.*/)) != 0)
 	{
 		return ERROR_FAILTX;
 	}
@@ -1437,12 +1455,23 @@ extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame)
 
 	/* Verificamos que exista lugar disponible en algun buffer (0,1,2) */
 	TXBn txBuffers[N_TXBUFFERS] = {TXB0, TXB1, TXB2};
-	TXBnCTRL_t _txbnCtrl[N_TXBUFFERS] = {0, 0, 0};
-	ReadReg_t _readReg[N_TXBUFFERS] = {0, 0, 0};
 
-	_readReg[TXB0].reg = MCP_TXB0CTRL; /*< Cargamos el registro de control.*/
-	_readReg[TXB1].reg = MCP_TXB1CTRL; /*< Idem.*/
-	_readReg[TXB2].reg = MCP_TXB2CTRL; /*< Idem.*/
+	TXBnCTRL_t _txbnCtrl[N_TXBUFFERS] = {
+		{.data = 0},
+		{.data = 0},
+		{.data = 0},
+	};
+
+	ReadReg_t readReg[N_TXBUFFERS] = {
+		{
+			.reg = MCP_TXB0CTRL, /*< Cargamos el registro de control.*/
+		},
+		{
+			.reg = MCP_TXB1CTRL, /*< Idem.*/
+		},
+		{
+			.reg = MCP_TXB2CTRL, /*< Idem.*/
+		}};
 
 	for (int i = 0; i < N_TXBUFFERS; i++)
 	{
@@ -1459,9 +1488,9 @@ extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame)
 		 * Si todos los buffers estan pendientes para transmitir
 		 * se emite un mensaje de error.
 		 * */
-		mcp2515_readRegister(&_readReg[i]);
+		mcp2515_readRegister(&readReg[i]);
 
-		_txbnCtrl[i].data = _readReg[i].data; /*< Carga la lectura en _txbnCtrl.*/
+		_txbnCtrl[i].data = readReg[i].data; /*< Carga la lectura en _txbnCtrl.*/
 
 		if (!_txbnCtrl[i].TXREQ)
 		{
@@ -1478,56 +1507,56 @@ extern ERROR_t mcp2515_readMessageWithBufferId(const RXBn rxbn,
 {
 	const struct RXBn_REGS *rxb = &RXB[rxbn];
 
-	uint8_t tbufdata[5];
-	ReadRegs_t _readRegs;
+	ReadRegs_t readRegs = {
+		.reg = rxb->SIDH,
+		.instruction = INSTRUCTION_READ,
+		.n = 5,
+	};
 
 	/* Lee las id de formato estandar y extendido */
-	/**
+	/*
 	 * Se carga el valor de la id estandar y extendida
 	 * al tipo de dato. Para esto debemos cargar el
 	 * registro donde vamos a leer. Este registro
 	 * puede ser al buffer 0 o al 1.
 	 * */
-	_readRegs.reg = rxb->SIDH;
-	_readRegs.instruction = INSTRUCTION_READ;
-	_readRegs.n = 5;
-	mcp2515_readRegisters(&_readRegs);
+	mcp2515_readRegisters(&readRegs);
 
 	/* Tomamos el valor del id */
-	/**
+	/*
 	 * Leemos desde el registro sidh. Por tanto tenemos
 	 * SIDH, SIDL, EXID0, EXID8, ...
 	 *
 	 * id = SIDH(8 bits) + SIDL(3 bits estandart + 2 bits extendido) + EXID8(8 bits ext) + EXID0()
 	 * */
-	uint32_t id = (_readRegs.values[MCP_SIDH] << 3) + (_readRegs.values[MCP_SIDL] >> 5);
+	uint32_t id = (readRegs.values[MCP_SIDH] << 3) + (readRegs.values[MCP_SIDL] >> 5);
 
 	/* Verifica si se enuentra en formato extendido */
-	if ((_readRegs.values[MCP_SIDL] & TXB_EXIDE_MASK) == TXB_EXIDE_MASK)
+	if ((readRegs.values[MCP_SIDL] & TXB_EXIDE_MASK) == TXB_EXIDE_MASK)
 	{
-		id = (id << 2) + (_readRegs.values[MCP_SIDL] & 0x03); /*< Agarra los bits 16 y 17 del exid.*/
-		id = (id << 8) + _readRegs.values[MCP_EID8];		  /*< 8 bits de la parte alta.*/
-		id = (id << 8) + _readRegs.values[MCP_EID0];		  /*< 8 bits de la parte baja.*/
+		id = (id << 2) + (readRegs.values[MCP_SIDL] & 0x03); /*< Agarra los bits 16 y 17 del exid.*/
+		id = (id << 8) + readRegs.values[MCP_EID8];			 /*< 8 bits de la parte alta.*/
+		id = (id << 8) + readRegs.values[MCP_EID0];			 /*< 8 bits de la parte baja.*/
 		id |= CAN_EFF_FLAG;
 	}
 
 	/* Determina la cantidad de data frame a recibir */
-	uint8_t dlc = (_readRegs.values[MCP_DLC] & DLC_MASK);
+	uint8_t dlc = (readRegs.values[MCP_DLC] & DLC_MASK);
 
 	if (dlc > CAN_MAX_DLEN)
 	{
 		return ERROR_FAIL;
 	}
 
-	/*  */
-	ReadReg_t _readReg;
+	/* Leemos el registro de control */
+	ReadReg_t readRegCTRL = {
+		.instruction = INSTRUCTION_READ,
+		.reg = rxb->CTRL,
+	};
 
-	_readReg.instruction = INSTRUCTION_READ;
-	_readReg.reg = rxb->CTRL;
+	mcp2515_readRegister(&readRegCTRL);
 
-	mcp2515_readRegister(&_readReg);
-
-	if (_readReg.data & RXBnCTRL_RTR)
+	if (readRegCTRL.data & RXBnCTRL_RTR)
 	{
 		id |= CAN_RTR_FLAG;
 	}
@@ -1535,19 +1564,21 @@ extern ERROR_t mcp2515_readMessageWithBufferId(const RXBn rxbn,
 	frame->can_id = id;
 	frame->can_dlc = dlc;
 
-	ReadRegs_t _readRegs;
+	ReadRegs_t readRegsDATA = {
+		.instruction = INSTRUCTION_READ,
+		.reg = rxb->DATA,
+		.n = dlc,
+	};
 
-	_readRegs.instruction = INSTRUCTION_READ;
-	_readRegs.reg = rxb->DATA;
-	_readRegs.n = dlc;
+	mcp2515_readRegisters(&readRegsDATA);
 
-	mcp2515_readRegisters(&_readRegs);
+	/* Modificamos el registro de interrupciones can */
+	ModifyReg_t _modifyReg = {
+		.reg = MCP_CANINTF,
+		.mask = rxb->CANINTF_RXnIF,
+		.data = 0,
+	};
 
-	ModifyReg_t _modifyReg;
-
-	_modifyReg.reg = MCP_CANINTF;
-	_modifyReg.mask = rxb->CANINTF_RXnIF;
-	_modifyReg.data = 0;
 	mcp2515_modifyRegister(_modifyReg.reg, _modifyReg.mask, _modifyReg.data);
 
 	return ERROR_OK;

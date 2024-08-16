@@ -1,0 +1,4 @@
+<map id="mcp2515_setBitrate" name="mcp2515_setBitrate">
+<area shape="rect" id="node1" title="Setea el baud rate." alt="" coords="5,5,159,32"/>
+<area shape="rect" id="node2" href="$mcp2515_8c.html#a0a1c3cc8b486dbd55ff9d2d011694fa6" title="Setea el modo de configuracion." alt="" coords="207,5,393,32"/>
+</map>

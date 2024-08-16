@@ -1,0 +1,5 @@
+<map id="spi_init" name="spi_init">
+<area shape="rect" id="node1" title="Inicializacion del spi." alt="" coords="267,5,336,32"/>
+<area shape="rect" id="node2" href="$mcp2515_8h.html#a93c2df6a52fa046c073256f50d96b930" title="Funciones publicas." alt="" coords="108,5,219,32"/>
+<area shape="rect" id="node3" href="$_m_c_p2515___example_8c.html#a840291bc02cba5474a4cb46a9b9566fe" title="Application entry point." alt="" coords="5,5,60,32"/>
+</map>

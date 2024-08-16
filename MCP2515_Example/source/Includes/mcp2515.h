@@ -20,13 +20,14 @@
 #ifndef INCLUDES_MCP2515_H_
 #define INCLUDES_MCP2515_H_
 
+#include "can.h"
 #include <stdint.h>
 #include <stdbool.h>
-#include "can.h"
 
 /**
- * @def Tipo de sistema a utilizar
- * @brief Se debe definir si se utiliza el sistema de tiempo real freertos o
+ * @brief Tipo de sistema a utilizar.
+ *
+ * Se debe definir si se utiliza el sistema de tiempo real freertos o
  * se utiliza el sistema de baremetal.
  *
  * @example
@@ -35,9 +36,10 @@
  */
 #define USE_FREERTOS 0
 
-/**
- * @def Speed 8M
- * @brief Valores calculados para la velocidad de bits por segundo.
+/*
+ * @brief Speed 8M.
+ *
+ * Valores calculados para la velocidad de bits por segundo.
  * Tales valores son cargamos en los registros de configuración del
  * modulo.
  */
@@ -97,9 +99,10 @@
 #define MCP_8MHz_5kBPS_CFG2 (0xBF)
 #define MCP_8MHz_5kBPS_CFG3 (0x87)
 
-/**
- * @def Speed 16M.
- * @brief Configuraciones para 16 MHz.
+/*
+ * @brief Speed 16M.
+ *
+ * Configuraciones para 16 MHz.
  */
 #define MCP_16MHz_1000kBPS_CFG1 (0x00)
 #define MCP_16MHz_1000kBPS_CFG2 (0xD0)
@@ -161,9 +164,10 @@
 #define MCP_16MHz_5kBPS_CFG2 (0xFF)
 #define MCP_16MHz_5kBPS_CFG3 (0x87)
 
-/**
- * @def Speed 20M.
- * @brief Configuraciones para 20MHz.
+/*
+ * @brief Speed 20M.
+ *
+ * Configuraciones para 20MHz.
  */
 #define MCP_20MHz_1000kBPS_CFG1 (0x00)
 #define MCP_20MHz_1000kBPS_CFG2 (0xD9)
@@ -209,14 +213,27 @@
 #define MCP_20MHz_33k3BPS_CFG2 (0xFF)
 #define MCP_20MHz_33k3BPS_CFG3 (0x87)
 
-enum CAN_CLOCK
+/**
+ * @brief Velocidad del reloj del modulo.
+ *
+ * Para el caso actual se selecciona la velocidad de 8 MHz ya que es
+ * el tipo de oscilador que viene fisicamente en el modulo can.
+ */
+typedef enum
 {
 	MCP_20MHZ,
 	MCP_16MHZ,
 	MCP_8MHZ,
-};
+} CAN_CLOCK;
 
-enum CAN_SPEED
+/**
+ * @brief Velocidad en baudios del modulo.
+ *
+ * Se puede seleccionar el tipo de velocidad cuando se llama a la funcion
+ * mcp2515_setBitrate(). Por defecto se puede elegir en 125KBps a 8MHz,
+ * que es el caso para este modulo.
+ */
+typedef enum
 {
 	CAN_5KBPS,
 	CAN_10KBPS,
@@ -234,44 +251,63 @@ enum CAN_SPEED
 	CAN_250KBPS,
 	CAN_500KBPS,
 	CAN_1000KBPS,
-};
+} CAN_SPEED;
 
-enum CAN_CLKOUT
+typedef enum
 {
 	CLKOUT_DISABLE = -1,
 	CLKOUT_DIV1 = 0x0,
 	CLKOUT_DIV2 = 0x1,
 	CLKOUT_DIV4 = 0x2,
 	CLKOUT_DIV8 = 0x3,
-};
+} CAN_CLKOUT;
 
 /**
- * @enum Errores
- * @brief Manejo de errores al enviar, recibir mensajes.
+ * @brief Enumeracion con los tipos de errores que aparecen.
+ *
+ * Manejo de errores al enviar, recibir mensajes.
  */
 typedef enum
 {
+	/**
+	 * @brief Sin errores.
+	 */
 	ERROR_OK = 0,
+	/**
+	 * @brief Fallo.
+	 */
 	ERROR_FAIL = 1,
+	/**
+	 * @brief Todos los buffer estan llenos.
+	 */
 	ERROR_ALLTXBUSY = 2,
+	/**
+	 * @brief Fallo en la inicializacion.
+	 */
 	ERROR_FAILINIT = 3,
+	/**
+	 * @brief Fallo en tx.
+	 */
 	ERROR_FAILTX = 4,
+	/**
+	 * @brief Sin mensajes.
+	 */
 	ERROR_NOMSG = 5
 } ERROR_t;
 
 /**
- * @enum Mascara para ID
+ * @brief Mascara para ID
  */
-enum MASK
+typedef enum
 {
 	MASK0,
 	MASK1
-};
+} MASK;
 
 /**
- * @enum Filtros para ID
+ * @brief Filtros para ID
  */
-enum RXF
+typedef enum
 {
 	RXF0 = 0,
 	RXF1 = 1,
@@ -279,42 +315,67 @@ enum RXF
 	RXF3 = 3,
 	RXF4 = 4,
 	RXF5 = 5
-};
+} RXF;
 
 /**
- * @enum Referencia al buffer de recepcion
+ * @brief Referencia al buffer de recepcion
  */
-enum RXBn
+typedef enum
 {
 	RXB0 = 0,
 	RXB1 = 1
-};
+} RXBn;
 
 /**
- * @enum Referencia al buffer de transmision
+ * @brief Referencia al buffer de transmision
  */
-enum TXBn
+typedef enum
 {
 	TXB0 = 0,
 	TXB1 = 1,
 	TXB2 = 2
-};
+} TXBn;
 
 /**
- * @enum Interrupciones del modulo can
- * @brief Configuraciones del registros de interrupcion.
+ * @brief Interrupciones del modulo can.
+ *
+ * Configuraciones del registros de interrupcion.
  */
 typedef enum
 {
+	/**
+	 * @brief Bandera de interrupcion por recepcion del buffer 0.
+	 */
 	CANINTF_RX0IF = 0x01,
+	/**
+	 * @brief Bandera de interrupcion por recepcion del buffer 1.
+	 */
 	CANINTF_RX1IF = 0x02,
+	/**
+	 * @brief Bandera de interrupcion por transmision del buffer 0.
+	 */
 	CANINTF_TX0IF = 0x04,
+	/**
+	 * @brief Bandera de interrupcion por transmision del buffer 1.
+	 */
 	CANINTF_TX1IF = 0x08,
+	/**
+	 * @brief Bandera de interrupcion por transmision del buffer 2.
+	 */
 	CANINTF_TX2IF = 0x10,
+	/**
+	 * @brief Bandera de interrupcion de error.
+	 */
 	CANINTF_ERRIF = 0x20,
+	/**
+	 * @brief Bandera de interrupcion de wake-up.
+	 */
 	CANINTF_WAKIF = 0x40,
+	/**
+	 * @brief Bandera de interrupcion de error del mensaje.
+	 */
 	CANINTF_MERRF = 0x80,
-} CANINTF_t;
+} CANINTF_enum;
 
 typedef enum
 {
@@ -326,7 +387,7 @@ typedef enum
 	EFLG_TXWAR = (1 << 2),
 	EFLG_RXWAR = (1 << 1),
 	EFLG_EWARN = (1 << 0),
-} EFLG_t;
+} EFLG_enum;
 
 typedef enum
 {
@@ -352,16 +413,28 @@ typedef enum
 	TXB_TXREQ = 0x08,
 	TXB_TXIE = 0x04,
 	TXB_TXP = 0x03,
-} TXBnCTRL_t;
+} TXBnCTRL_enum;
 
 /**
- * @enum Intrucciones
- * @brief Utilizadas para decirle al modulo que tipo de informacion
+ * @brief Intrucciones permitidas en el modulo.
+ *
+ * Utilizadas para decirle al modulo que tipo de informacion
  * vamos a mandarle.
  */
 typedef enum
 {
+	/**
+	 * @brief Instruccion de escritura de datos.
+	 *
+	 * Utilizamos esta instruccion cuando queremos escribir sobre
+	 * algun registro en particular. Antes de enviar el registro
+	 * debemos decirle al modulo que accion queremos realizar, en este
+	 * caso de escritura.
+	 */
 	INSTRUCTION_WRITE = 0x02,
+	/**
+	 * @brief Instruccion de lectura de datos.
+	 */
 	INSTRUCTION_READ = 0x03,
 	INSTRUCTION_BITMOD = 0x05,
 	INSTRUCTION_LOAD_TX0 = 0x40,
@@ -373,14 +446,21 @@ typedef enum
 	INSTRUCTION_RTS_ALL = 0x87,
 	INSTRUCTION_READ_RX0 = 0x90,
 	INSTRUCTION_READ_RX1 = 0x94,
+	/**
+	 * @brief Instruccion de lectura de estados del modulo.
+	 */
 	INSTRUCTION_READ_STATUS = 0xA0,
 	INSTRUCTION_RX_STATUS = 0xB0,
+	/**
+	 * @brief Instruccion de reseteo del modulo.
+	 */
 	INSTRUCTION_RESET = 0xC0
 } INSTRUCTION_t;
 
 /**
- * @enum Registros
- * @brief Utilizamos para cargarlo en la transmision del spi y decirle al
+ * @brief Ubicacion de los registros.
+ *
+ * Utilizamos para cargarlo en la transmision del spi y decirle al
  * modulo donde queremos modificar algo.
  */
 typedef enum
@@ -464,9 +544,6 @@ typedef enum
 	MCP_RXB1DATA = 0x76
 } REGISTER_t;
 
-uint8_t SPICS;
-uint32_t SPI_CLOCK;
-
 /**
  * @brief Funciones publicas.
  * @{
@@ -474,13 +551,9 @@ uint32_t SPI_CLOCK;
 
 /**
  * @brief Inicializa el modulo mcp2515.
- * @param[in] _CS chip select.
- * @param[in] _SPI_CLOCK reloj del spi.
- *
  * @note En esta funcion ya se realiza la inicializacion del modulo de spi.
  */
-extern void mcp2515_init(const uint8_t _CS, const uint32_t _SPI_CLOCK =
-												DEFAULT_SPI_CLOCK);
+extern void mcp2515_init(void);
 /**
  * @brief Resetea el modulo.
  */
@@ -576,19 +649,65 @@ extern bool mcp2515_checkReceive(void);
  */
 extern bool mcp2515_checkError(void);
 /**
+ * @brief Obtiene el estado de error de modulo can.
  *
+ * @return dato con los errores.
  */
 extern uint8_t mcp2515_getErrorFlags(void);
+/**
+ * @brief Limpia la bandera de overflow de los buffer de rx.
+ */
 extern void mcp2515_clearRXnOVRFlags(void);
+/**
+ * @brief Obtiene las interrupciones del modulo can.
+ * Desde el registro de interrupt flags.
+ *
+ * @return Devuelve las banderas de interrupcion que se presentaron.
+ */
 extern uint8_t mcp2515_getInterrupts(void);
+/**
+ * @brief Obtiene las interrupciones habilitadas desde el modulo can.
+ *
+ * @return Devuelve las interrupciones que se encuentran habilitadas.
+ */
 extern uint8_t mcp2515_getInterruptMask(void);
+/**
+ * @brief Limpia las banderas de interrupcion.
+ */
 extern void mcp2515_clearInterrupts(void);
+/**
+ * @brief Limpia las banderas de interrupcion de tx.
+ */
 extern void mcp2515_clearTXInterrupts(void);
+/**
+ * @brief Obtiene los estados solicitados de lectura.
+ *
+ * @return Devuelve el dato del registro de estados.
+ */
 extern uint8_t mcp2515_getStatus(void);
+/**
+ * @brief Limpia la bandera de overflow de los buffers de rx.
+ */
 extern void mcp2515_clearRXnOVR(void);
+/**
+ * @brief Limpia la bandera de merr.
+ */
 extern void mcp2515_clearMERR();
+/**
+ * @brief Limpia la bandera de errif.
+ */
 extern void mcp2515_clearERRIF();
+/**
+ * @brief Chequa el contador de error de recepcion.
+ *
+ * @return Devuelve el valor del contador.
+ */
 extern uint8_t mcp2515_errorCountRX(void);
+/**
+ * @brief Chequea el contador de error de transmision.
+ *
+ * @return Devuelve el valor del contador.
+ */
 extern uint8_t mcp2515_errorCountTX(void);
 
 /**

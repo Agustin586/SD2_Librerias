@@ -1,0 +1,4 @@
+<map id="mcp2515_checkReceive" name="mcp2515_checkReceive">
+<area shape="rect" id="node1" title="Chequea la recepcion de los datos." alt="" coords="5,5,184,32"/>
+<area shape="rect" id="node2" href="$mcp2515_8c.html#adab84b04c3e872a779e0b50cd6f939be" title="Obtiene los estados solicitados de lectura." alt="" coords="232,5,383,32"/>
+</map>

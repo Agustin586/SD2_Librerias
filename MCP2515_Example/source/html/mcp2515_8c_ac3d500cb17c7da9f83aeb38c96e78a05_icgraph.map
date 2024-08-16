@@ -1,0 +1,5 @@
+<map id="mcp2515_getErrorFlags" name="mcp2515_getErrorFlags">
+<area shape="rect" id="node1" title="Obtiene el estado de error de modulo can." alt="" coords="228,31,404,57"/>
+<area shape="rect" id="node2" href="$mcp2515_8h.html#a8ceef1324ef15325f4a5826d5b58273b" title="Chequea los errores informados desde el modulo." alt="" coords="13,5,172,32"/>
+<area shape="rect" id="node3" href="$mcp2515_8h.html#aeb679de4c34c365123f989fab92b9b71" title="Limpia la bandera de overflow de los buffers de rx." alt="" coords="5,56,180,83"/>
+</map>

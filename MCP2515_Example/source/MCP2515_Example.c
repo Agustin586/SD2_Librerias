@@ -47,6 +47,7 @@
 /* TODO: insert other definitions and declarations here. */
 
 #if USE_FREERTOS
+
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -55,8 +56,12 @@
 #define taskCanMsg_PRIORITIES 1
 
 static void vtaskRtos_canmsg(void *pvParameter);
+
 #else
+
 #define __delay_ms(x) delay_ms(x)
+static void delay_ms(uint16_t ms);
+static void canmsg_baremetal(void);
 
 static void delay_ms(uint16_t ms)
 {
@@ -72,7 +77,6 @@ static void delay_ms(uint16_t ms)
     return;
 }
 
-static void canmsg_baremetal(void);
 #endif
 
 struct can_frame canMsg1;
@@ -103,16 +107,21 @@ int main(void)
     canMsg1.data[6] = 0xBE;
     canMsg1.data[7] = 0x86;
 
+    mcp2515_init();
     mcp2515_reset();
-    mcp2515_setBitrate(CAN_125KBPS, MCP_16MHZ);
+    mcp2515_setBitrate(CAN_125KBPS, MCP_8MHZ);
     mcp2515_setNormalMode();
 
 #if (USE_FREERTOS)
+
     xTaskCreate(vtaskRtos_canmsg, "Task Can Msg", taskCanMsg_STACK, NULL, taskCanMsg_PRIORITIES, NULL);
 
     vTaskStartScheduler();
+
 #else
+
     canmsg_baremetal();
+
 #endif
 
     while (1)
@@ -122,6 +131,7 @@ int main(void)
 }
 
 #if USE_FREERTOS
+
 static void vtaskRtos_canmsg(void *pvParameter)
 {
     mcp2515_sendMessage(&canMsg1);
@@ -133,7 +143,9 @@ static void vtaskRtos_canmsg(void *pvParameter)
 
     return;
 }
+
 #else
+
 static void canmsg_baremetal(void)
 {
     mcp2515_sendMessage(&canMsg1);
@@ -141,4 +153,5 @@ static void canmsg_baremetal(void)
 
     return;
 }
+
 #endif

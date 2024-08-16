@@ -1,0 +1,4 @@
+<map id="mcp2515_checkError" name="mcp2515_checkError">
+<area shape="rect" id="node1" title="Chequea los errores informados desde el modulo." alt="" coords="5,5,164,32"/>
+<area shape="rect" id="node2" href="$mcp2515_8c.html#ac3d500cb17c7da9f83aeb38c96e78a05" title="Obtiene el estado de error de modulo can." alt="" coords="212,5,388,32"/>
+</map>
