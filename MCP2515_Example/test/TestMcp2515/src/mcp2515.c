@@ -1173,11 +1173,11 @@ extern ERROR_t mcp2515_setMode(const uint8_t mode)
 		if (error != ERROR_OK)
 			return error;
 
-		readReg.data &= CANSTAT_OPMOD;
-		modeMatch = (readReg.data == mode);
-
-		if (modeMatch)
+		if (readReg.data &= CANSTAT_OPMOD)
+		{
+			modeMatch = (readReg.data == mode);
 			break;
+		}
 	}
 
 	return modeMatch ? ERROR_OK : ERROR_FAIL;

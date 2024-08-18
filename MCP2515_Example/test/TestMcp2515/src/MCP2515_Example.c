@@ -62,8 +62,6 @@ static void vtaskRtos_canmsg(void *pvParameter);
 #define __delay_ms(x) delay_ms(x)
 static void delay_ms(uint16_t ms);
 static void canmsg_baremetal(void);
-static void canmsg_escritura(void);
-static void canmsg_lectura(void);
 
 static void delay_ms(uint16_t ms)
 {
@@ -128,12 +126,11 @@ int main(void)
     if (error != ERROR_OK)
     	PRINTF("Fallo al setear el bit rate\n\r");
 
-    error = mcp2515_setNormalMode();
+//    mcp2515_setNormalMode();
+    error = mcp2515_setLoopbackMode();
+
     if (error != ERROR_OK)
-      	PRINTF("Fallo al setear el normal mode\n\r");
-//    error = mcp2515_setLoopbackMode();
-//    if (error != ERROR_OK)
-//    	PRINTF("Fallo al setear el loopback mode\n\r");
+    	PRINTF("Fallo al setear el loopback mode\n\r");
 
 #if (USE_FREERTOS)
 
@@ -170,16 +167,6 @@ static void vtaskRtos_canmsg(void *pvParameter)
 
 static void canmsg_baremetal(void)
 {
-//	canmsg_escritura();
-	__delay_ms(500);
-	canmsg_lectura();
-    __delay_ms(1000);
-
-    return;
-}
-
-static void canmsg_escritura(void)
-{
 	ERROR_t estado;
 
 	estado = mcp2515_sendMessage(&canMsg1);
@@ -198,14 +185,9 @@ static void canmsg_escritura(void)
 	{
 		PRINTF("Error al enviar\n\r");
 	}
+    __delay_ms(500);
 
-	return;
-}
-static void canmsg_lectura(void)
-{
-	ERROR_t estado;
-
-	estado = mcp2515_readMessage(&canMsgRead);
+    estado = mcp2515_readMessage(&canMsgRead);
 
     if (estado != ERROR_NOMSG)
     {
@@ -223,7 +205,9 @@ static void canmsg_lectura(void)
 
     PRINTF("\n\r");
 
-	return;
+    __delay_ms(1000);
+
+    return;
 }
 
 #endif
