@@ -304,7 +304,11 @@ typedef enum
 	/**
 	 * @brief Error en verificacion de registro
 	 */
-	ERROR_MODIFY_REG,
+	ERROR_VERIFICAION_MODIFY_REG,
+	/**
+	 * @brief Error en verificacion de registro cargado
+	 */
+	ERROR_VERIFICACION_SET_REGISTER,
 } ERROR_t;
 
 /**

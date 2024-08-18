@@ -90,6 +90,8 @@ struct can_frame canMsgRead = {
  */
 int main(void)
 {
+	ERROR_t error;
+
     /* Init board hardware. */
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
@@ -113,10 +115,22 @@ int main(void)
     canMsg1.data[7] = 5;
 
     mcp2515_init();
-    mcp2515_reset();
-    mcp2515_setBitrate(CAN_125KBPS, MCP_8MHZ);
+
+    error = mcp2515_reset();
+
+    if (error != ERROR_OK)
+    	PRINTF("Fallo al resetear el modulo\n\r");
+
+    error = mcp2515_setBitrate(CAN_125KBPS, MCP_8MHZ);
+
+    if (error != ERROR_OK)
+    	PRINTF("Fallo al setear el bit rate\n\r");
+
 //    mcp2515_setNormalMode();
-    mcp2515_setLoopbackMode();
+    error = mcp2515_setLoopbackMode();
+
+    if (error != ERROR_OK)
+    	PRINTF("Fallo al setear el loopback mode\n\r");
 
 #if (USE_FREERTOS)
 
@@ -129,7 +143,7 @@ int main(void)
     while (1)
     {
 #if (!USE_FREERTOS)
-    canmsg_baremetal();
+//    canmsg_baremetal();
 #endif
     }
     return 0;

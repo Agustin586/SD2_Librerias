@@ -478,7 +478,7 @@ typedef struct
 	/**
 	 * @brief Nombre del registro a modificar.
 	 */
-	const REGISTER_t reg;
+	REGISTER_t reg;
 	/**
 	 * @brief Mascara.
 	 */
@@ -486,7 +486,7 @@ typedef struct
 	/**
 	 * @brief Dato a modificar.
 	 */
-	const uint8_t data;
+	uint8_t data;
 } ModifyReg_t;
 
 /**
@@ -498,8 +498,6 @@ typedef struct
 {
 	/** @brief Registro a leer. */
 	REGISTER_t reg;
-	/** @brief Instruccion de lectura. */
-	INSTRUCTION_t instruction;
 	/** @brief Datos a cargar. */
 	uint8_t data;
 } ReadReg_t;
@@ -516,13 +514,47 @@ typedef struct
 {
 	/** @brief Registro en el que se lee.*/
 	REGISTER_t reg;
-	/** @brief Instruccion.*/
-	INSTRUCTION_t instruction;
 	/** @brief Datos leidos.*/
 	uint8_t values[MAX_DATA_readREG];
 	/** @brief Longitud de la cadena.*/
 	uint8_t n;
 } ReadRegs_t;
+
+#define CANT_MAX_SET_REGISTERS 20
+
+/**
+ * @brief Dato de tipo seteo de registro
+ */
+typedef struct
+{
+	/**
+	 * @brief Registro a setear
+	 */
+	REGISTER_t reg;
+	/**
+	 * @brief Valor a cargar
+	 */
+	uint8_t value;
+} setRegister_t;
+
+/**
+ * @brief Dato de tipo seteo de registros
+ */
+typedef struct
+{
+	/**
+	 * @brief Registro inicial
+	 */
+	REGISTER_t reg;
+	/**
+	 * @brief Arreglo de datos
+	 */
+	uint8_t values[CANT_MAX_SET_REGISTERS];
+	/**
+	 * @brief Cantidad de bytes
+	 */
+	uint8_t n;
+} setRegisters_t;
 
 #if USE_FREERTOS
 #include "FreeRTOS.h"
@@ -550,13 +582,13 @@ static void delay_ms(uint16_t ms)
 #endif
 
 static const uint8_t CANCTRL_REQOP = 0xE0;
-// static const uint8_t CANCTRL_ABAT = 0x10;
+//static const uint8_t CANCTRL_ABAT = 0x10;
 // static const uint8_t CANCTRL_OSM = 0x08;
 static const uint8_t CANCTRL_CLKEN = 0x04;
 static const uint8_t CANCTRL_CLKPRE = 0x03;
 
 static const uint8_t CANSTAT_OPMOD = 0xE0;
-// static const uint8_t CANSTAT_ICOD = 0x0E;
+//static const uint8_t CANSTAT_ICOD = 0x0E;
 
 static const uint8_t CNF3_SOF = 0x80;
 
@@ -564,15 +596,15 @@ static const uint8_t TXB_EXIDE_MASK = 0x08;
 static const uint8_t DLC_MASK = 0x0F;
 static const uint8_t RTR_MASK = 0x40;
 
-// static const uint8_t RXBnCTRL_RXM_STD = 0x20;
-// static const uint8_t RXBnCTRL_RXM_EXT = 0x40;
+//static const uint8_t RXBnCTRL_RXM_STD = 0x20;
+//static const uint8_t RXBnCTRL_RXM_EXT = 0x40;
 static const uint8_t RXBnCTRL_RXM_STDEXT = 0x00;
 static const uint8_t RXBnCTRL_RXM_MASK = 0x60;
 static const uint8_t RXBnCTRL_RTR = 0x08;
 static const uint8_t RXB0CTRL_BUKT = 0x04;
 static const uint8_t RXB0CTRL_FILHIT_MASK = 0x03;
 static const uint8_t RXB1CTRL_FILHIT_MASK = 0x07;
-// static const uint8_t RXB0CTRL_FILHIT = 0x00;
+static const uint8_t RXB0CTRL_FILHIT = 0x00;
 static const uint8_t RXB1CTRL_FILHIT = 0x01;
 
 static const uint8_t MCP_SIDH = 0;
@@ -635,29 +667,22 @@ static ERROR_t mcp2515_readRegister(ReadReg_t *readReg);
 static ERROR_t mcp2515_readRegisters(ReadRegs_t *_readRegs);
 /**
  * @brief Setea un registro
- * @param[in] reg registro
- * @param[in] value dato
+ * @param[in] setReg Parametros
  * @return Devuelve el estado de la transmision
  */
-static ERROR_t mcp2515_setRegister(const REGISTER_t reg, const uint8_t value);
+static ERROR_t mcp2515_setRegister(setRegister_t setReg);
 /**
  * @brief Setea multiples registros
- * @param[in] reg registro incial donde setear datos
- * @param[in] values datos
- * @param[in] n cantidad de datos
+ * @param[in] SetRegs Parametros
  * @return Devuelve el estado de la transmision
  */
-static ERROR_t mcp2515_setRegisters(const REGISTER_t reg, const uint8_t values[],
-								 const uint8_t n);
+static ERROR_t mcp2515_setRegisters(setRegisters_t setRegs);
 /**
  * @brief Modifica un registro en particular
- * @param[in] reg registro a modificar
- * @param[in] mask bits que se van a modificar
- * @param[in] data valor que se va a cargar
+ * @param[in] modifyReg Parametros
  * @return Devuelve el estado de la modificacion
  */
-static ERROR_t mcp2515_modifyRegister(const REGISTER_t reg, const uint8_t mask,
-								   const uint8_t data);
+static ERROR_t mcp2515_modifyRegister(ModifyReg_t modifyReg);
 /**
  * @brief Configura el id para una accion en particular
  * @param[out] buffer lugar donde se va a cargar el resultado
@@ -758,131 +783,94 @@ static void endSPI(void)
 
 extern ERROR_t mcp2515_reset(void)
 {
-	INSTRUCTION_t instruction = INSTRUCTION_RESET;
-	REGISTER_t _register;
-	CANINTE_t _caninte;
+	ERROR_t error;
+	INSTRUCTION_t inst = INSTRUCTION_RESET;
 
-	/* Reinicio del modulo mcp2515 */
-	/*
-	 * Debemos reiniciar el modulo para configurar los parametros
-	 * necesarios antes de utilizarlo en el can bus.
-	 * */
+	/* Reseteamos el modulo */
 	startSPI();
-	spi_write(&instruction, 1);
+	status_t status = spi_write(&inst, 1);
+	if (status != kStatus_Success)
+		return ERROR_SPI_WRITE;
 	endSPI();
 
-	__delay_ms(200); /* Espera a que reinicie el modulo.*/
+	__delay_ms(100);
 
-	uint8_t zeros[14];
+	/* Limpiamos registros de tx y rx*/
+	setRegisters_t setRegs;
 
-	memset(zeros, 0, sizeof(zeros)); /* Inicia con un vector en 0.*/
+#define CANT_REGISTROS 14
+	setRegs.n = CANT_MAX_SET_REGISTERS;
 
-	/* Resetea todos los registros seteandolos en 0 */
-	/*
-	 * Registros de control de TX.
-	 * */
-	_register = MCP_TXB0CTRL; /* Registro de control tx del buffer 0 */
-	mcp2515_setRegisters(_register, zeros, 14);
+	memset(setRegs.values, 0, CANT_REGISTROS);
 
-	_register = MCP_TXB1CTRL; /* Registro de control tx del buffer 1 */
-	mcp2515_setRegisters(_register, zeros, 14);
+	setRegs.reg = MCP_TXB0CTRL;
+	error = mcp2515_setRegisters(setRegs);
+	if (error != ERROR_OK)
+		return error;
 
-	_register = MCP_TXB2CTRL; /* Registro de control tx del buffer 2 */
-	mcp2515_setRegisters(_register, zeros, 14);
+	setRegs.reg = MCP_TXB1CTRL;
 
-	/* Registros de control de Rx. */
-	_register = MCP_RXB0CTRL; /* Buffer 0 */
-	mcp2515_setRegister(_register, 0);
+	error = mcp2515_setRegisters(setRegs);
+	if (error != ERROR_OK)
+		return error;
+	setRegs.reg = MCP_TXB2CTRL;
 
-	_register = MCP_RXB1CTRL; /* Buffer 1 */
-	mcp2515_setRegister(_register, 0);
+	error = mcp2515_setRegisters(setRegs);
+	if (error != ERROR_OK)
+		return error;
 
-	/* Registro de interrupcion. */
-	_register = MCP_CANINTE; /* Registro de habilitacion de interrupcion */
-	_caninte.RX0IE = 1;
-	_caninte.RX1IE = 1;
-	_caninte.ERRIE = 1;
-	_caninte.MERRE = 1;
-	mcp2515_setRegister(_register, _caninte.data);
+	setRegister_t setReg;
 
-	/*
-	 * Debemos verificar que se activaron con un read.
-	 * */
+	setReg.reg = MCP_RXB0CTRL, setReg.value = 0;
+	error = mcp2515_setRegister(setReg);
+	if (error != ERROR_OK)
+		return error;
 
-	/* Configuro los registros de control de Rx */
-	// receives all valid messages using either Standard or Extended Identifiers that
-	// meet filter criteria. RXF0 is applied for RXB0, RXF1 is applied for RXB1
-	/* RXB0 control */
-	RXB0CTRL_t _rxb0Ctrl = {0};
-	RXB1CTRL_t _rxb1Ctrl = {0};
+	setReg.reg = MCP_RXB1CTRL, setReg.value = 0;
+	error = mcp2515_setRegister(setReg);
+	if (error != ERROR_OK)
+		return error;
 
-	_register = MCP_RXB0CTRL;
-	_rxb0Ctrl.BUKT = 1; /* Permite el roll over del RXB0 al RXB1.*/
+	/* Habilitamos interrupciones */
+	setReg.reg = MCP_CANINTE;
+	setReg.value = CANINTF_RX0IF | CANINTF_RX1IF | CANINTF_ERRIF | CANINTF_MERRF;
+	error = mcp2515_setRegister(setReg);
+	if (error != ERROR_OK)
+		return error;
 
-	ModifyReg_t _modifyRegRXB0 = {
-		.reg = _register,
-		.mask = RXBnCTRL_RXM_MASK | RXB0CTRL_BUKT | RXB0CTRL_FILHIT_MASK,
-		.data = _rxb0Ctrl.data,
-	};
+	/* Configuramos parametros del rx */
+	ModifyReg_t modifyReg;
 
-	mcp2515_modifyRegister(_modifyRegRXB0.reg,	/* Envia el registro que va a modificar.*/
-						   _modifyRegRXB0.mask, /* Envia la mascara.*/
-						   _modifyRegRXB0.data /* Setea unicamente el BUKT(roll over).*/);
+	modifyReg.reg = MCP_RXB0CTRL;
+	modifyReg.mask = RXBnCTRL_RXM_MASK | RXB0CTRL_BUKT | RXB0CTRL_FILHIT_MASK;
+	modifyReg.data = RXBnCTRL_RXM_STDEXT | RXB0CTRL_BUKT | RXB0CTRL_FILHIT;
+	error = mcp2515_modifyRegister(modifyReg);
+	if (error != ERROR_OK)
+		return error;
 
-	/*
-	 * Debe verificar que se cargo correctamente.
-	 */
+	modifyReg.reg = MCP_RXB1CTRL;
+	modifyReg.mask = RXBnCTRL_RXM_MASK | RXB1CTRL_FILHIT_MASK;
+	modifyReg.data = RXBnCTRL_RXM_STDEXT | RXB1CTRL_FILHIT;
+	error = mcp2515_modifyRegister(modifyReg);
+	if (error != ERROR_OK)
+		return error;
 
-	/* RXB1 control */
-	_register = MCP_RXB1CTRL;
-	_rxb1Ctrl.data = RXBnCTRL_RXM_STDEXT | RXB1CTRL_FILHIT; /* FILHIT1 = 1.*/
-
-	ModifyReg_t _modifyRegRXB1 = {
-		.reg = _register,
-		.mask = RXBnCTRL_RXM_MASK | RXB1CTRL_FILHIT_MASK,
-		.data = _rxb1Ctrl.data,
-	};
-
-	mcp2515_modifyRegister(_modifyRegRXB1.reg, _modifyRegRXB1.mask, _modifyRegRXB1.data);
-
-	// clear filters and masks
-	// do not filter any standard frames for RXF0 used by RXB0
-	// do not filter any extended frames for RXF1 used by RXB1
-
-	/*
-	 * Limpiamos los registros del id y mask.
-	 *
-	 * Seteamos en cero el filtro para el id standart y el extendido. Tambien
-	 * seteamos en cero la mascara. Luego se configurara mas adelante el
-	 * filtro y mascara correspondiente.
-	 * */
+	/* Limpiamos los filtros y mascaras */
 	RXF filters[] = {RXF0, RXF1, RXF2, RXF3, RXF4, RXF5};
-
-#define FILTER_CLEAR 0
-#define MASK_CLEAR 0
-
 	for (int i = 0; i < 6; i++)
 	{
 		bool ext = (i == 1);
-
-		ERROR_t result = mcp2515_setFilter(filters[i], ext, FILTER_CLEAR);
-
-		if (result != ERROR_OK)
-		{
-			return result;
-		}
+		error = mcp2515_setFilter(filters[i], ext, 0);
+		if (error != ERROR_OK)
+			return error;
 	}
 
 	MASK masks[] = {MASK0, MASK1};
-
 	for (int i = 0; i < 2; i++)
 	{
-		ERROR_t result = mcp2515_setFilterMask(masks[i], true, MASK_CLEAR);
-
-		if (result != ERROR_OK)
-		{
-			return result;
-		}
+		error = mcp2515_setFilterMask(masks[i], true, 0);
+		if (error != ERROR_OK)
+			return error;
 	}
 
 	return ERROR_OK;
@@ -890,25 +878,27 @@ extern ERROR_t mcp2515_reset(void)
 
 static ERROR_t mcp2515_readRegister(ReadReg_t *readReg)
 {
+	INSTRUCTION_t inst = INSTRUCTION_READ;
 	status_t status;
 
-	readReg->instruction = INSTRUCTION_READ;
-
 	startSPI();
-	status = spi_write(&readReg->instruction, 1);
-	if (status != kStatus_Success){
+	status = spi_write(&inst, 1);
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
 
 	status = spi_write(&readReg->reg, 1);
-	if (status != kStatus_Success){
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
 
 	status = spi_receive(&readReg->data, 1);
-	if (status != kStatus_Success){
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_READ;
 	}
@@ -919,23 +909,27 @@ static ERROR_t mcp2515_readRegister(ReadReg_t *readReg)
 
 static ERROR_t mcp2515_readRegisters(ReadRegs_t *readRegs)
 {
+	INSTRUCTION_t inst = INSTRUCTION_READ;
 	status_t status;
 
 	startSPI();
-	status = spi_write(&readRegs->instruction, 1);
-	if (status != kStatus_Success){
+	status = spi_write(&inst, 1);
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
 
 	status = spi_write(&readRegs->reg, 1);
-	if (status != kStatus_Success){
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
 
 	status = spi_receive(readRegs->values, readRegs->n);
-	if (status != kStatus_Success){
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_READ;
 	}
@@ -944,7 +938,7 @@ static ERROR_t mcp2515_readRegisters(ReadRegs_t *readRegs)
 	return ERROR_OK;
 }
 
-static ERROR_t mcp2515_setRegister(const REGISTER_t reg, const uint8_t value)
+static ERROR_t mcp2515_setRegister(setRegister_t setReg)
 {
 	status_t status;
 	INSTRUCTION_t instruction = INSTRUCTION_WRITE;
@@ -952,29 +946,48 @@ static ERROR_t mcp2515_setRegister(const REGISTER_t reg, const uint8_t value)
 	/* Envia los datos al modulo mediante spi */
 	startSPI();
 	status = spi_write(&instruction, 1);
-	if (status != kStatus_Success){
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
 
-	status = spi_write((uint8_t *)&reg, 1);
-	if (status != kStatus_Success){
+	status = spi_write(&setReg.reg, 1);
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
 
-	status = spi_write((uint8_t *)&value, 1);
-	if (status != kStatus_Success){
+	status = spi_write(&setReg.value, 1);
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
 	endSPI();
 
-	return ERROR_OK;
+	/* Verificamos que se cargo correctamente la informacion */
+#define MAX_INTENTOS 3
+
+	ReadReg_t readReg = {
+		.reg = setReg.reg,
+		.data = 0,
+	};
+
+	for (uint8_t i = 0; i < MAX_INTENTOS; i++)
+	{
+		ERROR_t error = mcp2515_readRegister(&readReg);
+		if (error != ERROR_OK)
+			return error;
+		if (readReg.data & setReg.value)
+			return ERROR_OK;
+	}
+
+	return ERROR_VERIFICACION_SET_REGISTER;
 }
 
-static ERROR_t mcp2515_setRegisters(const REGISTER_t reg, const uint8_t values[],
-								 const uint8_t n)
+static ERROR_t mcp2515_setRegisters(setRegisters_t setRegs)
 {
 	status_t status;
 	INSTRUCTION_t _instruction = INSTRUCTION_WRITE;
@@ -982,19 +995,22 @@ static ERROR_t mcp2515_setRegisters(const REGISTER_t reg, const uint8_t values[]
 	/* Envia los datos al modulo mediante spi */
 	startSPI();
 	status = spi_write(&_instruction, 1);
-	if (status != kStatus_Success){
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
 
-	status = spi_write((uint8_t *)&reg, 1);
-	if (status != kStatus_Success){
+	status = spi_write(&setRegs.reg, 1);
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
 
-	status = spi_write((uint8_t *)values, n);
-	if (status != kStatus_Success){
+	status = spi_write(setRegs.values, setRegs.n);
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
@@ -1003,55 +1019,40 @@ static ERROR_t mcp2515_setRegisters(const REGISTER_t reg, const uint8_t values[]
 	return ERROR_OK;
 }
 
-static ERROR_t mcp2515_modifyRegister(const REGISTER_t reg, const uint8_t mask,
-								   const uint8_t data)
+static ERROR_t mcp2515_modifyRegister(ModifyReg_t modifyReg)
 {
-	ERROR_t error = ERROR_OK;
 	INSTRUCTION_t _instruction = INSTRUCTION_BITMOD;
 	status_t status;
 
 	startSPI();
 	status = spi_write(&_instruction, 1);
-	if (status != kStatus_Success){
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
 
-	status = spi_write((uint8_t *)&reg, 1);
-	if (status != kStatus_Success){
+	status = spi_write(&modifyReg.reg, 1);
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
-	status = spi_write((uint8_t *)&mask, 1);
-	if (status != kStatus_Success){
+	status = spi_write(&modifyReg.mask, 1);
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
-	status = spi_write((uint8_t *)&data, 1);
-	if (status != kStatus_Success){
+	status = spi_write(&modifyReg.data, 1);
+	if (status != kStatus_Success)
+	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
 	endSPI();
 
-	/* Verificamos si se modifico correctamente */
-#define MAX_INTENTOS	3
-
-	ReadReg_t readReg = {
-		.instruction = INSTRUCTION_READ,
-		.reg = reg,
-		.data = 0,
-	};
-
-	for (uint8_t i = 0; i < MAX_INTENTOS; i++){
-		error = mcp2515_readRegister(&readReg);
-		if (error != ERROR_OK)
-			return error;
-		if ((readReg.data & mask) == data)
-			return ERROR_OK;
-	}
-
-	return ERROR_MODIFY_REG;
+	return ERROR_OK;
 }
 
 extern uint8_t mcp2515_getStatus(void)
@@ -1069,7 +1070,7 @@ extern uint8_t mcp2515_getStatus(void)
 
 extern ERROR_t mcp2515_setConfigMode()
 {
-	CANCTRL_t canctrl = {0};
+	CANCTRL_t canctrl = {.data = 0};
 
 	/* Modificamos el modo del trabajo del modulo */
 	/*
@@ -1087,7 +1088,7 @@ extern ERROR_t mcp2515_setConfigMode()
 
 extern ERROR_t mcp2515_setListenOnlyMode()
 {
-	CANCTRL_t canctrl = {0};
+	CANCTRL_t canctrl = {.data = 0};
 
 	canctrl.REQ0P = 0b011; /*< Modo de solo escucha.*/
 
@@ -1096,7 +1097,7 @@ extern ERROR_t mcp2515_setListenOnlyMode()
 
 extern ERROR_t mcp2515_setSleepMode()
 {
-	CANCTRL_t canctrl = {0};
+	CANCTRL_t canctrl = {.data = 0};
 
 	canctrl.REQ0P = 0b001; /*< Modo sleep de operacion.*/
 
@@ -1105,51 +1106,60 @@ extern ERROR_t mcp2515_setSleepMode()
 
 extern ERROR_t mcp2515_setLoopbackMode()
 {
-	CANCTRL_t _canctrl = {0};
+	CANCTRL_t canctrl = {.data = 0};
 
-	_canctrl.REQ0P = 0b010; /*< Modo loopback de operacion.*/
+	canctrl.REQ0P = 0b010; /*< Modo loopback de operacion.*/
 
-	return mcp2515_setMode(_canctrl.data);
+	return mcp2515_setMode(canctrl.data);
 }
 
 extern ERROR_t mcp2515_setNormalMode()
 {
-	CANCTRL_t _canctrl = {0};
+	CANCTRL_t canctrl = {.data = 0};
 
-	_canctrl.REQ0P = 0b000; /* Modo normal de operacion.*/
+	canctrl.REQ0P = 0b000; /* Modo normal de operacion.*/
 
-	return mcp2515_setMode(_canctrl.data);
+	return mcp2515_setMode(canctrl.data);
 }
 
 extern ERROR_t mcp2515_setMode(const uint8_t mode)
 {
-	const REGISTER_t reg = MCP_CANCTRL;
+	ERROR_t error;
 
 	ModifyReg_t modifyReg = {
-		.reg = reg,			   /* Registro de can control.*/
+		.reg = MCP_CANCTRL,		/* Registro de can control.*/
 		.mask = CANCTRL_REQOP, /* Corresponde a REQ0P[2:0].*/
 		.data = mode,		   /* Modo de operacion del modulo.*/
 	};
 
 	/* Configura el modo de operacion del modulo */
-	mcp2515_modifyRegister(modifyReg.reg, modifyReg.mask,
-						   modifyReg.data);
+	error = mcp2515_modifyRegister(modifyReg);
+	if (error != ERROR_OK)
+		return error;
 
-	/* Verifica que se cargo correctamente */
-	__delay_ms(200);
+	__delay_ms(50);
+
+	/* Verifica que se configuro el modo correctamente */
+#define CANT_INTENTOS	3
 
 	bool modeMatch = false;
-
 	ReadReg_t readReg = {
-		.instruction = INSTRUCTION_READ,
 		.reg = MCP_CANSTAT,
 		.data = 0,
 	};
 
-	mcp2515_readRegister(&readReg); /* Lee el registro para corroborar la informacion. */
+	for (uint8_t i = 0; i < CANT_INTENTOS; i++)
+	{
+		error = mcp2515_readRegister(&readReg); /* Lee el registro para corroborar la informacion. */
+		if (error != ERROR_OK)
+			return error;
 
-	readReg.data &= CANSTAT_OPMOD;
-	modeMatch = (readReg.data == mode);
+		if (readReg.data &= CANSTAT_OPMOD)
+		{
+			modeMatch = (readReg.data == mode);
+			break;
+		}
+	}
 
 	return modeMatch ? ERROR_OK : ERROR_FAIL;
 }
@@ -1447,19 +1457,28 @@ extern ERROR_t mcp2515_setBitrate(const CAN_SPEED canSpeed, CAN_CLOCK canClock)
 	}
 
 	/* Seteamos los cambios en el modulo */
-	CNF1_t _cnf1 = {.data = 0};
-	CNF2_t _cnf2 = {.data = 0};
-	CNF3_t _cnf3 = {.data = 0};
+	setRegister_t setReg[3];
+	enum {
+		CONFIG1 = 0,
+		CONFIG2,
+		CONFIG3,
+	};
 
-	_cnf1.data = cfg1;
-	_cnf2.data = cfg2;
-	_cnf3.data = cfg3;
+	setReg[CONFIG1].reg = MCP_CNF1, setReg[CONFIG1].value = cfg1;
+	setReg[CONFIG2].reg = MCP_CNF2, setReg[CONFIG2].value = cfg2;
+	setReg[CONFIG3].reg = MCP_CNF3, setReg[CONFIG3].value = cfg3;
 
 	if (set)
 	{
-		mcp2515_setRegister(MCP_CNF1, _cnf1.data);
-		mcp2515_setRegister(MCP_CNF2, _cnf2.data);
-		mcp2515_setRegister(MCP_CNF3, _cnf3.data);
+		error = mcp2515_setRegister(setReg[CONFIG1]);
+		if (error != ERROR_OK)
+			return error;
+		error = mcp2515_setRegister(setReg[CONFIG2]);
+		if (error != ERROR_OK)
+			return error;
+		error = mcp2515_setRegister(setReg[CONFIG3]);
+		if (error != ERROR_OK)
+			return error;
 		return ERROR_OK;
 	}
 	else
@@ -1470,24 +1489,42 @@ extern ERROR_t mcp2515_setBitrate(const CAN_SPEED canSpeed, CAN_CLOCK canClock)
 
 extern ERROR_t mcp2515_setClkOut(const CAN_CLKOUT divisor)
 {
+	ModifyReg_t modifyReg;
+
 	if (divisor == CLKOUT_DISABLE)
 	{
 		/* Turn off CLKEN */
-		mcp2515_modifyRegister(MCP_CANCTRL, CANCTRL_CLKEN, 0x00);
+		modifyReg.reg = MCP_CANCTRL;
+		modifyReg.mask = CANCTRL_CLKEN;
+		modifyReg.data = 0x00;
+		mcp2515_modifyRegister(modifyReg);
 
 		/* Turn on CLKOUT for SOF */
-		mcp2515_modifyRegister(MCP_CNF3, CNF3_SOF, CNF3_SOF);
+		modifyReg.reg = MCP_CNF3;
+		modifyReg.mask = CNF3_SOF;
+		modifyReg.data = CNF3_SOF;
+		mcp2515_modifyRegister(modifyReg);
+
 		return ERROR_OK;
 	}
 
 	/* Set the prescaler (CLKPRE) */
-	mcp2515_modifyRegister(MCP_CANCTRL, CANCTRL_CLKPRE, divisor);
+	modifyReg.reg = MCP_CANCTRL;
+	modifyReg.mask = CANCTRL_CLKPRE;
+	modifyReg.data = divisor;
+	mcp2515_modifyRegister(modifyReg);
 
 	/* Turn on CLKEN */
-	mcp2515_modifyRegister(MCP_CANCTRL, CANCTRL_CLKEN, CANCTRL_CLKEN);
+	modifyReg.reg = MCP_CANCTRL;
+	modifyReg.mask = CANCTRL_CLKEN;
+	modifyReg.data = CANCTRL_CLKEN;
+	mcp2515_modifyRegister(modifyReg);
 
 	/* Turn off CLKOUT for SOF */
-	mcp2515_modifyRegister(MCP_CNF3, CNF3_SOF, 0x00);
+	modifyReg.reg = MCP_CNF3;
+	modifyReg.mask = CNF3_SOF;
+	modifyReg.data = 0x00;
+	mcp2515_modifyRegister(modifyReg);
 
 	return ERROR_OK;
 }
@@ -1529,23 +1566,22 @@ extern ERROR_t mcp2515_setFilterMask(const MASK mask, const bool ext,
 	ERROR_t res = mcp2515_setConfigMode();
 
 	if (res != ERROR_OK)
-	{
 		return res;
-	}
 
-	uint8_t tbufdata[4];
+	/* Cargamos los datos */
+#define CANT_REGS	4
+	setRegisters_t setRegs;
 
-	mcp2515_prepareId(tbufdata, ext, ulData);
-
-	REGISTER_t reg;
+	setRegs.n = CANT_REGS;
+	mcp2515_prepareId(setRegs.values, ext, ulData);
 
 	switch (mask)
 	{
 	case MASK0:
-		reg = MCP_RXM0SIDH;
+		setRegs.reg = MCP_RXM0SIDH;
 		break;
 	case MASK1:
-		reg = MCP_RXM1SIDH;
+		setRegs.reg = MCP_RXM1SIDH;
 		break;
 	default:
 		return ERROR_FAIL;
@@ -1560,7 +1596,7 @@ extern ERROR_t mcp2515_setFilterMask(const MASK mask, const bool ext,
 	 * 		4. RXM0EID0.
 	 * Para RX1 lo mismo.
 	 * */
-	mcp2515_setRegisters(reg, tbufdata, 4);
+	mcp2515_setRegisters(setRegs);
 
 	return ERROR_OK;
 }
@@ -1572,10 +1608,9 @@ extern ERROR_t mcp2515_setFilter(const RXF num, const bool ext,
 	ERROR_t res = mcp2515_setConfigMode();
 
 	if (res != ERROR_OK)
-	{
 		return res;
-	}
 
+	/* Carga el registro */
 	REGISTER_t reg;
 
 	switch (num)
@@ -1602,10 +1637,17 @@ extern ERROR_t mcp2515_setFilter(const RXF num, const bool ext,
 		return ERROR_FAIL;
 	}
 
-	uint8_t tbufdata[4]; /* Utilizado para modificar los registros sid y eid del modulo.*/
+#define CANT_BUFFER	4
+	setRegisters_t setRegs;
 
-	mcp2515_prepareId(tbufdata, ext, ulData); /* Configuramos el id de acuerdo al formato extendido o no.*/
-	mcp2515_setRegisters(reg, tbufdata, 4);	  /* Cargamos el id configurado.*/
+	setRegs.reg = reg;
+	setRegs.n = CANT_BUFFER;
+
+	mcp2515_prepareId(setRegs.values, ext, ulData);
+
+	ERROR_t error = mcp2515_setRegisters(setRegs);
+	if (error != ERROR_OK)
+		return error;
 
 	return ERROR_OK;
 }
@@ -1613,16 +1655,16 @@ extern ERROR_t mcp2515_setFilter(const RXF num, const bool ext,
 extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 											   const struct can_frame *frame)
 {
+	ERROR_t error;
+
 	/* Verifica que no se supere la cantidad maxima de datos */
 	if (frame->can_dlc > CAN_MAX_DLEN)
-	{
 		return ERROR_FAILTX;
-	}
 
 	/* Envia la informacion */
 	const struct TXBn_REGS *txbuf = &TXB[txbn];
 
-	uint8_t data[13];
+	setRegisters_t setRegs;
 	/*
 	 * Formato de data[13]:
 	 * 		byte 0: SIDH
@@ -1633,33 +1675,46 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 	 * 		byte 5-13: Data frame
 	 * */
 
-	bool ext = (frame->can_id & CAN_EFF_FLAG); /*< Determina si es de formato extendido.*/
-	bool rtr = (frame->can_id & CAN_RTR_FLAG); /*< Determina si RTR se encuentra en '1'.*/
-
+	bool ext = (frame->can_id & CAN_EFF_FLAG); /* Determina si es de formato extendido.*/
+	bool rtr = (frame->can_id & CAN_RTR_FLAG); /* Determina si RTR se encuentra en '1'.*/
 	uint32_t id = (frame->can_id & (ext ? CAN_EFF_MASK : CAN_SFF_MASK));
 
 	/* Cargo los bytes del 0 al 3 */
-	mcp2515_prepareId(data, ext, id); /*< Le da el formato adecuado.*/
+	mcp2515_prepareId(setRegs.values, ext, id);
 
 	/* Cargo el byte 4 */
-	data[MCP_DLC] = rtr ? (frame->can_dlc | RTR_MASK) : frame->can_dlc;
+	setRegs.values[MCP_DLC] = rtr ? (frame->can_dlc | RTR_MASK) : frame->can_dlc;
 
 	/* Cargos los bytes del 5 al 13 */
-	memcpy(&data[MCP_DATA], frame->data, frame->can_dlc);
+	memcpy(&setRegs.values[MCP_DATA], frame->data, frame->can_dlc);
 
 	/* Envia los datos */
-	mcp2515_setRegisters(txbuf->SIDH, data, 5 + frame->can_dlc);
+	setRegs.n = 5 + frame->can_dlc;
+	setRegs.reg = txbuf->SIDH;
 
-	mcp2515_modifyRegister(txbuf->CTRL, TXB_TXREQ, TXB_TXREQ);
+	error = mcp2515_setRegisters(setRegs);
+	if (error != ERROR_OK)
+		return error;
+
+	/* Configura el registro control */
+	ModifyReg_t modifyReg;
+
+	modifyReg.reg = txbuf->CTRL;
+	modifyReg.mask = TXB_TXREQ;
+	modifyReg.data = TXB_TXREQ;
+	error = mcp2515_modifyRegister(modifyReg);
+	if (error != ERROR_OK)
+		return error;
 
 	/* Verifica la informacion enviada */
 	ReadReg_t readReg = {
-		.instruction = INSTRUCTION_READ,
 		.reg = txbuf->CTRL,
 		.data = 0,
 	};
 
-	mcp2515_readRegister(&readReg);
+	error = mcp2515_readRegister(&readReg);
+	if (error != ERROR_OK)
+		return error;
 
 	if ((readReg.data & (TXB_ABTF	/*< Message aborted flag bit.*/
 						 | TXB_MLOA /*< Message lost arbitration bit.*/
@@ -1732,11 +1787,11 @@ extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame)
 extern ERROR_t mcp2515_readMessageWithBufferId(const RXBn rxbn,
 											   struct can_frame *frame)
 {
+	ERROR_t error;
 	const struct RXBn_REGS *rxb = &RXB[rxbn];
 
 	ReadRegs_t readRegs = {
 		.reg = rxb->SIDH,
-		.instruction = INSTRUCTION_READ,
 		.n = 5,
 	};
 
@@ -1747,7 +1802,9 @@ extern ERROR_t mcp2515_readMessageWithBufferId(const RXBn rxbn,
 	 * registro donde vamos a leer. Este registro
 	 * puede ser al buffer 0 o al 1.
 	 * */
-	mcp2515_readRegisters(&readRegs);
+	error = mcp2515_readRegisters(&readRegs);
+	if(error != ERROR_OK)
+		return error;
 
 	/* Tomamos el valor del id */
 	/*
@@ -1771,20 +1828,18 @@ extern ERROR_t mcp2515_readMessageWithBufferId(const RXBn rxbn,
 	uint8_t dlc = (readRegs.values[MCP_DLC] & DLC_MASK);
 
 	if (dlc > CAN_MAX_DLEN)
-	{
 		return ERROR_FAIL;
-	}
 
 	/* Leemos el registro de control */
-	ReadReg_t readRegCTRL = {
-		.instruction = INSTRUCTION_READ,
-		.reg = rxb->CTRL,
-		.data = 0,
-	};
+	ReadReg_t readReg;
 
-	mcp2515_readRegister(&readRegCTRL);
+	readReg.reg = rxb->CTRL;
+	readReg.data = 0;
+	error = mcp2515_readRegister(&readReg);
+	if (error != ERROR_OK)
+		return error;
 
-	if (readRegCTRL.data & RXBnCTRL_RTR)
+	if (readReg.data & RXBnCTRL_RTR)
 	{
 		id |= CAN_RTR_FLAG;
 	}
@@ -1792,22 +1847,24 @@ extern ERROR_t mcp2515_readMessageWithBufferId(const RXBn rxbn,
 	frame->can_id = id;
 	frame->can_dlc = dlc;
 
-	ReadRegs_t readRegsDATA = {
-		.instruction = INSTRUCTION_READ,
-		.reg = rxb->DATA,
-		.n = dlc,
-	};
+	readRegs.reg = rxb->DATA;
+	readRegs.n = dlc;
+	error = mcp2515_readRegisters(&readRegs);
+	if (error != ERROR_OK)
+		return error;
 
-	mcp2515_readRegisters(&readRegsDATA);
+	memcpy(frame->data, readRegs.values, dlc);
 
 	/* Modificamos el registro de interrupciones can */
-	ModifyReg_t _modifyReg = {
+	ModifyReg_t modifyReg = {
 		.reg = MCP_CANINTF,
 		.mask = rxb->CANINTF_RXnIF,
 		.data = 0,
 	};
 
-	mcp2515_modifyRegister(_modifyReg.reg, _modifyReg.mask, _modifyReg.data);
+	error = mcp2515_modifyRegister(modifyReg);
+	if (error != ERROR_OK)
+		return error;
 
 	return ERROR_OK;
 }
@@ -1871,7 +1928,6 @@ extern uint8_t mcp2515_getErrorFlags(void)
 	*/
 
 	ReadReg_t _readReg = {
-		.instruction = INSTRUCTION_READ,
 		.reg = MCP_EFLG,
 	};
 
@@ -1882,18 +1938,13 @@ extern uint8_t mcp2515_getErrorFlags(void)
 
 extern void mcp2515_clearRXnOVRFlags(void)
 {
-	EFLG_t eflg;
-
-	eflg.RX0OVR = 1;
-	eflg.RX1OVR = 1;
-
-	ModifyReg_t _modifyReg = {
+	ModifyReg_t modifyReg = {
 		.reg = MCP_EFLG,
-		.mask = eflg.data, /*EFLG_RX0OVR | EFLG_RX1OVR*/
+		.mask = EFLG_RX0OVR | EFLG_RX1OVR, /*EFLG_RX0OVR | EFLG_RX1OVR*/
 		.data = 0,
 	};
 
-	mcp2515_modifyRegister(_modifyReg.reg, _modifyReg.mask, _modifyReg.data);
+	mcp2515_modifyRegister(modifyReg);
 
 	return;
 }
@@ -1902,7 +1953,6 @@ extern uint8_t mcp2515_getInterrupts(void)
 {
 	ReadReg_t readReg = {
 		.reg = MCP_CANINTF,
-		.instruction = INSTRUCTION_READ,
 		.data = 0,
 	};
 
@@ -1913,7 +1963,11 @@ extern uint8_t mcp2515_getInterrupts(void)
 
 extern void mcp2515_clearInterrupts(void)
 {
-	mcp2515_setRegister(MCP_CANINTF, 0);
+	setRegister_t setReg;
+
+	setReg.reg = MCP_CANINTF;
+	setReg.value = 0;
+	mcp2515_setRegister(setReg);
 
 	return;
 }
@@ -1922,7 +1976,6 @@ extern uint8_t mcp2515_getInterruptMask(void)
 {
 	ReadReg_t readReg = {
 		.reg = MCP_CANINTE,
-		.instruction = INSTRUCTION_READ,
 	};
 
 	mcp2515_readRegister(&readReg);
@@ -1940,13 +1993,13 @@ extern void mcp2515_clearTXInterrupts(void)
 	canintf.TX1IF = 1;
 	canintf.TX2IF = 1;
 
-	ModifyReg_t _modifyReg = {
+	ModifyReg_t modifyReg = {
 		.reg = MCP_CANINTF,
 		.mask = canintf.data, /*(CANINTF_TX0IF | CANINTF_TX1IF | CANINTF_TX2IF),*/
 		.data = 0,
 	};
 
-	mcp2515_modifyRegister(_modifyReg.reg, _modifyReg.mask, _modifyReg.data);
+	mcp2515_modifyRegister(modifyReg);
 
 	return;
 }
@@ -1973,7 +2026,7 @@ extern void mcp2515_clearMERR()
 
 	canintf.MERRF = 1;
 
-	ModifyReg_t _modifyReg = {
+	ModifyReg_t modifyReg = {
 		.reg = MCP_CANINTF,
 		.mask = canintf.data, // CANINTF_MERRF
 		.data = 0,
@@ -1981,7 +2034,7 @@ extern void mcp2515_clearMERR()
 
 	// modifyRegister(MCP_EFLG, EFLG_RX0OVR | EFLG_RX1OVR, 0);
 	// clearInterrupts();
-	mcp2515_modifyRegister(_modifyReg.reg, _modifyReg.mask, _modifyReg.data);
+	mcp2515_modifyRegister(modifyReg);
 
 	return;
 }
@@ -1994,7 +2047,7 @@ extern void mcp2515_clearERRIF()
 
 	canintf.ERRIF = 1;
 
-	ModifyReg_t _modifyReg = {
+	ModifyReg_t modifyReg = {
 		.reg = MCP_CANINTF,
 		.mask = canintf.data, // CANINTF_MERRF
 		.data = 0,
@@ -2002,7 +2055,7 @@ extern void mcp2515_clearERRIF()
 
 	// modifyRegister(MCP_EFLG, EFLG_RX0OVR | EFLG_RX1OVR, 0);
 	// clearInterrupts();
-	mcp2515_modifyRegister(_modifyReg.reg, _modifyReg.mask, _modifyReg.data);
+	mcp2515_modifyRegister(modifyReg);
 
 	return;
 }
@@ -2011,7 +2064,6 @@ extern uint8_t mcp2515_errorCountRX(void)
 {
 	ReadReg_t readReg = {
 		.reg = MCP_REC,
-		.instruction = INSTRUCTION_READ,
 		.data = 0,
 	};
 
@@ -2024,7 +2076,6 @@ extern uint8_t mcp2515_errorCountTX(void)
 {
 	ReadReg_t readReg = {
 		.reg = MCP_TEC,
-		.instruction = INSTRUCTION_READ,
 		.data = 0,
 	};
 
