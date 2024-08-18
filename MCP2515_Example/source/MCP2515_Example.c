@@ -80,7 +80,10 @@ static void delay_ms(uint16_t ms)
 #endif
 
 struct can_frame canMsg1;
-struct can_frame canMsg2;
+struct can_frame canMsgRead = {
+		.can_dlc = 0,
+		.can_id = 0,
+};
 
 /**
  * @brief   Application entry point.
@@ -96,21 +99,24 @@ int main(void)
     BOARD_InitDebugConsole();
 #endif
 
-    canMsg1.can_id = 0x0f6;
+    PRINTF("Ejemplo del modulo can MCP2515\n\r");
+
+    canMsg1.can_id = 125;
     canMsg1.can_dlc = 8;
-    canMsg1.data[0] = 0x8E;
-    canMsg1.data[1] = 0x87;
-    canMsg1.data[2] = 0x32;
-    canMsg1.data[3] = 0xFA;
-    canMsg1.data[4] = 0x26;
-    canMsg1.data[5] = 0x8E;
-    canMsg1.data[6] = 0xBE;
-    canMsg1.data[7] = 0x86;
+    canMsg1.data[0] = 10;
+    canMsg1.data[1] = 22;
+    canMsg1.data[2] = 32;
+    canMsg1.data[3] = 16;
+    canMsg1.data[4] = 26;
+    canMsg1.data[5] = 78;
+    canMsg1.data[6] = 69;
+    canMsg1.data[7] = 5;
 
     mcp2515_init();
     mcp2515_reset();
     mcp2515_setBitrate(CAN_125KBPS, MCP_8MHZ);
-    mcp2515_setNormalMode();
+//    mcp2515_setNormalMode();
+    mcp2515_setLoopbackMode();
 
 #if (USE_FREERTOS)
 
@@ -118,14 +124,13 @@ int main(void)
 
     vTaskStartScheduler();
 
-#else
-
-    canmsg_baremetal();
-
 #endif
 
     while (1)
     {
+#if (!USE_FREERTOS)
+    canmsg_baremetal();
+#endif
     }
     return 0;
 }
@@ -148,8 +153,45 @@ static void vtaskRtos_canmsg(void *pvParameter)
 
 static void canmsg_baremetal(void)
 {
-    mcp2515_sendMessage(&canMsg1);
-    __delay_ms(100);
+	ERROR_t estado;
+
+	estado = mcp2515_sendMessage(&canMsg1);
+
+	if (estado == ERROR_OK)
+	{
+		PRINTF("ID\tDLC\tDATA\n\r");
+		PRINTF("%d\t%d\t",canMsg1.can_id,canMsg1.can_dlc);
+
+		for (uint8_t i = 0; i < 8;i++){
+			PRINTF("%d ",canMsg1.data[i]);
+		}
+		PRINTF("\n\r");
+	}
+	else
+	{
+		PRINTF("Error al enviar\n\r");
+	}
+    __delay_ms(500);
+
+    estado = mcp2515_readMessage(&canMsgRead);
+
+    if (estado != ERROR_NOMSG)
+    {
+		PRINTF("ID\tDLC\tDATA\n\r");
+		PRINTF("%d\t%d\t",canMsgRead.can_id,canMsgRead.can_dlc);
+
+		for (uint8_t i = 0; i < 8;i++){
+			PRINTF("%d ",canMsgRead.data[i]);
+		}
+    }
+    else
+    {
+    	PRINTF("No hubo mensajes");
+    }
+
+    PRINTF("\n\r");
+
+    __delay_ms(1000);
 
     return;
 }

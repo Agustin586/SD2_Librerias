@@ -12,9 +12,6 @@
 #include "fsl_common.h"
 #include "fsl_gpio.h"
 #include "fsl_port.h"
-#include "fsl_i2c.h"
-#include "fsl_lpsci.h"
-#include "fsl_clock.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -34,41 +31,14 @@ extern "C" {
 #define BOARD_LED_GREEN_GPIO GPIOD
 
 /* Definitions for BOARD_InitACCELPeripheral functional group */
-/* BOARD_InitACCELPeripheral defines for I2C0 */
-/* Definition of peripheral ID */
-#define BOARD_ACCEL_I2C_PERIPHERAL I2C0
-/* Definition of the clock source */
-#define BOARD_ACCEL_I2C_CLOCK_SOURCE I2C0_CLK_SRC
-/* Definition of the clock source frequency */
-#define BOARD_ACCEL_I2C_CLK_FREQ CLOCK_GetFreq(BOARD_ACCEL_I2C_CLOCK_SOURCE)
 /* Alias for GPIOC peripheral */
 #define BOARD_INT1_GPIO GPIOC
 /* Alias for GPIOD peripheral */
 #define BOARD_INT2_GPIO GPIOD
 
 /* Definitions for BOARD_InitMAGPeripheral functional group */
-/* BOARD_InitMAGPeripheral defines for I2C0 */
-/* Definition of peripheral ID */
-#define MAG_I2C_PERIPHERAL I2C0
-/* Definition of the clock source */
-#define MAG_I2C_CLOCK_SOURCE I2C0_CLK_SRC
-/* Definition of the clock source frequency */
-#define MAG_I2C_CLK_FREQ CLOCK_GetFreq(MAG_I2C_CLOCK_SOURCE)
 /* Alias for GPIOD peripheral */
 #define INT2_GPIO GPIOD
-
-/* Definitions for BOARD_InitDEBUG_UARTPeripheral functional group */
-/* Definition of peripheral ID */
-#define BOARD_LPSCI_1_PERIPHERAL UART0
-/* Definition of the clock source frequency */
-#define BOARD_LPSCI_1_CLOCK_SOURCE 48000000UL
-
-/***********************************************************************************************************************
- * Global variables
- **********************************************************************************************************************/
-extern const i2c_master_config_t BOARD_ACCEL_I2C_config;
-extern const i2c_master_config_t MAG_I2C_config;
-extern const lpsci_config_t BOARD_LPSCI_1_config;
 
 /***********************************************************************************************************************
  * Initialization functions

@@ -29,12 +29,16 @@
 
 /**
  * @def Chip select en estado alto
+ * @brief Pone en alto el pin de chip select. Esto hace
+ * que se finilize la comunicacion con el dispositivo.
  */
-#define CS_HIGH GPIO_SetPinsOutput(GPIOE, BOARD_Cs_mcp2515_PIN)
+#define CS_HIGH GPIO_SetPinsOutput((GPIO_Type *)GPIOE_BASE, BOARD_Cs_mcp2515_PIN_MASK)
 /**
  * @def Chip select en estado bajo
+ * @brief Pone en bajo el pin de chip select. Esto hace
+ * que se inicie la comunicacion con el dispositivo.
  */
-#define CS_LOW GPIO_ClearPinsOutput(GPIOE, BOARD_Cs_mcp2515_PIN)
+#define CS_LOW GPIO_ClearPinsOutput((GPIO_Type *)GPIOE_BASE, BOARD_Cs_mcp2515_PIN_MASK)
 
 /*
  * =============
@@ -59,8 +63,14 @@ typedef union
 {
 	struct
 	{
-		unsigned SJW : 2;
+		/**
+		 * @brief Baud rate prescaler bits
+		 * */
 		unsigned BRP : 6;
+		/**
+		 * @brief Synchronization jump width lenght bits
+		 * */
+		unsigned SJW : 2;
 	};
 	uint8_t data;
 } CNF1_t;
@@ -72,10 +82,22 @@ typedef union
 {
 	struct
 	{
-		unsigned BTLMODE : 1;
-		unsigned SAM : 1;
-		unsigned PHSEG : 3;
+		/**
+		 * @brief Propagation segment lenght bits
+		 * */
 		unsigned PRSEG : 3;
+		/**
+		 * @brief PS1 lenght bits
+		 */
+		unsigned PHSEG : 3;
+		/**
+		 * @brief Sample point configuration bits
+		 */
+		unsigned SAM : 1;
+		/**
+		 * @brief PS2 bit time length bit
+		 */
+		unsigned BTLMODE : 1;
 	};
 	uint8_t data;
 } CNF2_t;
@@ -87,10 +109,22 @@ typedef union
 {
 	struct
 	{
-		unsigned SOF : 1;
-		unsigned WAKFIL : 1;
-		unsigned RESERVED : 3;
+		/**
+		 * @brief PS2 length bits
+		 */
 		unsigned PHSEG2 : 3;
+		/**
+		 * @brief Reservados
+		 */
+		unsigned RESERVED : 3;
+		/**
+		 * @brief Wake-up filter bit
+		 */
+		unsigned WAKFIL : 1;
+		/**
+		 * @brief Start-of-frame signal bit
+		 */
+		unsigned SOF : 1;
 	};
 	uint8_t data;
 } CNF3_t;
@@ -102,19 +136,18 @@ typedef union
 {
 	struct
 	{
-		unsigned RESERVED : 1;
-		/** @brief message aborted flag bit */
-		unsigned ABTF : 1;
-		/** @brief messsage lost arbitration bit */
-		unsigned MLOA : 1;
-		/** @brief transmission error detected bit */
-		unsigned TXERR : 1;
-		/** @brief message transmit request bit */
-		unsigned TXREQ : 1;
-
-		unsigned RESERVED2 : 1;
 		/** @brief transmit buffer priority bits */
 		unsigned TXP : 2;
+		unsigned RESERVED2 : 1;
+		/** @brief message transmit request bit */
+		unsigned TXREQ : 1;
+		/** @brief transmission error detected bit */
+		unsigned TXERR : 1;
+		/** @brief message lost arbitration bit */
+		unsigned MLOA : 1;
+		/** @brief message aborted flag bit */
+		unsigned ABTF : 1;
+		unsigned RESERVED : 1;
 	};
 	uint8_t data;
 } TXBnCTRL_t;
@@ -126,22 +159,22 @@ typedef union
 {
 	struct
 	{
-		/** @brief Message error interrupt enable */
-		unsigned MERRE : 1;
-		/** @brief Wake-up interupt enable */
-		unsigned WAKIE : 1;
-		/** @brief Error interrupt enable bit */
-		unsigned ERRIE : 1;
-		/** @brief Transmit buffer 2 empty interrupt enable bit */
-		unsigned TX2IE : 1;
-		/** @brief Transmit buffer 1 empty interrupt enable bit */
-		unsigned TX1IE : 1;
-		/** @brief Transmit buffer 0 empty interrupt enable bit */
-		unsigned TX0IE : 1;
-		/** @brief Receive buffer 1 full interrupt enable bit */
-		unsigned RX1IE : 1;
 		/** @brief Receive buffer 0 full interrupt enable bit */
 		unsigned RX0IE : 1;
+		/** @brief Receive buffer 1 full interrupt enable bit */
+		unsigned RX1IE : 1;
+		/** @brief Transmit buffer 0 empty interrupt enable bit */
+		unsigned TX0IE : 1;
+		/** @brief Transmit buffer 1 empty interrupt enable bit */
+		unsigned TX1IE : 1;
+		/** @brief Transmit buffer 2 empty interrupt enable bit */
+		unsigned TX2IE : 1;
+		/** @brief Error interrupt enable bit */
+		unsigned ERRIE : 1;
+		/** @brief Wake-up interrupt enable */
+		unsigned WAKIE : 1;
+		/** @brief Message error interrupt enable */
+		unsigned MERRE : 1;
 	};
 	uint8_t data;
 } CANINTE_t;
@@ -153,22 +186,22 @@ typedef union
 {
 	struct
 	{
-		/** @brief Message error interrupt flag bit */
-		unsigned MERRF : 1;
-		/** @brief Wake-up interrupt flag bit */
-		unsigned WAKIF : 1;
-		/** @brief Error interrupt flag bit */
-		unsigned ERRIF : 1;
-		/** @brief Transmit buffer 2 empty interrupt flag bit */
-		unsigned TX2IF : 1;
-		/** @brief Transmit buffer 1 empty interrupt flag bit */
-		unsigned TX1IF : 1;
-		/** @brief Transmit buffer 0 empty interrupt flag bit */
-		unsigned TX0IF : 1;
-		/** @brief Receive buffer 1 full interrupt flag bit */
-		unsigned RX1IF : 1;
 		/** @brief Receive buffer 0 full interrupt flag bit */
 		unsigned RX0IF : 1;
+		/** @brief Receive buffer 1 full interrupt flag bit */
+		unsigned RX1IF : 1;
+		/** @brief Transmit buffer 0 empty interrupt flag bit */
+		unsigned TX0IF : 1;
+		/** @brief Transmit buffer 1 empty interrupt flag bit */
+		unsigned TX1IF : 1;
+		/** @brief Transmit buffer 2 empty interrupt flag bit */
+		unsigned TX2IF : 1;
+		/** @brief Error interrupt flag bit */
+		unsigned ERRIF : 1;
+		/** @brief Wake-up interrupt flag bit */
+		unsigned WAKIF : 1;
+		/** @brief Message error interrupt flag bit */
+		unsigned MERRF : 1;
 	};
 	uint8_t data;
 } CANINTF_t;
@@ -180,11 +213,26 @@ typedef union
 {
 	struct
 	{
-		unsigned REQ0P : 3;
-		unsigned ABAT : 1;
-		unsigned OSM : 1;
-		unsigned CLKEN : 1;
+		/**
+		 * @brief CLKOUT pin prescaler bits
+		 */
 		unsigned CLKPRE : 2;
+		/**
+		 * @brief CLKOUT pin enable bit
+		 */
+		unsigned CLKEN : 1;
+		/**
+		 * @brief One-shot mode bit
+		 */
+		unsigned OSM : 1;
+		/**
+		 * @brief Abort all pending transmissions bit
+		 */
+		unsigned ABAT : 1;
+		/**
+		 * @brief Request operation mode bits
+		 */
+		unsigned REQ0P : 3;
 	};
 	uint8_t data;
 } CANCTRL_t;
@@ -196,22 +244,22 @@ typedef union
 {
 	struct
 	{
-		/** @brief Receive buffer 1 overflow */
-		unsigned RX1OVR : 1;
-		/** @brief Receive buffer 0 overflow */
-		unsigned RX0OVR : 1;
-		/** @brief bus-off error flag */
-		unsigned TXBO : 1;
-		/** @brief transmit error-passive flag */
-		unsigned TXEP : 1;
-		/** @brief receive error-passive flag */
-		unsigned RXEP : 1;
-		/** @brief transmit error warning flag */
-		unsigned TXWAR : 1;
-		/** @brief receive error warning flag */
-		unsigned RXWAR : 1;
 		/** @brief error warning flag */
 		unsigned EWARN : 1;
+		/** @brief receive error warning flag */
+		unsigned RXWAR : 1;
+		/** @brief transmit error warning flag */
+		unsigned TXWAR : 1;
+		/** @brief receive error-passive flag */
+		unsigned RXEP : 1;
+		/** @brief transmit error-passive flag */
+		unsigned TXEP : 1;
+		/** @brief bus-off error flag */
+		unsigned TXBO : 1;
+		/** @brief Receive buffer 0 overflow */
+		unsigned RX0OVR : 1;
+		/** @brief Receive buffer 1 overflow */
+		unsigned RX1OVR : 1;
 	};
 	uint8_t data;
 
@@ -224,13 +272,28 @@ typedef union
 {
 	struct
 	{
-		unsigned RESERVED : 1;
-		unsigned RXM : 2;
-		unsigned RESERVED2 : 1;
-		unsigned RXRTR : 1;
-		unsigned BUKT : 1;
+		/**
+		 * @brief Filter hit bit
+		 */
+		unsigned FILHIT0 : 1;
+		/**
+		 * @brief Read-only copy of BUKT bit
+		 */
 		unsigned BUKT1 : 1;
-		unsigned FILGIT0 : 1;
+		/**
+		 * @brief Rollver enable bit
+		 */
+		unsigned BUKT : 1;
+		/**
+		 * @brief Received remote transfer request bit
+		 */
+		unsigned RXRTR : 1;
+		unsigned RESERVED2 : 1;
+		/**
+		 * @brief Receive buffer operating mode bits
+		 */
+		unsigned RXM : 2;
+		unsigned RESERVED : 1;
 	};
 	uint8_t data;
 } RXB0CTRL_t;
@@ -242,11 +305,20 @@ typedef union
 {
 	struct
 	{
-		unsigned RESERVED : 1;
-		unsigned RXM : 2;
-		unsigned RESERVED2 : 1;
-		unsigned RXRTR : 1;
+		/**
+		 * @brief Filter hit bits
+		 */
 		unsigned FILHIT : 3;
+		/**
+		 * @brief Received remote transfer request bit
+		 */
+		unsigned RXRTR : 1;
+		unsigned RESERVED2 : 1;
+		/**
+		 * @brief Receive buffer operating mode bits
+		 */
+		unsigned RXM : 2;
+		unsigned RESERVED : 1;
 	};
 	uint8_t data;
 } RXB1CTRL_t;
@@ -258,14 +330,32 @@ typedef union
 {
 	struct
 	{
-		unsigned RESERVED : 1;
-		unsigned RESERVED2 : 1;
-		unsigned B2RTS : 1;
-		unsigned B1RTS : 1;
-		unsigned B0RTS : 1;
-		unsigned B2RTSM : 1;
-		unsigned B1RTSM : 1;
+		/**
+		 * @brief ~{TX0RTS} pin mode bit
+		 */
 		unsigned B0RTSM : 1;
+		/**
+		 * @brief ~{TX1RTS} pin mode bit
+		 */
+		unsigned B1RTSM : 1;
+		/**
+		 * @brief ~{TX2RTS} pin mode bit
+		 */
+		unsigned B2RTSM : 1;
+		/**
+		 * @brief ~{TX0RTS} pin state bit
+		 */
+		unsigned B0RTS : 1;
+		/**
+		 * @brief ~{TX1RTS} pin state bit
+		 */
+		unsigned B1RTS : 1;
+		/**
+		 * @brief ~{TX2RTS} pin state bit
+		 */
+		unsigned B2RTS : 1;
+		unsigned RESERVED2 : 1;
+		unsigned RESERVED : 1;
 	};
 	uint8_t data;
 } TXRTSCTRL_t;
@@ -277,6 +367,9 @@ typedef union
 {
 	struct
 	{
+		/**
+		 * @brief Standart identifier bits
+		 */
 		unsigned SID : 8;
 	};
 	uint8_t data;
@@ -289,11 +382,20 @@ typedef union
 {
 	struct
 	{
-		unsigned SID : 3;
-		unsigned RESERVED : 1;
-		unsigned EXIDE : 1;
-		unsigned RESERVED2 : 1;
+		/**
+		 * @brief Extended identifier bits
+		 */
 		unsigned EID : 2;
+		unsigned RESERVED2 : 1;
+		/**
+		 * @brief Extended identifier enable bit
+		 */
+		unsigned EXIDE : 1;
+		unsigned RESERVED : 1;
+		/**
+		 * @brief Standard identifier bits
+		 */
+		unsigned SID : 3;
 	};
 	uint8_t data;
 } TXBnSIDL_t;
@@ -305,6 +407,9 @@ typedef union
 {
 	struct
 	{
+		/**
+		 * @brief Extended identifier bits
+		 */
 		unsigned EID : 8;
 	};
 	uint8_t data;
@@ -317,6 +422,9 @@ typedef union
 {
 	struct
 	{
+		/**
+		 * @brief Extended identifier bits
+		 */
 		unsigned EID : 8;
 	};
 	uint8_t data;
@@ -329,10 +437,16 @@ typedef union
 {
 	struct
 	{
-		unsigned RESERVED : 1;
-		unsigned RTR : 1;
-		unsigned RESERVED2 : 2;
+		/**
+		 * @brief Data length code bits
+		 */
 		unsigned DLC : 4;
+		unsigned RESERVED2 : 2;
+		/**
+		 * @brief Remote transmission request bit
+		 */
+		unsigned RTR : 1;
+		unsigned RESERVED : 1;
 	};
 	uint8_t data;
 } TXBnDLC_t;
@@ -344,6 +458,9 @@ typedef union
 {
 	struct
 	{
+		/**
+		 * @brief Transmit buffer n data field byte m bits
+		 */
 		unsigned TXBnDm : 8;
 	};
 	uint8_t data;
@@ -380,7 +497,7 @@ typedef struct
 typedef struct
 {
 	/** @brief Registro a leer. */
-	const REGISTER_t reg;
+	REGISTER_t reg;
 	/** @brief Instruccion de lectura. */
 	INSTRUCTION_t instruction;
 	/** @brief Datos a cargar. */
@@ -398,9 +515,9 @@ typedef struct
 typedef struct
 {
 	/** @brief Registro en el que se lee.*/
-	const REGISTER_t reg;
+	REGISTER_t reg;
 	/** @brief Instruccion.*/
-	const INSTRUCTION_t instruction;
+	INSTRUCTION_t instruction;
 	/** @brief Datos leidos.*/
 	uint8_t values[MAX_DATA_readREG];
 	/** @brief Longitud de la cadena.*/
@@ -507,29 +624,39 @@ static ERROR_t mcp2515_setMode(const uint8_t mode);
 /**
  * @brief Lee un solo registro a la vez
  * @param[in,out] _readReg Puntero al tipo de dato ReadReg_t
+ * @return Devuelve el estado de la transferencia
  */
-static void mcp2515_readRegister(ReadReg_t *_readReg);
+static ERROR_t mcp2515_readRegister(ReadReg_t *readReg);
 /**
  * @brief Lee multiples registros a la vez
  * @param[in,out] _readRegs Puntero al tipo de dato
+ * @return Devuelve el estado de la transferencia
  */
-static void mcp2515_readRegisters(ReadRegs_t *_readRegs);
+static ERROR_t mcp2515_readRegisters(ReadRegs_t *_readRegs);
 /**
  * @brief Setea un registro
+ * @param[in] reg registro
+ * @param[in] value dato
+ * @return Devuelve el estado de la transmision
  */
-static void mcp2515_setRegister(const REGISTER_t reg, const uint8_t value);
+static ERROR_t mcp2515_setRegister(const REGISTER_t reg, const uint8_t value);
 /**
  * @brief Setea multiples registros
+ * @param[in] reg registro incial donde setear datos
+ * @param[in] values datos
+ * @param[in] n cantidad de datos
+ * @return Devuelve el estado de la transmision
  */
-static void mcp2515_setRegisters(const REGISTER_t reg, const uint8_t values[],
+static ERROR_t mcp2515_setRegisters(const REGISTER_t reg, const uint8_t values[],
 								 const uint8_t n);
 /**
  * @brief Modifica un registro en particular
  * @param[in] reg registro a modificar
  * @param[in] mask bits que se van a modificar
  * @param[in] data valor que se va a cargar
+ * @return Devuelve el estado de la modificacion
  */
-static void mcp2515_modifyRegister(const REGISTER_t reg, const uint8_t mask,
+static ERROR_t mcp2515_modifyRegister(const REGISTER_t reg, const uint8_t mask,
 								   const uint8_t data);
 /**
  * @brief Configura el id para una accion en particular
@@ -644,7 +771,7 @@ extern ERROR_t mcp2515_reset(void)
 	spi_write(&instruction, 1);
 	endSPI();
 
-	__delay_ms(10); /* Espera a que reinicie el modulo.*/
+	__delay_ms(200); /* Espera a que reinicie el modulo.*/
 
 	uint8_t zeros[14];
 
@@ -654,33 +781,33 @@ extern ERROR_t mcp2515_reset(void)
 	/*
 	 * Registros de control de TX.
 	 * */
-	_register = MCP_TXB0CTRL;
+	_register = MCP_TXB0CTRL; /* Registro de control tx del buffer 0 */
 	mcp2515_setRegisters(_register, zeros, 14);
 
-	_register = MCP_TXB1CTRL;
+	_register = MCP_TXB1CTRL; /* Registro de control tx del buffer 1 */
 	mcp2515_setRegisters(_register, zeros, 14);
 
-	_register = MCP_TXB2CTRL;
+	_register = MCP_TXB2CTRL; /* Registro de control tx del buffer 2 */
 	mcp2515_setRegisters(_register, zeros, 14);
 
-	/*
-	 * Registros de control de Rx.
-	 * */
-	_register = MCP_RXB0CTRL;
+	/* Registros de control de Rx. */
+	_register = MCP_RXB0CTRL; /* Buffer 0 */
 	mcp2515_setRegister(_register, 0);
 
-	_register = MCP_RXB1CTRL;
+	_register = MCP_RXB1CTRL; /* Buffer 1 */
 	mcp2515_setRegister(_register, 0);
 
-	/*
-	 * Registro de interrupcion.
-	 * */
-	_register = MCP_CANINTE;
+	/* Registro de interrupcion. */
+	_register = MCP_CANINTE; /* Registro de habilitacion de interrupcion */
 	_caninte.RX0IE = 1;
 	_caninte.RX1IE = 1;
 	_caninte.ERRIE = 1;
 	_caninte.MERRE = 1;
 	mcp2515_setRegister(_register, _caninte.data);
+
+	/*
+	 * Debemos verificar que se activaron con un read.
+	 * */
 
 	/* Configuro los registros de control de Rx */
 	// receives all valid messages using either Standard or Extended Identifiers that
@@ -701,6 +828,10 @@ extern ERROR_t mcp2515_reset(void)
 	mcp2515_modifyRegister(_modifyRegRXB0.reg,	/* Envia el registro que va a modificar.*/
 						   _modifyRegRXB0.mask, /* Envia la mascara.*/
 						   _modifyRegRXB0.data /* Setea unicamente el BUKT(roll over).*/);
+
+	/*
+	 * Debe verificar que se cargo correctamente.
+	 */
 
 	/* RXB1 control */
 	_register = MCP_RXB1CTRL;
@@ -757,78 +888,170 @@ extern ERROR_t mcp2515_reset(void)
 	return ERROR_OK;
 }
 
-static void mcp2515_readRegister(ReadReg_t *readReg)
+static ERROR_t mcp2515_readRegister(ReadReg_t *readReg)
 {
-	uint8_t nro_brytes = 1;
+	status_t status;
 
 	readReg->instruction = INSTRUCTION_READ;
 
 	startSPI();
-	spi_write(&readReg->instruction, 1);
-	spi_write((uint8_t *)&readReg->reg, 1);
-	spi_receive(&readReg->data, nro_brytes);
+	status = spi_write(&readReg->instruction, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
+
+	status = spi_write(&readReg->reg, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
+
+	status = spi_receive(&readReg->data, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_READ;
+	}
 	endSPI();
 
-	return;
+	return ERROR_OK;
 }
 
-static void mcp2515_readRegisters(ReadRegs_t *readRegs)
+static ERROR_t mcp2515_readRegisters(ReadRegs_t *readRegs)
 {
+	status_t status;
+
 	startSPI();
-	spi_write((uint8_t *)&readRegs->instruction, 1);
-	spi_write((uint8_t *)&readRegs->reg, 1);
-	/* No estoy seguro si enviando un valor de 5 en n ya
-	 * es sufiente para tomar 5 datos desde la recepcion.
-	 * Hay que probar.
-	 * */
-	spi_receive(readRegs->values, readRegs->n);
+	status = spi_write(&readRegs->instruction, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
+
+	status = spi_write(&readRegs->reg, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
+
+	status = spi_receive(readRegs->values, readRegs->n);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_READ;
+	}
 	endSPI();
 
-	return;
+	return ERROR_OK;
 }
 
-static void mcp2515_setRegister(const REGISTER_t reg, const uint8_t value)
+static ERROR_t mcp2515_setRegister(const REGISTER_t reg, const uint8_t value)
 {
+	status_t status;
 	INSTRUCTION_t instruction = INSTRUCTION_WRITE;
 
 	/* Envia los datos al modulo mediante spi */
 	startSPI();
-	spi_write(&instruction, 1);
-	spi_write((uint8_t *)&reg, 1);
-	spi_write((uint8_t *)&value, 1);
+	status = spi_write(&instruction, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
+
+	status = spi_write((uint8_t *)&reg, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
+
+	status = spi_write((uint8_t *)&value, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
 	endSPI();
 
-	return;
+	return ERROR_OK;
 }
 
-static void mcp2515_setRegisters(const REGISTER_t reg, const uint8_t values[],
+static ERROR_t mcp2515_setRegisters(const REGISTER_t reg, const uint8_t values[],
 								 const uint8_t n)
 {
+	status_t status;
 	INSTRUCTION_t _instruction = INSTRUCTION_WRITE;
 
 	/* Envia los datos al modulo mediante spi */
 	startSPI();
-	spi_write(&_instruction, 1);
-	spi_write((uint8_t *)&reg, 1);
-	spi_write((uint8_t *)values, n);
+	status = spi_write(&_instruction, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
+
+	status = spi_write((uint8_t *)&reg, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
+
+	status = spi_write((uint8_t *)values, n);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
 	endSPI();
 
-	return;
+	return ERROR_OK;
 }
 
-static void mcp2515_modifyRegister(const REGISTER_t reg, const uint8_t mask,
+static ERROR_t mcp2515_modifyRegister(const REGISTER_t reg, const uint8_t mask,
 								   const uint8_t data)
 {
+	ERROR_t error = ERROR_OK;
 	INSTRUCTION_t _instruction = INSTRUCTION_BITMOD;
+	status_t status;
 
 	startSPI();
-	spi_write(&_instruction, 1);
-	spi_write((uint8_t *)&reg, 1);
-	spi_write((uint8_t *)&mask, 1);
-	spi_write((uint8_t *)&data, 1);
+	status = spi_write(&_instruction, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
+
+	status = spi_write((uint8_t *)&reg, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
+	status = spi_write((uint8_t *)&mask, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
+	status = spi_write((uint8_t *)&data, 1);
+	if (status != kStatus_Success){
+		endSPI();
+		return ERROR_SPI_WRITE;
+	}
 	endSPI();
 
-	return;
+	/* Verificamos si se modifico correctamente */
+#define MAX_INTENTOS	3
+
+	ReadReg_t readReg = {
+		.instruction = INSTRUCTION_READ,
+		.reg = reg,
+		.data = 0,
+	};
+
+	for (uint8_t i = 0; i < MAX_INTENTOS; i++){
+		error = mcp2515_readRegister(&readReg);
+		if (error != ERROR_OK)
+			return error;
+		if ((readReg.data & mask) == data)
+			return ERROR_OK;
+	}
+
+	return ERROR_MODIFY_REG;
 }
 
 extern uint8_t mcp2515_getStatus(void)
@@ -846,7 +1069,7 @@ extern uint8_t mcp2515_getStatus(void)
 
 extern ERROR_t mcp2515_setConfigMode()
 {
-	CANCTRL_t canctrl;
+	CANCTRL_t canctrl = {0};
 
 	/* Modificamos el modo del trabajo del modulo */
 	/*
@@ -857,8 +1080,7 @@ extern ERROR_t mcp2515_setConfigMode()
 	 * 		4. Modo de solo escucha.
 	 * 		5. Modo de loopback.
 	 * */
-	canctrl.data = 0;	   /*< Nos aseguramos de que se encuentra limpia.*/
-	canctrl.REQ0P = 0b100; /*< El modulo entra en modo de configuracion.*/
+	canctrl.REQ0P = 0b100; /* El modulo entra en modo de configuracion.*/
 
 	return mcp2515_setMode(canctrl.data);
 }
@@ -914,12 +1136,14 @@ extern ERROR_t mcp2515_setMode(const uint8_t mode)
 						   modifyReg.data);
 
 	/* Verifica que se cargo correctamente */
-	__delay_ms(10);
+	__delay_ms(200);
 
 	bool modeMatch = false;
 
 	ReadReg_t readReg = {
+		.instruction = INSTRUCTION_READ,
 		.reg = MCP_CANSTAT,
+		.data = 0,
 	};
 
 	mcp2515_readRegister(&readReg); /* Lee el registro para corroborar la informacion. */
@@ -1223,9 +1447,9 @@ extern ERROR_t mcp2515_setBitrate(const CAN_SPEED canSpeed, CAN_CLOCK canClock)
 	}
 
 	/* Seteamos los cambios en el modulo */
-	CNF1_t _cnf1;
-	CNF2_t _cnf2;
-	CNF3_t _cnf3;
+	CNF1_t _cnf1 = {.data = 0};
+	CNF2_t _cnf2 = {.data = 0};
+	CNF3_t _cnf3 = {.data = 0};
 
 	_cnf1.data = cfg1;
 	_cnf2.data = cfg2;
@@ -1282,7 +1506,7 @@ extern void mcp2515_prepareId(uint8_t *buffer, const bool ext,
 		buffer[MCP_SIDL] += (uint8_t)((canid & 0x1C) << 3);
 		buffer[MCP_SIDL] |= TXB_EXIDE_MASK;		  /*< Pone en '1' el bit EXIDE.*/
 		buffer[MCP_SIDH] = (uint8_t)(canid >> 5); /*< Obtiene los ultimos 5 bits de la parte alta.*/
-												  /**
+												  /*
 												   * El formato de SIDL queda como sigue: SID2 SID1 SID0 - EXIDE - EID17 EID16,
 												   * donde '-' corresponde a un bit reservado. --> Esto se carga en TXBnSIDL.
 												   * */
@@ -1430,7 +1654,9 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 
 	/* Verifica la informacion enviada */
 	ReadReg_t readReg = {
+		.instruction = INSTRUCTION_READ,
 		.reg = txbuf->CTRL,
+		.data = 0,
 	};
 
 	mcp2515_readRegister(&readReg);
@@ -1456,7 +1682,7 @@ extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame)
 	/* Verificamos que exista lugar disponible en algun buffer (0,1,2) */
 	TXBn txBuffers[N_TXBUFFERS] = {TXB0, TXB1, TXB2};
 
-	TXBnCTRL_t _txbnCtrl[N_TXBUFFERS] = {
+	TXBnCTRL_t txbnCtrl[N_TXBUFFERS] = {
 		{.data = 0},
 		{.data = 0},
 		{.data = 0},
@@ -1471,7 +1697,8 @@ extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame)
 		},
 		{
 			.reg = MCP_TXB2CTRL, /*< Idem.*/
-		}};
+		},
+	};
 
 	for (int i = 0; i < N_TXBUFFERS; i++)
 	{
@@ -1482,17 +1709,17 @@ extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame)
 		 *
 		 * Recordar: existen 3 buffers de transmisión por tanto
 		 * si uno se encuentra pendiente para transmitir el TXREQ
-		 * se setea en '0', y luego se carga el mensaje en el siguiente
-		 * buffer (donde se vuelve a verificar que TXREQ == 1). Esto
+		 * se setea en '1', y luego se carga el mensaje en el siguiente
+		 * buffer (donde se vuelve a verificar que TXREQ == 0). Esto
 		 * se realiza 3 buffer, iterando entre los 3 que existen.
 		 * Si todos los buffers estan pendientes para transmitir
 		 * se emite un mensaje de error.
 		 * */
 		mcp2515_readRegister(&readReg[i]);
 
-		_txbnCtrl[i].data = readReg[i].data; /*< Carga la lectura en _txbnCtrl.*/
+		txbnCtrl[i].data = readReg[i].data; /*< Carga la lectura en _txbnCtrl.*/
 
-		if (!_txbnCtrl[i].TXREQ)
+		if (txbnCtrl[i].TXREQ == 0)
 		{
 			return mcp2515_sendMessageWithBufferId(txBuffers[i], frame);
 		}
@@ -1552,6 +1779,7 @@ extern ERROR_t mcp2515_readMessageWithBufferId(const RXBn rxbn,
 	ReadReg_t readRegCTRL = {
 		.instruction = INSTRUCTION_READ,
 		.reg = rxb->CTRL,
+		.data = 0,
 	};
 
 	mcp2515_readRegister(&readRegCTRL);
@@ -1586,23 +1814,23 @@ extern ERROR_t mcp2515_readMessageWithBufferId(const RXBn rxbn,
 
 extern ERROR_t mcp2515_readMessage(struct can_frame *frame)
 {
-	ERROR_t rc;
+	ERROR_t error;
 	uint8_t stat = mcp2515_getStatus();
 
 	if (stat & STAT_RX0IF)
 	{
-		rc = mcp2515_readMessageWithBufferId(RXB0, frame);
+		error = mcp2515_readMessageWithBufferId(RXB0, frame);
 	}
 	else if (stat & STAT_RX1IF)
 	{
-		rc = mcp2515_readMessageWithBufferId(RXB1, frame);
+		error = mcp2515_readMessageWithBufferId(RXB1, frame);
 	}
 	else
 	{
-		rc = ERROR_NOMSG;
+		error = ERROR_NOMSG;
 	}
 
-	return rc;
+	return error;
 }
 
 extern bool mcp2515_checkReceive(void)
@@ -1643,6 +1871,7 @@ extern uint8_t mcp2515_getErrorFlags(void)
 	*/
 
 	ReadReg_t _readReg = {
+		.instruction = INSTRUCTION_READ,
 		.reg = MCP_EFLG,
 	};
 
@@ -1671,14 +1900,15 @@ extern void mcp2515_clearRXnOVRFlags(void)
 
 extern uint8_t mcp2515_getInterrupts(void)
 {
-	ReadReg_t _readReg = {
+	ReadReg_t readReg = {
 		.reg = MCP_CANINTF,
 		.instruction = INSTRUCTION_READ,
+		.data = 0,
 	};
 
-	mcp2515_readRegister(&_readReg);
+	mcp2515_readRegister(&readReg);
 
-	return _readReg.data;
+	return readReg.data;
 }
 
 extern void mcp2515_clearInterrupts(void)
@@ -1690,14 +1920,14 @@ extern void mcp2515_clearInterrupts(void)
 
 extern uint8_t mcp2515_getInterruptMask(void)
 {
-	ReadReg_t _readReg = {
+	ReadReg_t readReg = {
 		.reg = MCP_CANINTE,
 		.instruction = INSTRUCTION_READ,
 	};
 
-	mcp2515_readRegister(&_readReg);
+	mcp2515_readRegister(&readReg);
 
-	return _readReg.data;
+	return readReg.data;
 }
 
 extern void mcp2515_clearTXInterrupts(void)
@@ -1738,7 +1968,8 @@ extern void mcp2515_clearRXnOVR(void)
 extern void mcp2515_clearMERR()
 {
 	CANINTF_t canintf = {
-		.data = 0};
+		.data = 0,
+	};
 
 	canintf.MERRF = 1;
 
@@ -1758,7 +1989,8 @@ extern void mcp2515_clearMERR()
 extern void mcp2515_clearERRIF()
 {
 	CANINTF_t canintf = {
-		.data = 0};
+		.data = 0,
+	};
 
 	canintf.ERRIF = 1;
 

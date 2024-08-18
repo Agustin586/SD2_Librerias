@@ -18,6 +18,7 @@
 #define INCLUDE_SPI_H_
 
 /* Archivos */
+#include "fsl_common.h"
 #include <stdint.h>
 
 /* Funciones */
@@ -29,13 +30,15 @@ extern void spi_init(void);
  * @brief Escritura de datos
  * @param[in] tx_buffer buffer donde se manda la informacion
  * @param[in] n numeros de bytes de datos
+ * @return Estado de la transmision
  */
-extern void spi_write(uint8_t *tx_buffer, uint16_t n);
+extern status_t spi_write(uint8_t *tx_buffer, uint16_t n);
 /**
  * @brief Recepcion de datos
  * @param[out] rx_buffer buffer donde se cargan los datos
  * @param[in] n numeros de bytes
+ * @return Estado de la recepcion
  */
-extern void spi_receive(uint8_t *rx_buffer, uint8_t n);
+extern status_t spi_receive(uint8_t *rx_buffer, uint8_t n);
 
 #endif /* INCLUDE_SPI_H_ */

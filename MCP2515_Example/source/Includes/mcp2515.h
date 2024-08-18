@@ -292,7 +292,19 @@ typedef enum
 	/**
 	 * @brief Sin mensajes.
 	 */
-	ERROR_NOMSG = 5
+	ERROR_NOMSG = 5,
+	/**
+	 * @brief Error en spi write
+	 */
+	ERROR_SPI_WRITE,
+	/**
+	 * @brief Error en spi read
+	 */
+	ERROR_SPI_READ,
+	/**
+	 * @brief Error en verificacion de registro
+	 */
+	ERROR_MODIFY_REG,
 } ERROR_t;
 
 /**

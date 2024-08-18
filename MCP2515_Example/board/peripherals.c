@@ -241,44 +241,6 @@ static void BOARD_NVIC_2_init(void) {
  * BOARD_InitACCELPeripheral functional group
  **********************************************************************************************************************/
 /***********************************************************************************************************************
- * ACCEL_I2C initialization code
- **********************************************************************************************************************/
-/* clang-format off */
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-instance:
-- name: 'ACCEL_I2C'
-- type: 'i2c'
-- mode: 'I2C_Polling'
-- custom_name_enabled: 'true'
-- type_id: 'i2c_2566d7363e7e9aaedabb432110e372d7'
-- functional_group: 'BOARD_InitACCELPeripheral'
-- peripheral: 'I2C0'
-- config_sets:
-  - fsl_i2c:
-    - i2c_mode: 'kI2C_Master'
-    - clockSource: 'BusInterfaceClock'
-    - clockSourceFreq: 'GetFreq'
-    - i2c_master_config:
-      - enableMaster: 'true'
-      - enableStopHold: 'false'
-      - baudRate_Bps: '100000'
-      - glitchFilterWidth: '0'
-    - quick_selection: 'QS_I2C_1'
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-/* clang-format on */
-const i2c_master_config_t BOARD_ACCEL_I2C_config = {
-  .enableMaster = true,
-  .enableStopHold = false,
-  .baudRate_Bps = 100000UL,
-  .glitchFilterWidth = 0U
-};
-
-static void BOARD_ACCEL_I2C_init(void) {
-  /* Initialization function */
-  I2C_MasterInit(BOARD_ACCEL_I2C_PERIPHERAL, &BOARD_ACCEL_I2C_config, BOARD_ACCEL_I2C_CLK_FREQ);
-}
-
-/***********************************************************************************************************************
  * INT1 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -364,44 +326,6 @@ static void BOARD_NVIC_3_init(void) {
  * BOARD_InitMAGPeripheral functional group
  **********************************************************************************************************************/
 /***********************************************************************************************************************
- * MAG_I2C initialization code
- **********************************************************************************************************************/
-/* clang-format off */
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-instance:
-- name: 'MAG_I2C'
-- type: 'i2c'
-- mode: 'I2C_Polling'
-- custom_name_enabled: 'true'
-- type_id: 'i2c_2566d7363e7e9aaedabb432110e372d7'
-- functional_group: 'BOARD_InitMAGPeripheral'
-- peripheral: 'I2C0'
-- config_sets:
-  - fsl_i2c:
-    - i2c_mode: 'kI2C_Master'
-    - clockSource: 'BusInterfaceClock'
-    - clockSourceFreq: 'GetFreq'
-    - i2c_master_config:
-      - enableMaster: 'true'
-      - enableStopHold: 'false'
-      - baudRate_Bps: '100000'
-      - glitchFilterWidth: '0'
-    - quick_selection: 'QS_I2C_1'
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-/* clang-format on */
-const i2c_master_config_t MAG_I2C_config = {
-  .enableMaster = true,
-  .enableStopHold = false,
-  .baudRate_Bps = 100000UL,
-  .glitchFilterWidth = 0U
-};
-
-static void MAG_I2C_init(void) {
-  /* Initialization function */
-  I2C_MasterInit(MAG_I2C_PERIPHERAL, &MAG_I2C_config, MAG_I2C_CLK_FREQ);
-}
-
-/***********************************************************************************************************************
  * INT2 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -458,45 +382,6 @@ static void NVIC_2_init(void) {
  * BOARD_InitDEBUG_UARTPeripheral functional group
  **********************************************************************************************************************/
 /***********************************************************************************************************************
- * LPSCI_1 initialization code
- **********************************************************************************************************************/
-/* clang-format off */
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-instance:
-- name: 'LPSCI_1'
-- type: 'lpsci'
-- mode: 'polling'
-- custom_name_enabled: 'true'
-- type_id: 'lpsci_d7d643c7d665ff9a7a181303138bb697'
-- functional_group: 'BOARD_InitDEBUG_UARTPeripheral'
-- peripheral: 'UART0'
-- config_sets:
-  - lpsciConfig_t:
-    - lpsciConfig:
-      - clockSource: 'UartClock'
-      - lpsciSrcClkFreq: 'BOARD_BootClockRUN'
-      - baudRate_Bps: '115200'
-      - parityMode: 'kLPSCI_ParityDisabled'
-      - stopBitCount: 'kLPSCI_OneStopBit'
-      - idleLineType: 'kLPSCI_IdleLineStartBit'
-      - enableTx: 'false'
-      - enableRx: 'false'
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-/* clang-format on */
-const lpsci_config_t BOARD_LPSCI_1_config = {
-  .baudRate_Bps = 115200UL,
-  .parityMode = kLPSCI_ParityDisabled,
-  .stopBitCount = kLPSCI_OneStopBit,
-  .idleLineType = kLPSCI_IdleLineStartBit,
-  .enableTx = false,
-  .enableRx = false
-};
-
-static void BOARD_LPSCI_1_init(void) {
-  LPSCI_Init(BOARD_LPSCI_1_PERIPHERAL, &BOARD_LPSCI_1_config, BOARD_LPSCI_1_CLOCK_SOURCE);
-}
-
-/***********************************************************************************************************************
  * NVIC_4 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -544,7 +429,6 @@ void BOARD_InitLEDsPeripheral(void)
 void BOARD_InitACCELPeripheral(void)
 {
   /* Initialize components */
-  BOARD_ACCEL_I2C_init();
   BOARD_INT1_init();
   BOARD_INT2_init();
 }
@@ -552,14 +436,12 @@ void BOARD_InitACCELPeripheral(void)
 void BOARD_InitMAGPeripheral(void)
 {
   /* Initialize components */
-  MAG_I2C_init();
   INT2_init();
 }
 
 void BOARD_InitDEBUG_UARTPeripheral(void)
 {
   /* Initialize components */
-  BOARD_LPSCI_1_init();
 }
 
 /***********************************************************************************************************************
