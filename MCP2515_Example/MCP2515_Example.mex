@@ -67,7 +67,7 @@
                <pin_label pin_num="66" pin_signal="LCD_P16/PTB20/CMP0_OUT/LCD_P16_Fault" label="J4[9]/CMP_OUT"/>
                <pin_label pin_num="3" pin_signal="LCD_P50/PTE2/SPI1_SCK/LCD_P50_Fault" label="J3[15]"/>
                <pin_label pin_num="4" pin_signal="LCD_P51/PTE3/SPI1_MISO/SPI1_MOSI/LCD_P51_Fault" label="J3[13]"/>
-               <pin_label pin_num="7" pin_signal="LCD_P54/PTE6/I2S0_MCLK/USB_SOF_OUT/LCD_P54_Fault" label="J3[11]"/>
+               <pin_label pin_num="7" pin_signal="LCD_P54/PTE6/I2S0_MCLK/USB_SOF_OUT/LCD_P54_Fault" label="J3[11]" identifier="Int_mcp2515"/>
                <pin_label pin_num="14" pin_signal="LCD_P55/ADC0_DP1/ADC0_SE1/PTE16/SPI0_PCS0/UART2_TX/TPM_CLKIN0/LCD_P55_Fault" label="J3[9]" identifier="Cs_mcp2515"/>
                <pin_label pin_num="15" pin_signal="LCD_P56/ADC0_DM1/ADC0_SE5a/PTE17/SPI0_SCK/UART2_RX/TPM_CLKIN1/LPTMR0_ALT3/LCD_P56_Fault" label="J3[7]"/>
                <pin_label pin_num="16" pin_signal="LCD_P57/ADC0_DP2/ADC0_SE2/PTE18/SPI0_MOSI/I2C0_SDA/SPI0_MISO/LCD_P57_Fault" label="J3[5]"/>
@@ -167,6 +167,12 @@
                      <pin_features>
                         <pin_feature name="direction" value="OUTPUT"/>
                         <pin_feature name="gpio_init_state" value="true"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="GPIOE" signal="GPIO, 6" pin_num="7" pin_signal="LCD_P54/PTE6/I2S0_MCLK/USB_SOF_OUT/LCD_P54_Fault">
+                     <pin_features>
+                        <pin_feature name="direction" value="INPUT"/>
+                        <pin_feature name="slew_rate" value="fast"/>
                      </pin_features>
                   </pin>
                </pins>

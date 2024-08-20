@@ -520,7 +520,7 @@ typedef struct
 	uint8_t n;
 } ReadRegs_t;
 
-#define CANT_MAX_SET_REGISTERS 20
+#define CANT_MAX_SET_REGISTERS 13
 
 /**
  * @brief Dato de tipo seteo de registro
@@ -582,13 +582,13 @@ static void delay_ms(uint16_t ms)
 #endif
 
 static const uint8_t CANCTRL_REQOP = 0xE0;
-//static const uint8_t CANCTRL_ABAT = 0x10;
-// static const uint8_t CANCTRL_OSM = 0x08;
+// static const uint8_t CANCTRL_ABAT = 0x10;
+//  static const uint8_t CANCTRL_OSM = 0x08;
 static const uint8_t CANCTRL_CLKEN = 0x04;
 static const uint8_t CANCTRL_CLKPRE = 0x03;
 
 static const uint8_t CANSTAT_OPMOD = 0xE0;
-//static const uint8_t CANSTAT_ICOD = 0x0E;
+// static const uint8_t CANSTAT_ICOD = 0x0E;
 
 static const uint8_t CNF3_SOF = 0x80;
 
@@ -596,8 +596,8 @@ static const uint8_t TXB_EXIDE_MASK = 0x08;
 static const uint8_t DLC_MASK = 0x0F;
 static const uint8_t RTR_MASK = 0x40;
 
-//static const uint8_t RXBnCTRL_RXM_STD = 0x20;
-//static const uint8_t RXBnCTRL_RXM_EXT = 0x40;
+// static const uint8_t RXBnCTRL_RXM_STD = 0x20;
+// static const uint8_t RXBnCTRL_RXM_EXT = 0x40;
 static const uint8_t RXBnCTRL_RXM_STDEXT = 0x00;
 static const uint8_t RXBnCTRL_RXM_MASK = 0x60;
 static const uint8_t RXBnCTRL_RTR = 0x08;
@@ -985,24 +985,24 @@ static ERROR_t mcp2515_setRegister(setRegister_t setReg)
 	}
 	endSPI();
 
-//	/* Verificamos que se cargo correctamente la informacion */
-//#define MAX_INTENTOS 3
-//
-//	ReadReg_t readReg = {
-//		.reg = setReg.reg,
-//		.data = 0,
-//	};
-//
-//	for (uint8_t i = 0; i < MAX_INTENTOS; i++)
-//	{
-//		ERROR_t error = mcp2515_readRegister(&readReg);
-//		if (error != ERROR_OK)
-//			return error;
-//		if (readReg.data & setReg.value)
-//			return ERROR_OK;
-//	}
-//
-//	return ERROR_VERIFICACION_SET_REGISTER;
+	//	/* Verificamos que se cargo correctamente la informacion */
+	// #define MAX_INTENTOS 3
+	//
+	//	ReadReg_t readReg = {
+	//		.reg = setReg.reg,
+	//		.data = 0,
+	//	};
+	//
+	//	for (uint8_t i = 0; i < MAX_INTENTOS; i++)
+	//	{
+	//		ERROR_t error = mcp2515_readRegister(&readReg);
+	//		if (error != ERROR_OK)
+	//			return error;
+	//		if (readReg.data & setReg.value)
+	//			return ERROR_OK;
+	//	}
+	//
+	//	return ERROR_VERIFICACION_SET_REGISTER;
 	return ERROR_OK;
 }
 
@@ -1146,7 +1146,7 @@ extern ERROR_t mcp2515_setMode(const uint8_t mode)
 	ERROR_t error;
 
 	ModifyReg_t modifyReg = {
-		.reg = MCP_CANCTRL,		/* Registro de can control.*/
+		.reg = MCP_CANCTRL,	   /* Registro de can control.*/
 		.mask = CANCTRL_REQOP, /* Corresponde a REQ0P[2:0].*/
 		.data = mode,		   /* Modo de operacion del modulo.*/
 	};
@@ -1159,7 +1159,7 @@ extern ERROR_t mcp2515_setMode(const uint8_t mode)
 	__delay_ms(50);
 
 	/* Verifica que se configuro el modo correctamente */
-#define CANT_INTENTOS	3
+#define CANT_INTENTOS 3
 
 	bool modeMatch = false;
 	ReadReg_t readReg = {
@@ -1477,7 +1477,8 @@ extern ERROR_t mcp2515_setBitrate(const CAN_SPEED canSpeed, CAN_CLOCK canClock)
 
 	/* Seteamos los cambios en el modulo */
 	setRegister_t setReg[3];
-	enum {
+	enum
+	{
 		CONFIG1 = 0,
 		CONFIG2,
 		CONFIG3,
@@ -1555,22 +1556,18 @@ extern void mcp2515_prepareId(uint8_t *buffer, const bool ext,
 
 	if (ext)
 	{
-		buffer[MCP_EID0] = (uint8_t)(canid & 0xFF); /*< Primeros 8 bits bajos en EID0.*/
-		buffer[MCP_EID8] = (uint8_t)(canid >> 8);	/*< Segundos 8 bits altos en EID8.*/
+		buffer[MCP_EID0] = (uint8_t)(canid & 0xFF);
+		buffer[MCP_EID8] = (uint8_t)(canid >> 8);
 		canid = (uint16_t)(id >> 16);
-		buffer[MCP_SIDL] = (uint8_t)(canid & 0x03); /*< Bits 16 y 17 del id extendido.*/
+		buffer[MCP_SIDL] = (uint8_t)(canid & 0x03);
 		buffer[MCP_SIDL] += (uint8_t)((canid & 0x1C) << 3);
-		buffer[MCP_SIDL] |= TXB_EXIDE_MASK;		  /*< Pone en '1' el bit EXIDE.*/
-		buffer[MCP_SIDH] = (uint8_t)(canid >> 5); /*< Obtiene los ultimos 5 bits de la parte alta.*/
-												  /*
-												   * El formato de SIDL queda como sigue: SID2 SID1 SID0 - EXIDE - EID17 EID16,
-												   * donde '-' corresponde a un bit reservado. --> Esto se carga en TXBnSIDL.
-												   * */
+		buffer[MCP_SIDL] |= TXB_EXIDE_MASK;
+		buffer[MCP_SIDH] = (uint8_t)(canid >> 5);
 	}
 	else
 	{
-		buffer[MCP_SIDH] = (uint8_t)(canid >> 3);		   /*< Bits del 3-10.*/
-		buffer[MCP_SIDL] = (uint8_t)((canid & 0x07) << 5); /*< Bits del 0-2.*/
+		buffer[MCP_SIDH] = (uint8_t)(canid >> 3);
+		buffer[MCP_SIDL] = (uint8_t)((canid & 0x07) << 5);
 		buffer[MCP_EID0] = 0;
 		buffer[MCP_EID8] = 0;
 	}
@@ -1587,8 +1584,8 @@ extern ERROR_t mcp2515_setFilterMask(const MASK mask, const bool ext,
 	if (res != ERROR_OK)
 		return res;
 
-	/* Cargamos los datos */
-#define CANT_REGS	4
+		/* Cargamos los datos */
+#define CANT_REGS 4
 	setRegisters_t setRegs;
 
 	setRegs.n = CANT_REGS;
@@ -1656,7 +1653,7 @@ extern ERROR_t mcp2515_setFilter(const RXF num, const bool ext,
 		return ERROR_FAIL;
 	}
 
-#define CANT_BUFFER	4
+#define CANT_BUFFER 4
 	setRegisters_t setRegs;
 
 	setRegs.reg = reg;
@@ -1675,6 +1672,29 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 											   const struct can_frame *frame)
 {
 	ERROR_t error;
+	struct {
+		REGISTER_t TxBSIDH;
+		REGISTER_t TxBCTRL;
+	}RegistroTx;
+
+	switch (txbn)
+	{
+		case TXB0:
+			RegistroTx.TxBCTRL = MCP_TXB0CTRL;
+			RegistroTx.TxBSIDH = MCP_TXB0SIDH;
+			break;
+		case TXB1:
+			RegistroTx.TxBCTRL = MCP_TXB1CTRL;
+			RegistroTx.TxBSIDH = MCP_TXB1SIDH;
+			break;
+		case TXB2:
+			RegistroTx.TxBCTRL = MCP_TXB2CTRL;
+			RegistroTx.TxBSIDH = MCP_TXB2SIDH;
+			break;
+		default:
+			error = ERROR_FAIL;
+			break;
+	}
 
 	/* Verifica que no se supere la cantidad maxima de datos */
 	if (frame->can_dlc > CAN_MAX_DLEN)
@@ -1684,6 +1704,9 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 	const struct TXBn_REGS *txbuf = &TXB[txbn];
 
 	setRegisters_t setRegs;
+
+	setRegs.values[0] = '\0';
+
 	/*
 	 * Formato de data[13]:
 	 * 		byte 0: SIDH
@@ -1709,8 +1732,8 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 
 	/* Envia los datos */
 	setRegs.n = 5 + frame->can_dlc;
-	setRegs.reg = txbuf->SIDH;
-
+//	setRegs.reg = txbuf->SIDH;
+	setRegs.reg = RegistroTx.TxBSIDH;
 	error = mcp2515_setRegisters(setRegs);
 	if (error != ERROR_OK)
 		return error;
@@ -1718,7 +1741,8 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 	/* Configura el registro control */
 	ModifyReg_t modifyReg;
 
-	modifyReg.reg = txbuf->CTRL;
+//	modifyReg.reg = txbuf->CTRL;
+	modifyReg.reg = RegistroTx.TxBCTRL;
 	modifyReg.mask = TXB_TXREQ;
 	modifyReg.data = TXB_TXREQ;
 	error = mcp2515_modifyRegister(modifyReg);
@@ -1727,7 +1751,8 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 
 	/* Verifica la informacion enviada */
 	ReadReg_t readReg = {
-		.reg = txbuf->CTRL,
+//		.reg = txbuf->CTRL,
+		.reg = RegistroTx.TxBCTRL,
 		.data = 0,
 	};
 
@@ -1755,45 +1780,21 @@ extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame)
 
 	/* Verificamos que exista lugar disponible en algun buffer (0,1,2) */
 	TXBn txBuffers[N_TXBUFFERS] = {TXB0, TXB1, TXB2};
-
-	TXBnCTRL_t txbnCtrl[N_TXBUFFERS] = {
-		{.data = 0},
-		{.data = 0},
-		{.data = 0},
-	};
-
-	ReadReg_t readReg[N_TXBUFFERS] = {
-		{
-			.reg = MCP_TXB0CTRL, /*< Cargamos el registro de control.*/
-		},
-		{
-			.reg = MCP_TXB1CTRL, /*< Idem.*/
-		},
-		{
-			.reg = MCP_TXB2CTRL, /*< Idem.*/
-		},
-	};
+	REGISTER_t TxnControl[N_TXBUFFERS] = {MCP_TXB0CTRL, MCP_TXB1CTRL, MCP_TXB2CTRL};
 
 	for (int i = 0; i < N_TXBUFFERS; i++)
 	{
-		/* Verifica que el TXBnCTRL --> TXREQ == 1 */
-		/*
-		 * TXREQ: verifica que el registro este libre para poder
-		 * cargar un dato y luego transmitirlo.
-		 *
-		 * Recordar: existen 3 buffers de transmisión por tanto
-		 * si uno se encuentra pendiente para transmitir el TXREQ
-		 * se setea en '1', y luego se carga el mensaje en el siguiente
-		 * buffer (donde se vuelve a verificar que TXREQ == 0). Esto
-		 * se realiza 3 buffer, iterando entre los 3 que existen.
-		 * Si todos los buffers estan pendientes para transmitir
-		 * se emite un mensaje de error.
-		 * */
-		mcp2515_readRegister(&readReg[i]);
+		const struct TXBn_REGS *txbuf = &TXB[txBuffers[i]];
 
-		txbnCtrl[i].data = readReg[i].data; /*< Carga la lectura en _txbnCtrl.*/
+		ReadReg_t readReg;
 
-		if (txbnCtrl[i].TXREQ == 0)
+//		readReg.reg = txbuf->CTRL;
+		readReg.reg = TxnControl[i];
+		ERROR_t error = mcp2515_readRegister(&readReg);
+		if (error != ERROR_OK)
+			return error;
+
+		if ((readReg.data & TXB_TXREQ) == 0)
 		{
 			return mcp2515_sendMessageWithBufferId(txBuffers[i], frame);
 		}
@@ -1822,7 +1823,7 @@ extern ERROR_t mcp2515_readMessageWithBufferId(const RXBn rxbn,
 	 * puede ser al buffer 0 o al 1.
 	 * */
 	error = mcp2515_readRegisters(&readRegs);
-	if(error != ERROR_OK)
+	if (error != ERROR_OK)
 		return error;
 
 	/* Tomamos el valor del id */
@@ -1968,16 +1969,22 @@ extern void mcp2515_clearRXnOVRFlags(void)
 	return;
 }
 
-extern uint8_t mcp2515_getInterrupts(void)
+volatile static CANINTF_t IntMCP2515 = {0};
+
+extern ERROR_t mcp2515_getInterrupts(void)
 {
 	ReadReg_t readReg = {
 		.reg = MCP_CANINTF,
 		.data = 0,
 	};
 
-	mcp2515_readRegister(&readReg);
+	ERROR_t error = mcp2515_readRegister(&readReg);
+	if (error != ERROR_OK)
+		return error;
 
-	return readReg.data;
+	IntMCP2515.data = readReg.data;
+
+	return error;
 }
 
 extern void mcp2515_clearInterrupts(void)
@@ -1987,6 +1994,8 @@ extern void mcp2515_clearInterrupts(void)
 	setReg.reg = MCP_CANINTF;
 	setReg.value = 0;
 	mcp2515_setRegister(setReg);
+
+	IntMCP2515.data = 0;
 
 	return;
 }
@@ -2004,21 +2013,17 @@ extern uint8_t mcp2515_getInterruptMask(void)
 
 extern void mcp2515_clearTXInterrupts(void)
 {
-	CANINTF_t canintf = {
-		.data = 0,
-	};
-
-	canintf.TX0IF = 1;
-	canintf.TX1IF = 1;
-	canintf.TX2IF = 1;
-
 	ModifyReg_t modifyReg = {
 		.reg = MCP_CANINTF,
-		.mask = canintf.data, /*(CANINTF_TX0IF | CANINTF_TX1IF | CANINTF_TX2IF),*/
+		.mask = CANINTF_TX0IF | CANINTF_TX1IF | CANINTF_TX2IF, /*(CANINTF_TX0IF | CANINTF_TX1IF | CANINTF_TX2IF),*/
 		.data = 0,
 	};
 
 	mcp2515_modifyRegister(modifyReg);
+
+	IntMCP2515.TX0IF = 0;
+	IntMCP2515.TX1IF = 0;
+	IntMCP2515.TX2IF = 0;
 
 	return;
 }
@@ -2039,42 +2044,34 @@ extern void mcp2515_clearRXnOVR(void)
 
 extern void mcp2515_clearMERR()
 {
-	CANINTF_t canintf = {
-		.data = 0,
-	};
-
-	canintf.MERRF = 1;
-
 	ModifyReg_t modifyReg = {
 		.reg = MCP_CANINTF,
-		.mask = canintf.data, // CANINTF_MERRF
+		.mask = CANINTF_MERRF, // CANINTF_MERRF
 		.data = 0,
 	};
 
 	// modifyRegister(MCP_EFLG, EFLG_RX0OVR | EFLG_RX1OVR, 0);
 	// clearInterrupts();
 	mcp2515_modifyRegister(modifyReg);
+
+	IntMCP2515.MERRF = 0;
 
 	return;
 }
 
 extern void mcp2515_clearERRIF()
 {
-	CANINTF_t canintf = {
-		.data = 0,
-	};
-
-	canintf.ERRIF = 1;
-
 	ModifyReg_t modifyReg = {
 		.reg = MCP_CANINTF,
-		.mask = canintf.data, // CANINTF_MERRF
+		.mask = CANINTF_ERRIF,
 		.data = 0,
 	};
 
 	// modifyRegister(MCP_EFLG, EFLG_RX0OVR | EFLG_RX1OVR, 0);
 	// clearInterrupts();
 	mcp2515_modifyRegister(modifyReg);
+
+	IntMCP2515.ERRIF = 0;
 
 	return;
 }
@@ -2091,6 +2088,7 @@ extern uint8_t mcp2515_errorCountRX(void)
 	return readReg.data;
 }
 
+
 extern uint8_t mcp2515_errorCountTX(void)
 {
 	ReadReg_t readReg = {
@@ -2101,4 +2099,47 @@ extern uint8_t mcp2515_errorCountTX(void)
 	mcp2515_readRegister(&readReg);
 
 	return readReg.data;
+}
+
+extern bool mcp2515_getIntERRIF(void)
+{
+	return IntMCP2515.ERRIF;
+}
+
+extern bool mcp2515_getIntMERRF(void)
+{
+	return IntMCP2515.MERRF;
+}
+
+extern bool mcp2515_getIntRX1IF(void)
+{
+	bool aux = IntMCP2515.RX1IF;
+
+	IntMCP2515.RX1IF = 0;
+
+	return aux;
+}
+
+extern bool mcp2515_getIntRX0IF(void)
+{
+	bool aux = IntMCP2515.RX0IF;
+
+	IntMCP2515.RX0IF = 0;
+
+	return aux;
+}
+
+extern bool mcp2515_getIntTX0IF(void)
+{
+	return IntMCP2515.TX0IF;
+}
+
+extern bool mcp2515_getIntTX1IF(void)
+{
+	return IntMCP2515.TX1IF;
+}
+
+extern bool mcp2515_getIntTX2IF(void)
+{
+	return IntMCP2515.TX2IF;
 }

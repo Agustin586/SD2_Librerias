@@ -59,40 +59,70 @@ static void vtaskRtos_canmsg(void *pvParameter);
 
 #else
 
+/**
+ * @brief Retardo de tiempo bloqueante.
+ */
 #define __delay_ms(x) delay_ms(x)
+
+/**
+ * @brief Retardo bloqueante.
+ * @param[in] ms Tiempo en milisegundos
+ */
 static void delay_ms(uint16_t ms);
+/**
+ * @brief Lectura y escritura del modulo can.
+ */
 static void canmsg_baremetal(void);
+/**
+ * @brief Escritura del modulo can.
+ */
 static void canmsg_escritura(void);
+/**
+ * @brief Lectura del modulo can.
+ */
 static void canmsg_lectura(void);
 
-static void delay_ms(uint16_t ms)
-{
-    // Calcula el número de ciclos necesarios
-    uint32_t cycles = (CLOCK_GetCoreSysClkFreq() / 1000) * ms / 4;
-
-    // Realiza el bucle para generar el retardo
-    for (uint32_t i = 0; i < cycles; i++)
-    {
-        __NOP(); // No Operation (1 ciclo de instrucción)
-    }
-
-    return;
-}
+/**
+ * @brief Interrupcion por recepcion de datos del modulo can.
+ *
+ * Cuando se genera una interrupcion por recepcion se activa
+ * la bandera y luego dicha bandera se detecta por polling en
+ * el programa principal.
+ *
+ * @note Debe ser de tipo volatile para que no sea optimizada
+ * por el compilador, dado que es una variable que se modifica
+ * en una interrupcion.
+ */
+volatile static bool Rx_flag_mcp2515 = false;
 
 #endif
 
+/**
+ * @brief Mensaje 1 de can.
+ */
 struct can_frame canMsg1;
+/**
+ * @brief Mensaje de lectura.
+ */
 struct can_frame canMsgRead = {
 		.can_dlc = 0,
 		.can_id = 0,
 };
 
 /**
+ * @brief Inicializacion de perifericos.
+ */
+static void perifericos_init(void);
+/**
+ * @brief Configuraciones de interrupcion.
+ */
+static void interrupt_init(void);
+
+/**
  * @brief   Application entry point.
  */
 int main(void)
 {
-	ERROR_t error;
 
     /* Init board hardware. */
     BOARD_InitBootPins();
@@ -105,7 +135,7 @@ int main(void)
 
     PRINTF("Ejemplo del modulo can MCP2515\n\r");
 
-    canMsg1.can_id = 125;
+    canMsg1.can_id = 232;
     canMsg1.can_dlc = 8;
     canMsg1.data[0] = 10;
     canMsg1.data[1] = 22;
@@ -116,24 +146,21 @@ int main(void)
     canMsg1.data[6] = 69;
     canMsg1.data[7] = 5;
 
-    mcp2515_init();
+#if (!USE_FREERTOS)
 
-    error = mcp2515_reset();
+    /*
+     * @note
+     * Si utilizamos el modo de baremetal entonces podemos
+     * inicializar tranquilamente el modulo.
+     * En vez si utilizamos un rtos debido al uso de retardos
+     * como lo es vtaskdelay debemos encontrarnos en el ámbito
+     * del sistema de tiempo real, es decir una tarea. Habiendo
+     * inicializado el scheduler anteriormente.
+     * */
+    perifericos_init();
+    interrupt_init();
 
-    if (error != ERROR_OK)
-    	PRINTF("Fallo al resetear el modulo\n\r");
-
-    error = mcp2515_setBitrate(CAN_125KBPS, MCP_8MHZ);
-
-    if (error != ERROR_OK)
-    	PRINTF("Fallo al setear el bit rate\n\r");
-
-    error = mcp2515_setNormalMode();
-    if (error != ERROR_OK)
-      	PRINTF("Fallo al setear el normal mode\n\r");
-//    error = mcp2515_setLoopbackMode();
-//    if (error != ERROR_OK)
-//    	PRINTF("Fallo al setear el loopback mode\n\r");
+#endif
 
 #if (USE_FREERTOS)
 
@@ -168,12 +195,28 @@ static void vtaskRtos_canmsg(void *pvParameter)
 
 #else
 
+static void delay_ms(uint16_t ms)
+{
+    // Calcula el número de ciclos necesarios
+    uint32_t cycles = (CLOCK_GetCoreSysClkFreq() / 1000) * ms / 4;
+
+    // Realiza el bucle para generar el retardo
+    for (uint32_t i = 0; i < cycles; i++)
+    {
+        __NOP(); // No Operation (1 ciclo de instrucción)
+    }
+
+    return;
+}
+
 static void canmsg_baremetal(void)
 {
-//	canmsg_escritura();
-	__delay_ms(500);
-	canmsg_lectura();
-    __delay_ms(1000);
+	canmsg_escritura();
+
+	if (Rx_flag_mcp2515)
+		canmsg_lectura(),Rx_flag_mcp2515 = false;
+
+    __delay_ms(500);
 
     return;
 }
@@ -186,6 +229,7 @@ static void canmsg_escritura(void)
 
 	if (estado == ERROR_OK)
 	{
+		PRINTF("\nMensaje enviado\n\r");
 		PRINTF("ID\tDLC\tDATA\n\r");
 		PRINTF("%d\t%d\t",canMsg1.can_id,canMsg1.can_dlc);
 
@@ -201,6 +245,7 @@ static void canmsg_escritura(void)
 
 	return;
 }
+
 static void canmsg_lectura(void)
 {
 	ERROR_t estado;
@@ -209,6 +254,7 @@ static void canmsg_lectura(void)
 
     if (estado != ERROR_NOMSG)
     {
+    	PRINTF("\nMensaje de recepcion\n\r");
 		PRINTF("ID\tDLC\tDATA\n\r");
 		PRINTF("%d\t%d\t",canMsgRead.can_id,canMsgRead.can_dlc);
 
@@ -227,3 +273,127 @@ static void canmsg_lectura(void)
 }
 
 #endif
+
+static void perifericos_init(void)
+{
+	ERROR_t error;
+
+    mcp2515_init();
+
+    error = mcp2515_reset();
+
+    if (error != ERROR_OK)
+    	PRINTF("Fallo al resetear el modulo\n\r");
+
+    error = mcp2515_setBitrate(CAN_125KBPS, MCP_8MHZ);
+
+    if (error != ERROR_OK)
+    	PRINTF("Fallo al setear el bit rate\n\r");
+
+//    error = mcp2515_setNormalMode();
+//    if (error != ERROR_OK)
+//      	PRINTF("Fallo al setear el normal mode\n\r");
+    error = mcp2515_setLoopbackMode();
+    if (error != ERROR_OK)
+    	PRINTF("Fallo al setear el loopback mode\n\r");
+
+	return;
+}
+
+#define PIN_NUMBER 17
+
+static void interrupt_init(void)
+{
+	CLOCK_EnableClock(kCLOCK_PortA);  // Por ejemplo, para el puerto A
+
+	port_pin_config_t config = {
+	    .pullSelect = kPORT_PullUp,
+	    .slewRate = kPORT_FastSlewRate,
+	    .passiveFilterEnable = kPORT_PassiveFilterDisable,
+	    .driveStrength = kPORT_LowDriveStrength,
+	    .mux = kPORT_MuxAsGpio
+	};
+
+	PORT_SetPinConfig(PORTA, PIN_NUMBER, &config);
+	PORT_SetPinInterruptConfig(PORTA, PIN_NUMBER, kPORT_InterruptFallingEdge); // Configura interrupción por flanco descendente
+
+	NVIC_EnableIRQ(PORTA_IRQn);  // Habilita la interrupción para el puerto A
+
+	gpio_pin_config_t gpioConfig = {
+	    .pinDirection = kGPIO_DigitalInput,
+	    .outputLogic = 0U
+	};
+
+	GPIO_PinInit(GPIOA, PIN_NUMBER, &gpioConfig);
+
+	return;
+}
+
+void PORTA_IRQHandler(void) {
+    // Obtiene el estado de las banderas de interrupción del puerto A
+    uint32_t interruptFlags = GPIO_GetPinsInterruptFlags(GPIOA);
+
+    if (interruptFlags & (1U << PIN_NUMBER))
+    {
+		// Código que se ejecutará cuando ocurra la interrupción
+
+    	/*
+    	 * @note
+    	 * Se configuraron por defecto interrupciones para rx0, rx1, err, merr. En la
+    	 * funcion de mcp2515_reset() se pueden configurar algunas mas.
+    	 * */
+
+    	/* Leemos las interrupciones generadas */
+    	ERROR_t error = mcp2515_getInterrupts();
+    	if (error != ERROR_OK)
+    		PRINTF("Fallo al leer la interrupcion\n\r");
+
+    	/* Detectamos las que nos sirvan */
+    	if (mcp2515_getIntERRIF())
+    	{
+    		// Acciones ...
+    		PRINTF("Error interrupt flag\n\r");
+
+    		// Limpiamos la bandera
+    		mcp2515_clearERRIF();
+    	}
+
+    	if (mcp2515_getIntMERRF())
+    	{
+    		// Acciones ...
+    		PRINTF("Message error interrupt flag\n\r");
+
+    		// Limpiamos la bandera
+    		mcp2515_clearMERR();
+    	}
+
+    	if (mcp2515_getIntRX0IF() || mcp2515_getIntRX1IF())
+    	{
+    		// Acciones ...
+    		Rx_flag_mcp2515 = true;
+
+    		// La bandera se limpia en la funcion de recepcion
+    		// mcp2515_readMessage().
+    	}
+
+    	/*
+    	 * Descomentar si es necesario tener en cuenta dicha interrupcion.
+    	 * Ademas debe habilitarse en la funcion de reset del mcp2515.
+    	 * */
+//    	if (mcp2515_getIntTX0IF() ||
+//    		mcp2515_getIntTX1IF() ||
+//			mcp2515_getIntTX2IF())
+//    	{
+//    		// Acciones ...
+////    		PRINTF("Mensaje enviado\n\r");
+//
+//    		// Limpiamos la bandera
+//    		mcp2515_clearTXInterrupts();
+//    	}
+
+		// Limpia la bandera de interrupción
+		GPIO_ClearPinsInterruptFlags(GPIOA, 1U << PIN_NUMBER);
+    }
+
+    return;
+}
