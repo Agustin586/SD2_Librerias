@@ -55,7 +55,7 @@ pin_labels:
 - {pin_num: '66', pin_signal: LCD_P16/PTB20/CMP0_OUT/LCD_P16_Fault, label: 'J4[9]/CMP_OUT'}
 - {pin_num: '3', pin_signal: LCD_P50/PTE2/SPI1_SCK/LCD_P50_Fault, label: 'J3[15]'}
 - {pin_num: '4', pin_signal: LCD_P51/PTE3/SPI1_MISO/SPI1_MOSI/LCD_P51_Fault, label: 'J3[13]'}
-- {pin_num: '7', pin_signal: LCD_P54/PTE6/I2S0_MCLK/USB_SOF_OUT/LCD_P54_Fault, label: 'J3[11]'}
+- {pin_num: '7', pin_signal: LCD_P54/PTE6/I2S0_MCLK/USB_SOF_OUT/LCD_P54_Fault, label: 'J3[11]', identifier: Int_mcp2515}
 - {pin_num: '14', pin_signal: LCD_P55/ADC0_DP1/ADC0_SE1/PTE16/SPI0_PCS0/UART2_TX/TPM_CLKIN0/LCD_P55_Fault, label: 'J3[9]', identifier: Cs_mcp2515}
 - {pin_num: '15', pin_signal: LCD_P56/ADC0_DM1/ADC0_SE5a/PTE17/SPI0_SCK/UART2_RX/TPM_CLKIN1/LPTMR0_ALT3/LCD_P56_Fault, label: 'J3[7]'}
 - {pin_num: '16', pin_signal: LCD_P57/ADC0_DP2/ADC0_SE2/PTE18/SPI0_MOSI/I2C0_SDA/SPI0_MISO/LCD_P57_Fault, label: 'J3[5]'}
@@ -146,6 +146,7 @@ BOARD_InitPins:
   - {pin_num: '15', peripheral: SPI0, signal: SCK, pin_signal: LCD_P56/ADC0_DM1/ADC0_SE5a/PTE17/SPI0_SCK/UART2_RX/TPM_CLKIN1/LPTMR0_ALT3/LCD_P56_Fault}
   - {pin_num: '14', peripheral: GPIOE, signal: 'GPIO, 16', pin_signal: LCD_P55/ADC0_DP1/ADC0_SE1/PTE16/SPI0_PCS0/UART2_TX/TPM_CLKIN0/LCD_P55_Fault, direction: OUTPUT,
     gpio_init_state: 'true'}
+  - {pin_num: '7', peripheral: GPIOE, signal: 'GPIO, 6', pin_signal: LCD_P54/PTE6/I2S0_MCLK/USB_SOF_OUT/LCD_P54_Fault, direction: INPUT, slew_rate: fast}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -160,6 +161,13 @@ void BOARD_InitPins(void)
 {
     /* Port E Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortE);
+
+    gpio_pin_config_t Int_mcp2515_config = {
+        .pinDirection = kGPIO_DigitalInput,
+        .outputLogic = 0U
+    };
+    /* Initialize GPIO functionality on pin PTE6 (pin 7)  */
+    GPIO_PinInit(BOARD_Int_mcp2515_GPIO, BOARD_Int_mcp2515_PIN, &Int_mcp2515_config);
 
     gpio_pin_config_t Cs_mcp2515_config = {
         .pinDirection = kGPIO_DigitalOutput,
@@ -179,6 +187,17 @@ void BOARD_InitPins(void)
 
     /* PORTE19 (pin 17) is configured as SPI0_MISO */
     PORT_SetPinMux(PORTE, 19U, kPORT_MuxAlt2);
+
+    /* PORTE6 (pin 7) is configured as PTE6 */
+    PORT_SetPinMux(BOARD_Int_mcp2515_PORT, BOARD_Int_mcp2515_PIN, kPORT_MuxAsGpio);
+
+    PORTE->PCR[6] = ((PORTE->PCR[6] &
+                      /* Mask bits to zero which are setting */
+                      (~(PORT_PCR_SRE_MASK | PORT_PCR_ISF_MASK)))
+
+                     /* Slew Rate Enable: Fast slew rate is configured on the corresponding pin, if the pin is
+                      * configured as a digital output. */
+                     | PORT_PCR_SRE(kPORT_FastSlewRate));
 }
 
 /* clang-format off */

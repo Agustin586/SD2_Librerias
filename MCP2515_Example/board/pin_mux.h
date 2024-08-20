@@ -39,6 +39,20 @@ void BOARD_InitBootPins(void);
 #define BOARD_Cs_mcp2515_PIN_MASK (1U << 16U)      /*!<@brief PORT pin mask */
                                                    /* @} */
 
+/*! @name PORTE6 (number 7), J3[11]
+  @{ */
+
+/* Symbols to be used with GPIO driver */
+#define BOARD_Int_mcp2515_FGPIO FGPIOE             /*!<@brief FGPIO peripheral base pointer */
+#define BOARD_Int_mcp2515_GPIO GPIOE               /*!<@brief GPIO peripheral base pointer */
+#define BOARD_Int_mcp2515_GPIO_PIN_MASK (1U << 6U) /*!<@brief GPIO pin mask */
+
+/* Symbols to be used with PORT driver */
+#define BOARD_Int_mcp2515_PORT PORTE               /*!<@brief PORT peripheral base pointer */
+#define BOARD_Int_mcp2515_PIN 6U                   /*!<@brief PORT pin number */
+#define BOARD_Int_mcp2515_PIN_MASK (1U << 6U)      /*!<@brief PORT pin mask */
+                                                   /* @} */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *

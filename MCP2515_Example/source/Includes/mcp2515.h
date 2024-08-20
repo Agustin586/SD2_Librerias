@@ -678,9 +678,9 @@ extern void mcp2515_clearRXnOVRFlags(void);
  * @brief Obtiene las interrupciones del modulo can.
  * Desde el registro de interrupt flags.
  *
- * @return Devuelve las banderas de interrupcion que se presentaron.
+ * @return Devuelve el estado de la lectura.
  */
-extern uint8_t mcp2515_getInterrupts(void);
+extern ERROR_t mcp2515_getInterrupts(void);
 /**
  * @brief Obtiene las interrupciones habilitadas desde el modulo can.
  *
@@ -725,6 +725,48 @@ extern uint8_t mcp2515_errorCountRX(void);
  * @return Devuelve el valor del contador.
  */
 extern uint8_t mcp2515_errorCountTX(void);
+
+/**
+ * @brief Bandera de interrupcion de error int flag.
+ * @return Devuelve el estado de la bandera.
+ */
+extern bool mcp2515_getIntERRIF(void);
+
+/**
+ * @brief Bandera de int de MERRF.
+ * @return Devuelve el estado de la bandera.
+ */
+extern bool mcp2515_getIntMERRF(void);
+
+/**
+ * @brief Bandera de interrupcion de RX1IF.
+ * @return Devuelve el estado de la bandera.
+ */
+extern bool mcp2515_getIntRX1IF(void);
+
+/**
+ * @brief Bandera de interrupcion de RX0IF.
+ * @return Devuelve el estado de la bandera.
+ */
+extern bool mcp2515_getIntRX0IF(void);
+
+/**
+ * @brief Bandera de interrupcion de TX0IF.
+ * @return Devuelve el estado de la bandera.
+ */
+extern bool mcp2515_getIntTX0IF(void);
+
+/**
+ * @brief Bandera de interrupcion de TX1IF.
+ * @return Devuelve el estado de la bandera.
+ */
+extern bool mcp2515_getIntTX1IF(void);
+
+/**
+ * @brief Bandera de interrupcion de TX2IF.
+ * @return Devuelve el estado de la bandera.
+ */
+extern bool mcp2515_getIntTX2IF(void);
 
 /**
  * @}
