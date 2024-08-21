@@ -1,0 +1,1541 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mcp2515 Example - Documentacion: Referencia del Archivo source/Source/mcp2515.c</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">Mcp2515 Example - Documentacion
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generado por Doxygen 1.9.1 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Buscar','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Buscar');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('mcp2515_8c.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Estructuras de datos</a> &#124;
+<a href="#define-members">defines</a> &#124;
+<a href="#func-members">Funciones</a>  </div>
+  <div class="headertitle">
+<div class="title">Referencia del Archivo mcp2515.c</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>Libreria para manipulacion del modulo can mcp2515.  
+<a href="#details">Más...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="mcp2515_8h_source.html">Includes/mcp2515.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="spi_8h_source.html">Includes/spi.h</a>&quot;</code><br />
+<code>#include &quot;fsl_gpio.h&quot;</code><br />
+<code>#include &quot;pin_mux.h&quot;</code><br />
+<code>#include &quot;fsl_port.h&quot;</code><br />
+<code>#include &lt;string.h&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Dependencia gráfica adjunta para mcp2515.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c__incl.png" border="0" usemap="#asource_2_source_2mcp2515_8c" alt=""/></div>
+<map name="asource_2_source_2mcp2515_8c" id="asource_2_source_2mcp2515_8c">
+<area shape="rect" title="Libreria para manipulacion del modulo can mcp2515." alt="" coords="343,5,531,32"/>
+<area shape="rect" href="mcp2515_8h.html" title="Liberia del modulo CAN MCP2515, utilizada para la placa de desarrollo KL46Z. Realizada como parte de ..." alt="" coords="26,80,178,107"/>
+<area shape="rect" href="spi_8h.html" title=" " alt="" coords="203,80,313,107"/>
+<area shape="rect" title=" " alt="" coords="338,80,423,107"/>
+<area shape="rect" title=" " alt="" coords="447,80,538,107"/>
+<area shape="rect" title=" " alt="" coords="562,80,645,107"/>
+<area shape="rect" title=" " alt="" coords="669,80,740,107"/>
+<area shape="rect" href="can_8h.html" title=" " alt="" coords="5,155,63,181"/>
+<area shape="rect" title=" " alt="" coords="65,229,136,256"/>
+<area shape="rect" title=" " alt="" coords="138,155,221,181"/>
+<area shape="rect" title=" " alt="" coords="295,155,410,181"/>
+</map>
+</div>
+</div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Estructuras de datos</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_c_n_f1__t.html">CNF1_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de configuracion 1.  <a href="union_c_n_f1__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_c_n_f2__t.html">CNF2_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de configuracion 2.  <a href="union_c_n_f2__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_c_n_f3__t.html">CNF3_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de configuracion 3.  <a href="union_c_n_f3__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_t_x_bn_c_t_r_l__t.html">TXBnCTRL_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de control de transimision.  <a href="union_t_x_bn_c_t_r_l__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_c_a_n_i_n_t_e__t.html">CANINTE_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de interrupciones.  <a href="union_c_a_n_i_n_t_e__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_c_a_n_i_n_t_f__t.html">CANINTF_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro CAN INTERRUPT FLAG.  <a href="union_c_a_n_i_n_t_f__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_c_a_n_c_t_r_l__t.html">CANCTRL_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de control de can.  <a href="union_c_a_n_c_t_r_l__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_e_f_l_g__t.html">EFLG_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro ERROR FLAG.  <a href="union_e_f_l_g__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_r_x_b0_c_t_r_l__t.html">RXB0CTRL_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de control de rxb0.  <a href="union_r_x_b0_c_t_r_l__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_r_x_b1_c_t_r_l__t.html">RXB1CTRL_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de control de rxb1.  <a href="union_r_x_b1_c_t_r_l__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_t_x_r_t_s_c_t_r_l__t.html">TXRTSCTRL_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de pin control y estado.  <a href="union_t_x_r_t_s_c_t_r_l__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_t_x_bn_s_i_d_h__t.html">TXBnSIDH_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de id parte alta.  <a href="union_t_x_bn_s_i_d_h__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_t_x_bn_s_i_d_l__t.html">TXBnSIDL_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de id parte baja.  <a href="union_t_x_bn_s_i_d_l__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_t_x_bn_e_i_d8__t.html">TXBnEID8_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de id extendida parte alta.  <a href="union_t_x_bn_e_i_d8__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_t_x_bn_e_i_d0__t.html">TXBnEID0_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de id extendida parte baja.  <a href="union_t_x_bn_e_i_d0__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_t_x_bn_d_l_c__t.html">TXBnDLC_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de longitud de datos.  <a href="union_t_x_bn_d_l_c__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">union &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="union_t_x_bn_dm__t.html">TXBnDm_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registro de datos.  <a href="union_t_x_bn_dm__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_modify_reg__t.html">ModifyReg_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Modificar registro.  <a href="struct_modify_reg__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_read_reg__t.html">ReadReg_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registros de lectura de datos.  <a href="struct_read_reg__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_read_regs__t.html">ReadRegs_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estructura para la lectura de registros.  <a href="struct_read_regs__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structset_register__t.html">setRegister_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dato de tipo seteo de registro.  <a href="structset_register__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structset_registers__t.html">setRegisters_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dato de tipo seteo de registros.  <a href="structset_registers__t.html#details">Más...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><b>TXBn_REGS</b></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><b>RXBn_REGS</b></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+defines</h2></td></tr>
+<tr class="memitem:aba86d3b84923f65b4072042cd7f40cb7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#aba86d3b84923f65b4072042cd7f40cb7">CS_HIGH</a>&#160;&#160;&#160;GPIO_SetPinsOutput((GPIO_Type *)GPIOE_BASE, BOARD_Cs_mcp2515_PIN_MASK)</td></tr>
+<tr class="separator:aba86d3b84923f65b4072042cd7f40cb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad388aceaf44bb064821c29273e2d31d7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#ad388aceaf44bb064821c29273e2d31d7">CS_LOW</a>&#160;&#160;&#160;GPIO_ClearPinsOutput((GPIO_Type *)GPIOE_BASE, BOARD_Cs_mcp2515_PIN_MASK)</td></tr>
+<tr class="separator:ad388aceaf44bb064821c29273e2d31d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a121e530779e48afea7f7f9a6cd225087"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a121e530779e48afea7f7f9a6cd225087">MAX_DATA_readREG</a>&#160;&#160;&#160;10</td></tr>
+<tr class="separator:a121e530779e48afea7f7f9a6cd225087"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4774eee855d3a99b5c052ef8dd574f7b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a4774eee855d3a99b5c052ef8dd574f7b">CANT_MAX_SET_REGISTERS</a>&#160;&#160;&#160;13</td></tr>
+<tr class="separator:a4774eee855d3a99b5c052ef8dd574f7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a383704d8f976b5a4d680ba951a3fc6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a6a383704d8f976b5a4d680ba951a3fc6">__delay_ms</a>(x)&#160;&#160;&#160;delay_ms(x)</td></tr>
+<tr class="separator:a6a383704d8f976b5a4d680ba951a3fc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abda566dd69924ef1793a1782f6934fbf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#abda566dd69924ef1793a1782f6934fbf">N_TXBUFFERS</a>&#160;&#160;&#160;3</td></tr>
+<tr class="separator:abda566dd69924ef1793a1782f6934fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d69b304b851013b81fdbbf4911de094"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a8d69b304b851013b81fdbbf4911de094">N_RXBUFFERS</a>&#160;&#160;&#160;2</td></tr>
+<tr class="separator:a8d69b304b851013b81fdbbf4911de094"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca788d906d43225e36270d58de9b0f47"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#aca788d906d43225e36270d58de9b0f47">CANT_REGISTROS</a>&#160;&#160;&#160;14</td></tr>
+<tr class="separator:aca788d906d43225e36270d58de9b0f47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac32c16c3fb6018044ee42070be99d2e3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#ac32c16c3fb6018044ee42070be99d2e3">CANT_INTENTOS</a>&#160;&#160;&#160;3</td></tr>
+<tr class="separator:ac32c16c3fb6018044ee42070be99d2e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a051e1821aa4fbd35c768d72dbd41a83f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a051e1821aa4fbd35c768d72dbd41a83f">CANT_REGS</a>&#160;&#160;&#160;4</td></tr>
+<tr class="separator:a051e1821aa4fbd35c768d72dbd41a83f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91340062f221a5ea07e0cb8be0d43dca"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a91340062f221a5ea07e0cb8be0d43dca">CANT_BUFFER</a>&#160;&#160;&#160;4</td></tr>
+<tr class="separator:a91340062f221a5ea07e0cb8be0d43dca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Funciones</h2></td></tr>
+<tr class="memitem:a93c2df6a52fa046c073256f50d96b930"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a93c2df6a52fa046c073256f50d96b930">mcp2515_init</a> (void)</td></tr>
+<tr class="memdesc:a93c2df6a52fa046c073256f50d96b930"><td class="mdescLeft">&#160;</td><td class="mdescRight">Funciones publicas.  <a href="mcp2515_8c.html#a93c2df6a52fa046c073256f50d96b930">Más...</a><br /></td></tr>
+<tr class="separator:a93c2df6a52fa046c073256f50d96b930"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21cb40a7513567cb455ce296ef0bbe4b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a21cb40a7513567cb455ce296ef0bbe4b">mcp2515_reset</a> (void)</td></tr>
+<tr class="memdesc:a21cb40a7513567cb455ce296ef0bbe4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resetea el modulo.  <a href="mcp2515_8c.html#a21cb40a7513567cb455ce296ef0bbe4b">Más...</a><br /></td></tr>
+<tr class="separator:a21cb40a7513567cb455ce296ef0bbe4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adab84b04c3e872a779e0b50cd6f939be"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#adab84b04c3e872a779e0b50cd6f939be">mcp2515_getStatus</a> (void)</td></tr>
+<tr class="memdesc:adab84b04c3e872a779e0b50cd6f939be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Obtiene los estados solicitados de lectura.  <a href="mcp2515_8c.html#adab84b04c3e872a779e0b50cd6f939be">Más...</a><br /></td></tr>
+<tr class="separator:adab84b04c3e872a779e0b50cd6f939be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a1c3cc8b486dbd55ff9d2d011694fa6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a0a1c3cc8b486dbd55ff9d2d011694fa6">mcp2515_setConfigMode</a> ()</td></tr>
+<tr class="memdesc:a0a1c3cc8b486dbd55ff9d2d011694fa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setea el modo de configuracion.  <a href="mcp2515_8c.html#a0a1c3cc8b486dbd55ff9d2d011694fa6">Más...</a><br /></td></tr>
+<tr class="separator:a0a1c3cc8b486dbd55ff9d2d011694fa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24629fc99e83c9f097a0d24629dcae79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a24629fc99e83c9f097a0d24629dcae79">mcp2515_setListenOnlyMode</a> ()</td></tr>
+<tr class="memdesc:a24629fc99e83c9f097a0d24629dcae79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setea el modo de solo escucha.  <a href="mcp2515_8c.html#a24629fc99e83c9f097a0d24629dcae79">Más...</a><br /></td></tr>
+<tr class="separator:a24629fc99e83c9f097a0d24629dcae79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9eeb6e5089676520f1f243d43b25bd0b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a9eeb6e5089676520f1f243d43b25bd0b">mcp2515_setSleepMode</a> ()</td></tr>
+<tr class="memdesc:a9eeb6e5089676520f1f243d43b25bd0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setea el modo sleep.  <a href="mcp2515_8c.html#a9eeb6e5089676520f1f243d43b25bd0b">Más...</a><br /></td></tr>
+<tr class="separator:a9eeb6e5089676520f1f243d43b25bd0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d44b1c2e0ad790988f8821b12fc8c80"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a4d44b1c2e0ad790988f8821b12fc8c80">mcp2515_setLoopbackMode</a> ()</td></tr>
+<tr class="memdesc:a4d44b1c2e0ad790988f8821b12fc8c80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setea el modo de loopback.  <a href="mcp2515_8c.html#a4d44b1c2e0ad790988f8821b12fc8c80">Más...</a><br /></td></tr>
+<tr class="separator:a4d44b1c2e0ad790988f8821b12fc8c80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5403fd588f8558b6b3031e9cee0b35e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#ab5403fd588f8558b6b3031e9cee0b35e">mcp2515_setNormalMode</a> ()</td></tr>
+<tr class="memdesc:ab5403fd588f8558b6b3031e9cee0b35e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setea el modo normal de trabajo.  <a href="mcp2515_8c.html#ab5403fd588f8558b6b3031e9cee0b35e">Más...</a><br /></td></tr>
+<tr class="separator:ab5403fd588f8558b6b3031e9cee0b35e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a376a8574dcdafeeac264e1b652333d58"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a376a8574dcdafeeac264e1b652333d58">mcp2515_setBitrate</a> (const <a class="el" href="mcp2515_8h.html#a7f502641a3b61ab57fb25ff6ca90e32e">CAN_SPEED</a> canSpeed, <a class="el" href="mcp2515_8h.html#a879ed70dbe7d5aa868602ed440f12df6">CAN_CLOCK</a> canClock)</td></tr>
+<tr class="memdesc:a376a8574dcdafeeac264e1b652333d58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setea el baud rate.  <a href="mcp2515_8c.html#a376a8574dcdafeeac264e1b652333d58">Más...</a><br /></td></tr>
+<tr class="separator:a376a8574dcdafeeac264e1b652333d58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0838ae4e7ae0ec6c7fe78138350c3b11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a0838ae4e7ae0ec6c7fe78138350c3b11">mcp2515_setClkOut</a> (const <a class="el" href="mcp2515_8h.html#a67c63428365b799be30ceeae1739adcb">CAN_CLKOUT</a> divisor)</td></tr>
+<tr class="memdesc:a0838ae4e7ae0ec6c7fe78138350c3b11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hay que ver que hace.  <a href="mcp2515_8c.html#a0838ae4e7ae0ec6c7fe78138350c3b11">Más...</a><br /></td></tr>
+<tr class="separator:a0838ae4e7ae0ec6c7fe78138350c3b11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34318296cf509afa4e66aeffdbeb0f6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a34318296cf509afa4e66aeffdbeb0f6d">mcp2515_setFilterMask</a> (const <a class="el" href="mcp2515_8h.html#ae51208c7fd555e7e63cd809a89e4220d">MASK</a> mask, const bool ext, const uint32_t ulData)</td></tr>
+<tr class="memdesc:a34318296cf509afa4e66aeffdbeb0f6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setea el filtro y la mascara. Se configuran dichos datos en los registros del propio modulo.  <a href="mcp2515_8c.html#a34318296cf509afa4e66aeffdbeb0f6d">Más...</a><br /></td></tr>
+<tr class="separator:a34318296cf509afa4e66aeffdbeb0f6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb0e9467c52bdc0cef5bb689dd3b996f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#adb0e9467c52bdc0cef5bb689dd3b996f">mcp2515_setFilter</a> (const <a class="el" href="mcp2515_8h.html#a276555e03ed0422889ff43fd9d34e5db">RXF</a> num, const bool ext, const uint32_t ulData)</td></tr>
+<tr class="memdesc:adb0e9467c52bdc0cef5bb689dd3b996f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Se configura el filtro.  <a href="mcp2515_8c.html#adb0e9467c52bdc0cef5bb689dd3b996f">Más...</a><br /></td></tr>
+<tr class="separator:adb0e9467c52bdc0cef5bb689dd3b996f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4733cdbc41bfeb798df55ab500ba76ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a4733cdbc41bfeb798df55ab500ba76ee">mcp2515_sendMessageWithBufferId</a> (const <a class="el" href="mcp2515_8h.html#a5c0ca376d41833f08d0af6ae04cd04cc">TXBn</a> txbn, const struct <a class="el" href="structcan__frame.html">can_frame</a> *frame)</td></tr>
+<tr class="memdesc:a4733cdbc41bfeb798df55ab500ba76ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Envio de mensaje con el buffer.  <a href="mcp2515_8c.html#a4733cdbc41bfeb798df55ab500ba76ee">Más...</a><br /></td></tr>
+<tr class="separator:a4733cdbc41bfeb798df55ab500ba76ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4139b924c04d5aa72c132ccd16f05437"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a4139b924c04d5aa72c132ccd16f05437">mcp2515_sendMessage</a> (const struct <a class="el" href="structcan__frame.html">can_frame</a> *frame)</td></tr>
+<tr class="memdesc:a4139b924c04d5aa72c132ccd16f05437"><td class="mdescLeft">&#160;</td><td class="mdescRight">Envio de mensaje.  <a href="mcp2515_8c.html#a4139b924c04d5aa72c132ccd16f05437">Más...</a><br /></td></tr>
+<tr class="separator:a4139b924c04d5aa72c132ccd16f05437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a56a5809b74e255e306caa97853dd13"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a5a56a5809b74e255e306caa97853dd13">mcp2515_readMessageWithBufferId</a> (const <a class="el" href="mcp2515_8h.html#ad89dbe4d5f940ced7b358cb7e8b48d60">RXBn</a> rxbn, struct <a class="el" href="structcan__frame.html">can_frame</a> *frame)</td></tr>
+<tr class="memdesc:a5a56a5809b74e255e306caa97853dd13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lee mensaje con el buffer indicado.  <a href="mcp2515_8c.html#a5a56a5809b74e255e306caa97853dd13">Más...</a><br /></td></tr>
+<tr class="separator:a5a56a5809b74e255e306caa97853dd13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98f361e58e9c16ec15a1469172a80547"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a98f361e58e9c16ec15a1469172a80547">mcp2515_readMessage</a> (struct <a class="el" href="structcan__frame.html">can_frame</a> *frame)</td></tr>
+<tr class="memdesc:a98f361e58e9c16ec15a1469172a80547"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lee mensaje.  <a href="mcp2515_8c.html#a98f361e58e9c16ec15a1469172a80547">Más...</a><br /></td></tr>
+<tr class="separator:a98f361e58e9c16ec15a1469172a80547"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a679684df91e2a18e578e81c7be7af67f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a679684df91e2a18e578e81c7be7af67f">mcp2515_checkReceive</a> (void)</td></tr>
+<tr class="memdesc:a679684df91e2a18e578e81c7be7af67f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chequea la recepcion de los datos.  <a href="mcp2515_8c.html#a679684df91e2a18e578e81c7be7af67f">Más...</a><br /></td></tr>
+<tr class="separator:a679684df91e2a18e578e81c7be7af67f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ceef1324ef15325f4a5826d5b58273b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a8ceef1324ef15325f4a5826d5b58273b">mcp2515_checkError</a> (void)</td></tr>
+<tr class="memdesc:a8ceef1324ef15325f4a5826d5b58273b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chequea los errores informados desde el modulo.  <a href="mcp2515_8c.html#a8ceef1324ef15325f4a5826d5b58273b">Más...</a><br /></td></tr>
+<tr class="separator:a8ceef1324ef15325f4a5826d5b58273b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3d500cb17c7da9f83aeb38c96e78a05"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#ac3d500cb17c7da9f83aeb38c96e78a05">mcp2515_getErrorFlags</a> (void)</td></tr>
+<tr class="memdesc:ac3d500cb17c7da9f83aeb38c96e78a05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Obtiene el estado de error de modulo can.  <a href="mcp2515_8c.html#ac3d500cb17c7da9f83aeb38c96e78a05">Más...</a><br /></td></tr>
+<tr class="separator:ac3d500cb17c7da9f83aeb38c96e78a05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae96902bcbdb6e764a65cbe35f942dd7a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#ae96902bcbdb6e764a65cbe35f942dd7a">mcp2515_clearRXnOVRFlags</a> (void)</td></tr>
+<tr class="memdesc:ae96902bcbdb6e764a65cbe35f942dd7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Limpia la bandera de overflow de los buffer de rx.  <a href="mcp2515_8c.html#ae96902bcbdb6e764a65cbe35f942dd7a">Más...</a><br /></td></tr>
+<tr class="separator:ae96902bcbdb6e764a65cbe35f942dd7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7af7b4fa57705edc5690d743269bb412"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a7af7b4fa57705edc5690d743269bb412">mcp2515_getInterrupts</a> (void)</td></tr>
+<tr class="memdesc:a7af7b4fa57705edc5690d743269bb412"><td class="mdescLeft">&#160;</td><td class="mdescRight">Obtiene las interrupciones del modulo can. Desde el registro de interrupt flags.  <a href="mcp2515_8c.html#a7af7b4fa57705edc5690d743269bb412">Más...</a><br /></td></tr>
+<tr class="separator:a7af7b4fa57705edc5690d743269bb412"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a584ccc859e4ab5430492f526cd77c0ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a584ccc859e4ab5430492f526cd77c0ed">mcp2515_clearInterrupts</a> (void)</td></tr>
+<tr class="memdesc:a584ccc859e4ab5430492f526cd77c0ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Limpia las banderas de interrupcion.  <a href="mcp2515_8c.html#a584ccc859e4ab5430492f526cd77c0ed">Más...</a><br /></td></tr>
+<tr class="separator:a584ccc859e4ab5430492f526cd77c0ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32b8237325cc18003a9482d90b3831e8"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a32b8237325cc18003a9482d90b3831e8">mcp2515_getInterruptMask</a> (void)</td></tr>
+<tr class="memdesc:a32b8237325cc18003a9482d90b3831e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Obtiene las interrupciones habilitadas desde el modulo can.  <a href="mcp2515_8c.html#a32b8237325cc18003a9482d90b3831e8">Más...</a><br /></td></tr>
+<tr class="separator:a32b8237325cc18003a9482d90b3831e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71b19c089b2853a6f8615d64a3991e3d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a71b19c089b2853a6f8615d64a3991e3d">mcp2515_clearTXInterrupts</a> (void)</td></tr>
+<tr class="memdesc:a71b19c089b2853a6f8615d64a3991e3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Limpia las banderas de interrupcion de tx.  <a href="mcp2515_8c.html#a71b19c089b2853a6f8615d64a3991e3d">Más...</a><br /></td></tr>
+<tr class="separator:a71b19c089b2853a6f8615d64a3991e3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb679de4c34c365123f989fab92b9b71"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#aeb679de4c34c365123f989fab92b9b71">mcp2515_clearRXnOVR</a> (void)</td></tr>
+<tr class="memdesc:aeb679de4c34c365123f989fab92b9b71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Limpia la bandera de overflow de los buffers de rx.  <a href="mcp2515_8c.html#aeb679de4c34c365123f989fab92b9b71">Más...</a><br /></td></tr>
+<tr class="separator:aeb679de4c34c365123f989fab92b9b71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e585c2aec2c8e21b9d8a57e2a7be2ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a8e585c2aec2c8e21b9d8a57e2a7be2ac">mcp2515_clearMERR</a> ()</td></tr>
+<tr class="memdesc:a8e585c2aec2c8e21b9d8a57e2a7be2ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Limpia la bandera de merr.  <a href="mcp2515_8c.html#a8e585c2aec2c8e21b9d8a57e2a7be2ac">Más...</a><br /></td></tr>
+<tr class="separator:a8e585c2aec2c8e21b9d8a57e2a7be2ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29c3f045ae54f41059e8b85009cb1b87"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a29c3f045ae54f41059e8b85009cb1b87">mcp2515_clearERRIF</a> ()</td></tr>
+<tr class="memdesc:a29c3f045ae54f41059e8b85009cb1b87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Limpia la bandera de errif.  <a href="mcp2515_8c.html#a29c3f045ae54f41059e8b85009cb1b87">Más...</a><br /></td></tr>
+<tr class="separator:a29c3f045ae54f41059e8b85009cb1b87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5e2dbab71fce64be2696e8901312f7e"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#ab5e2dbab71fce64be2696e8901312f7e">mcp2515_errorCountRX</a> (void)</td></tr>
+<tr class="memdesc:ab5e2dbab71fce64be2696e8901312f7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chequa el contador de error de recepcion.  <a href="mcp2515_8c.html#ab5e2dbab71fce64be2696e8901312f7e">Más...</a><br /></td></tr>
+<tr class="separator:ab5e2dbab71fce64be2696e8901312f7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab193cc15f237a1ca714ddd1338455c0"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#aab193cc15f237a1ca714ddd1338455c0">mcp2515_errorCountTX</a> (void)</td></tr>
+<tr class="memdesc:aab193cc15f237a1ca714ddd1338455c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chequea el contador de error de transmision.  <a href="mcp2515_8c.html#aab193cc15f237a1ca714ddd1338455c0">Más...</a><br /></td></tr>
+<tr class="separator:aab193cc15f237a1ca714ddd1338455c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c6db50c68ad7f3b2a311a92ff157221"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a7c6db50c68ad7f3b2a311a92ff157221">mcp2515_getIntERRIF</a> (void)</td></tr>
+<tr class="memdesc:a7c6db50c68ad7f3b2a311a92ff157221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bandera de interrupcion de error int flag.  <a href="mcp2515_8c.html#a7c6db50c68ad7f3b2a311a92ff157221">Más...</a><br /></td></tr>
+<tr class="separator:a7c6db50c68ad7f3b2a311a92ff157221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72a3df4cb55a27259ae530fd85867b9e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a72a3df4cb55a27259ae530fd85867b9e">mcp2515_getIntMERRF</a> (void)</td></tr>
+<tr class="memdesc:a72a3df4cb55a27259ae530fd85867b9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bandera de int de MERRF.  <a href="mcp2515_8c.html#a72a3df4cb55a27259ae530fd85867b9e">Más...</a><br /></td></tr>
+<tr class="separator:a72a3df4cb55a27259ae530fd85867b9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a429641dd27485c38fb7ec323daf2ecdb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a429641dd27485c38fb7ec323daf2ecdb">mcp2515_getIntRX1IF</a> (void)</td></tr>
+<tr class="memdesc:a429641dd27485c38fb7ec323daf2ecdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bandera de interrupcion de RX1IF.  <a href="mcp2515_8c.html#a429641dd27485c38fb7ec323daf2ecdb">Más...</a><br /></td></tr>
+<tr class="separator:a429641dd27485c38fb7ec323daf2ecdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a063b62da23cc659a078e497fa9f32d17"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a063b62da23cc659a078e497fa9f32d17">mcp2515_getIntRX0IF</a> (void)</td></tr>
+<tr class="memdesc:a063b62da23cc659a078e497fa9f32d17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bandera de interrupcion de RX0IF.  <a href="mcp2515_8c.html#a063b62da23cc659a078e497fa9f32d17">Más...</a><br /></td></tr>
+<tr class="separator:a063b62da23cc659a078e497fa9f32d17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26d95904d11b2d2e9e278cb8f346e96f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a26d95904d11b2d2e9e278cb8f346e96f">mcp2515_getIntTX0IF</a> (void)</td></tr>
+<tr class="memdesc:a26d95904d11b2d2e9e278cb8f346e96f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bandera de interrupcion de TX0IF.  <a href="mcp2515_8c.html#a26d95904d11b2d2e9e278cb8f346e96f">Más...</a><br /></td></tr>
+<tr class="separator:a26d95904d11b2d2e9e278cb8f346e96f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d3402a55fb2b3a40778532dc4f27291"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a1d3402a55fb2b3a40778532dc4f27291">mcp2515_getIntTX1IF</a> (void)</td></tr>
+<tr class="memdesc:a1d3402a55fb2b3a40778532dc4f27291"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bandera de interrupcion de TX1IF.  <a href="mcp2515_8c.html#a1d3402a55fb2b3a40778532dc4f27291">Más...</a><br /></td></tr>
+<tr class="separator:a1d3402a55fb2b3a40778532dc4f27291"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ad2c3412a5de8aadbd619c234c1cc1b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcp2515_8c.html#a5ad2c3412a5de8aadbd619c234c1cc1b">mcp2515_getIntTX2IF</a> (void)</td></tr>
+<tr class="memdesc:a5ad2c3412a5de8aadbd619c234c1cc1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bandera de interrupcion de TX2IF.  <a href="mcp2515_8c.html#a5ad2c3412a5de8aadbd619c234c1cc1b">Más...</a><br /></td></tr>
+<tr class="separator:a5ad2c3412a5de8aadbd619c234c1cc1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Descripción detallada</h2>
+<div class="textblock"><p>Libreria para manipulacion del modulo can mcp2515. </p>
+<dl class="section author"><dt>Autor</dt><dd>Zuliani, Agustin. </dd></dl>
+<dl class="section date"><dt>Fecha</dt><dd>03/08/24</dd></dl>
+<dl class="section note"><dt>Nota</dt><dd>Para utilizar dicha libreria debera incluirse de antemano la libreria correspondiente del modulo spi para trabajar con la kl46z. En adicion esa libreria debera corresponder a la que permite el uso de freertos si fuera el caso. Para nuestro caso utilizamos <a class="el" href="spi_8h.html">spi.h</a> y <a class="el" href="spi_8c.html" title="Libreria del spi para manipular con freertos o con baremetal.">spi.c</a> para trabajar. </dd></dl>
+</div><h2 class="groupheader">Documentación de los 'defines'</h2>
+<a id="a6a383704d8f976b5a4d680ba951a3fc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a383704d8f976b5a4d680ba951a3fc6">&#9670;&nbsp;</a></span>__delay_ms</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define __delay_ms</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">x</td><td>)</td>
+          <td>&#160;&#160;&#160;delay_ms(x)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a91340062f221a5ea07e0cb8be0d43dca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91340062f221a5ea07e0cb8be0d43dca">&#9670;&nbsp;</a></span>CANT_BUFFER</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CANT_BUFFER&#160;&#160;&#160;4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac32c16c3fb6018044ee42070be99d2e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac32c16c3fb6018044ee42070be99d2e3">&#9670;&nbsp;</a></span>CANT_INTENTOS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CANT_INTENTOS&#160;&#160;&#160;3</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4774eee855d3a99b5c052ef8dd574f7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4774eee855d3a99b5c052ef8dd574f7b">&#9670;&nbsp;</a></span>CANT_MAX_SET_REGISTERS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CANT_MAX_SET_REGISTERS&#160;&#160;&#160;13</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aca788d906d43225e36270d58de9b0f47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca788d906d43225e36270d58de9b0f47">&#9670;&nbsp;</a></span>CANT_REGISTROS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CANT_REGISTROS&#160;&#160;&#160;14</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a051e1821aa4fbd35c768d72dbd41a83f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a051e1821aa4fbd35c768d72dbd41a83f">&#9670;&nbsp;</a></span>CANT_REGS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CANT_REGS&#160;&#160;&#160;4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aba86d3b84923f65b4072042cd7f40cb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba86d3b84923f65b4072042cd7f40cb7">&#9670;&nbsp;</a></span>CS_HIGH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CS_HIGH&#160;&#160;&#160;GPIO_SetPinsOutput((GPIO_Type *)GPIOE_BASE, BOARD_Cs_mcp2515_PIN_MASK)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad388aceaf44bb064821c29273e2d31d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad388aceaf44bb064821c29273e2d31d7">&#9670;&nbsp;</a></span>CS_LOW</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CS_LOW&#160;&#160;&#160;GPIO_ClearPinsOutput((GPIO_Type *)GPIOE_BASE, BOARD_Cs_mcp2515_PIN_MASK)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a121e530779e48afea7f7f9a6cd225087"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a121e530779e48afea7f7f9a6cd225087">&#9670;&nbsp;</a></span>MAX_DATA_readREG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAX_DATA_readREG&#160;&#160;&#160;10</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8d69b304b851013b81fdbbf4911de094"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d69b304b851013b81fdbbf4911de094">&#9670;&nbsp;</a></span>N_RXBUFFERS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define N_RXBUFFERS&#160;&#160;&#160;2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abda566dd69924ef1793a1782f6934fbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abda566dd69924ef1793a1782f6934fbf">&#9670;&nbsp;</a></span>N_TXBUFFERS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define N_TXBUFFERS&#160;&#160;&#160;3</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Documentación de las funciones</h2>
+<a id="a8ceef1324ef15325f4a5826d5b58273b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ceef1324ef15325f4a5826d5b58273b">&#9670;&nbsp;</a></span>mcp2515_checkError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mcp2515_checkError </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Chequea los errores informados desde el modulo. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Estado del error. </dd></dl>
+<div class="dynheader">
+Gráfico de llamadas para esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a8ceef1324ef15325f4a5826d5b58273b_cgraph.png" border="0" usemap="#amcp2515_8c_a8ceef1324ef15325f4a5826d5b58273b_cgraph" alt=""/></div>
+<map name="amcp2515_8c_a8ceef1324ef15325f4a5826d5b58273b_cgraph" id="amcp2515_8c_a8ceef1324ef15325f4a5826d5b58273b_cgraph">
+<area shape="rect" title="Chequea los errores informados desde el modulo." alt="" coords="5,5,164,32"/>
+<area shape="rect" href="mcp2515_8c.html#ac3d500cb17c7da9f83aeb38c96e78a05" title="Obtiene el estado de error de modulo can." alt="" coords="212,5,388,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a679684df91e2a18e578e81c7be7af67f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a679684df91e2a18e578e81c7be7af67f">&#9670;&nbsp;</a></span>mcp2515_checkReceive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mcp2515_checkReceive </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Chequea la recepcion de los datos. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Estado de la recepcion. </dd></dl>
+<div class="dynheader">
+Gráfico de llamadas para esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a679684df91e2a18e578e81c7be7af67f_cgraph.png" border="0" usemap="#amcp2515_8c_a679684df91e2a18e578e81c7be7af67f_cgraph" alt=""/></div>
+<map name="amcp2515_8c_a679684df91e2a18e578e81c7be7af67f_cgraph" id="amcp2515_8c_a679684df91e2a18e578e81c7be7af67f_cgraph">
+<area shape="rect" title="Chequea la recepcion de los datos." alt="" coords="5,5,184,32"/>
+<area shape="rect" href="mcp2515_8c.html#adab84b04c3e872a779e0b50cd6f939be" title="Obtiene los estados solicitados de lectura." alt="" coords="232,5,383,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a29c3f045ae54f41059e8b85009cb1b87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29c3f045ae54f41059e8b85009cb1b87">&#9670;&nbsp;</a></span>mcp2515_clearERRIF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mcp2515_clearERRIF </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Limpia la bandera de errif. </p>
+<div class="dynheader">
+Gráfico de llamadas a esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a29c3f045ae54f41059e8b85009cb1b87_icgraph.png" border="0" usemap="#amcp2515_8c_a29c3f045ae54f41059e8b85009cb1b87_icgraph" alt=""/></div>
+<map name="amcp2515_8c_a29c3f045ae54f41059e8b85009cb1b87_icgraph" id="amcp2515_8c_a29c3f045ae54f41059e8b85009cb1b87_icgraph">
+<area shape="rect" title="Limpia la bandera de errif." alt="" coords="199,5,357,32"/>
+<area shape="rect" href="_m_c_p2515___example_8c.html#ae01b365de69142666b470757d24fae84" title=" " alt="" coords="5,5,151,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a584ccc859e4ab5430492f526cd77c0ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a584ccc859e4ab5430492f526cd77c0ed">&#9670;&nbsp;</a></span>mcp2515_clearInterrupts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mcp2515_clearInterrupts </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Limpia las banderas de interrupcion. </p>
+<div class="dynheader">
+Gráfico de llamadas a esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a584ccc859e4ab5430492f526cd77c0ed_icgraph.png" border="0" usemap="#amcp2515_8c_a584ccc859e4ab5430492f526cd77c0ed_icgraph" alt=""/></div>
+<map name="amcp2515_8c_a584ccc859e4ab5430492f526cd77c0ed_icgraph" id="amcp2515_8c_a584ccc859e4ab5430492f526cd77c0ed_icgraph">
+<area shape="rect" title="Limpia las banderas de interrupcion." alt="" coords="228,5,412,32"/>
+<area shape="rect" href="mcp2515_8h.html#aeb679de4c34c365123f989fab92b9b71" title="Limpia la bandera de overflow de los buffers de rx." alt="" coords="5,5,180,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a8e585c2aec2c8e21b9d8a57e2a7be2ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e585c2aec2c8e21b9d8a57e2a7be2ac">&#9670;&nbsp;</a></span>mcp2515_clearMERR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mcp2515_clearMERR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Limpia la bandera de merr. </p>
+<div class="dynheader">
+Gráfico de llamadas a esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a8e585c2aec2c8e21b9d8a57e2a7be2ac_icgraph.png" border="0" usemap="#amcp2515_8c_a8e585c2aec2c8e21b9d8a57e2a7be2ac_icgraph" alt=""/></div>
+<map name="amcp2515_8c_a8e585c2aec2c8e21b9d8a57e2a7be2ac_icgraph" id="amcp2515_8c_a8e585c2aec2c8e21b9d8a57e2a7be2ac_icgraph">
+<area shape="rect" title="Limpia la bandera de merr." alt="" coords="199,5,357,32"/>
+<area shape="rect" href="_m_c_p2515___example_8c.html#ae01b365de69142666b470757d24fae84" title=" " alt="" coords="5,5,151,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="aeb679de4c34c365123f989fab92b9b71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb679de4c34c365123f989fab92b9b71">&#9670;&nbsp;</a></span>mcp2515_clearRXnOVR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mcp2515_clearRXnOVR </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Limpia la bandera de overflow de los buffers de rx. </p>
+<div class="dynheader">
+Gráfico de llamadas para esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_aeb679de4c34c365123f989fab92b9b71_cgraph.png" border="0" usemap="#amcp2515_8c_aeb679de4c34c365123f989fab92b9b71_cgraph" alt=""/></div>
+<map name="amcp2515_8c_aeb679de4c34c365123f989fab92b9b71_cgraph" id="amcp2515_8c_aeb679de4c34c365123f989fab92b9b71_cgraph">
+<area shape="rect" title="Limpia la bandera de overflow de los buffers de rx." alt="" coords="5,56,180,83"/>
+<area shape="rect" href="mcp2515_8c.html#a584ccc859e4ab5430492f526cd77c0ed" title="Limpia las banderas de interrupcion." alt="" coords="241,5,425,32"/>
+<area shape="rect" href="mcp2515_8c.html#ae96902bcbdb6e764a65cbe35f942dd7a" title="Limpia la bandera de overflow de los buffer de rx." alt="" coords="228,56,439,83"/>
+<area shape="rect" href="mcp2515_8c.html#ac3d500cb17c7da9f83aeb38c96e78a05" title="Obtiene el estado de error de modulo can." alt="" coords="245,107,421,133"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ae96902bcbdb6e764a65cbe35f942dd7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae96902bcbdb6e764a65cbe35f942dd7a">&#9670;&nbsp;</a></span>mcp2515_clearRXnOVRFlags()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mcp2515_clearRXnOVRFlags </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Limpia la bandera de overflow de los buffer de rx. </p>
+<div class="dynheader">
+Gráfico de llamadas a esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_ae96902bcbdb6e764a65cbe35f942dd7a_icgraph.png" border="0" usemap="#amcp2515_8c_ae96902bcbdb6e764a65cbe35f942dd7a_icgraph" alt=""/></div>
+<map name="amcp2515_8c_ae96902bcbdb6e764a65cbe35f942dd7a_icgraph" id="amcp2515_8c_ae96902bcbdb6e764a65cbe35f942dd7a_icgraph">
+<area shape="rect" title="Limpia la bandera de overflow de los buffer de rx." alt="" coords="228,5,439,32"/>
+<area shape="rect" href="mcp2515_8h.html#aeb679de4c34c365123f989fab92b9b71" title="Limpia la bandera de overflow de los buffers de rx." alt="" coords="5,5,180,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a71b19c089b2853a6f8615d64a3991e3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71b19c089b2853a6f8615d64a3991e3d">&#9670;&nbsp;</a></span>mcp2515_clearTXInterrupts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mcp2515_clearTXInterrupts </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Limpia las banderas de interrupcion de tx. </p>
+
+</div>
+</div>
+<a id="ab5e2dbab71fce64be2696e8901312f7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5e2dbab71fce64be2696e8901312f7e">&#9670;&nbsp;</a></span>mcp2515_errorCountRX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mcp2515_errorCountRX </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Chequa el contador de error de recepcion. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Devuelve el valor del contador. </dd></dl>
+
+</div>
+</div>
+<a id="aab193cc15f237a1ca714ddd1338455c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab193cc15f237a1ca714ddd1338455c0">&#9670;&nbsp;</a></span>mcp2515_errorCountTX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mcp2515_errorCountTX </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Chequea el contador de error de transmision. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Devuelve el valor del contador. </dd></dl>
+
+</div>
+</div>
+<a id="ac3d500cb17c7da9f83aeb38c96e78a05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3d500cb17c7da9f83aeb38c96e78a05">&#9670;&nbsp;</a></span>mcp2515_getErrorFlags()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mcp2515_getErrorFlags </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Obtiene el estado de error de modulo can. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>dato con los errores. </dd></dl>
+<div class="dynheader">
+Gráfico de llamadas a esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_ac3d500cb17c7da9f83aeb38c96e78a05_icgraph.png" border="0" usemap="#amcp2515_8c_ac3d500cb17c7da9f83aeb38c96e78a05_icgraph" alt=""/></div>
+<map name="amcp2515_8c_ac3d500cb17c7da9f83aeb38c96e78a05_icgraph" id="amcp2515_8c_ac3d500cb17c7da9f83aeb38c96e78a05_icgraph">
+<area shape="rect" title="Obtiene el estado de error de modulo can." alt="" coords="228,31,404,57"/>
+<area shape="rect" href="mcp2515_8h.html#a8ceef1324ef15325f4a5826d5b58273b" title="Chequea los errores informados desde el modulo." alt="" coords="13,5,172,32"/>
+<area shape="rect" href="mcp2515_8h.html#aeb679de4c34c365123f989fab92b9b71" title="Limpia la bandera de overflow de los buffers de rx." alt="" coords="5,56,180,83"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a7c6db50c68ad7f3b2a311a92ff157221"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c6db50c68ad7f3b2a311a92ff157221">&#9670;&nbsp;</a></span>mcp2515_getIntERRIF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mcp2515_getIntERRIF </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bandera de interrupcion de error int flag. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Devuelve el estado de la bandera. </dd></dl>
+<div class="dynheader">
+Gráfico de llamadas a esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a7c6db50c68ad7f3b2a311a92ff157221_icgraph.png" border="0" usemap="#amcp2515_8c_a7c6db50c68ad7f3b2a311a92ff157221_icgraph" alt=""/></div>
+<map name="amcp2515_8c_a7c6db50c68ad7f3b2a311a92ff157221_icgraph" id="amcp2515_8c_a7c6db50c68ad7f3b2a311a92ff157221_icgraph">
+<area shape="rect" title="Bandera de interrupcion de error int flag." alt="" coords="199,5,364,32"/>
+<area shape="rect" href="_m_c_p2515___example_8c.html#ae01b365de69142666b470757d24fae84" title=" " alt="" coords="5,5,151,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a32b8237325cc18003a9482d90b3831e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32b8237325cc18003a9482d90b3831e8">&#9670;&nbsp;</a></span>mcp2515_getInterruptMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mcp2515_getInterruptMask </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Obtiene las interrupciones habilitadas desde el modulo can. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Devuelve las interrupciones que se encuentran habilitadas. </dd></dl>
+
+</div>
+</div>
+<a id="a7af7b4fa57705edc5690d743269bb412"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7af7b4fa57705edc5690d743269bb412">&#9670;&nbsp;</a></span>mcp2515_getInterrupts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_getInterrupts </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Obtiene las interrupciones del modulo can. Desde el registro de interrupt flags. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Devuelve el estado de la lectura. </dd></dl>
+<div class="dynheader">
+Gráfico de llamadas a esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a7af7b4fa57705edc5690d743269bb412_icgraph.png" border="0" usemap="#amcp2515_8c_a7af7b4fa57705edc5690d743269bb412_icgraph" alt=""/></div>
+<map name="amcp2515_8c_a7af7b4fa57705edc5690d743269bb412_icgraph" id="amcp2515_8c_a7af7b4fa57705edc5690d743269bb412_icgraph">
+<area shape="rect" title="Obtiene las interrupciones del modulo can. Desde el registro de interrupt flags." alt="" coords="199,5,372,32"/>
+<area shape="rect" href="_m_c_p2515___example_8c.html#ae01b365de69142666b470757d24fae84" title=" " alt="" coords="5,5,151,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a72a3df4cb55a27259ae530fd85867b9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72a3df4cb55a27259ae530fd85867b9e">&#9670;&nbsp;</a></span>mcp2515_getIntMERRF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mcp2515_getIntMERRF </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bandera de int de MERRF. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Devuelve el estado de la bandera. </dd></dl>
+<div class="dynheader">
+Gráfico de llamadas a esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a72a3df4cb55a27259ae530fd85867b9e_icgraph.png" border="0" usemap="#amcp2515_8c_a72a3df4cb55a27259ae530fd85867b9e_icgraph" alt=""/></div>
+<map name="amcp2515_8c_a72a3df4cb55a27259ae530fd85867b9e_icgraph" id="amcp2515_8c_a72a3df4cb55a27259ae530fd85867b9e_icgraph">
+<area shape="rect" title="Bandera de int de MERRF." alt="" coords="199,5,372,32"/>
+<area shape="rect" href="_m_c_p2515___example_8c.html#ae01b365de69142666b470757d24fae84" title=" " alt="" coords="5,5,151,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a063b62da23cc659a078e497fa9f32d17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a063b62da23cc659a078e497fa9f32d17">&#9670;&nbsp;</a></span>mcp2515_getIntRX0IF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mcp2515_getIntRX0IF </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bandera de interrupcion de RX0IF. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Devuelve el estado de la bandera. </dd></dl>
+<div class="dynheader">
+Gráfico de llamadas a esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a063b62da23cc659a078e497fa9f32d17_icgraph.png" border="0" usemap="#amcp2515_8c_a063b62da23cc659a078e497fa9f32d17_icgraph" alt=""/></div>
+<map name="amcp2515_8c_a063b62da23cc659a078e497fa9f32d17_icgraph" id="amcp2515_8c_a063b62da23cc659a078e497fa9f32d17_icgraph">
+<area shape="rect" title="Bandera de interrupcion de RX0IF." alt="" coords="199,5,364,32"/>
+<area shape="rect" href="_m_c_p2515___example_8c.html#ae01b365de69142666b470757d24fae84" title=" " alt="" coords="5,5,151,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a429641dd27485c38fb7ec323daf2ecdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a429641dd27485c38fb7ec323daf2ecdb">&#9670;&nbsp;</a></span>mcp2515_getIntRX1IF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mcp2515_getIntRX1IF </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bandera de interrupcion de RX1IF. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Devuelve el estado de la bandera. </dd></dl>
+<div class="dynheader">
+Gráfico de llamadas a esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a429641dd27485c38fb7ec323daf2ecdb_icgraph.png" border="0" usemap="#amcp2515_8c_a429641dd27485c38fb7ec323daf2ecdb_icgraph" alt=""/></div>
+<map name="amcp2515_8c_a429641dd27485c38fb7ec323daf2ecdb_icgraph" id="amcp2515_8c_a429641dd27485c38fb7ec323daf2ecdb_icgraph">
+<area shape="rect" title="Bandera de interrupcion de RX1IF." alt="" coords="199,5,364,32"/>
+<area shape="rect" href="_m_c_p2515___example_8c.html#ae01b365de69142666b470757d24fae84" title=" " alt="" coords="5,5,151,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a26d95904d11b2d2e9e278cb8f346e96f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26d95904d11b2d2e9e278cb8f346e96f">&#9670;&nbsp;</a></span>mcp2515_getIntTX0IF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mcp2515_getIntTX0IF </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bandera de interrupcion de TX0IF. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Devuelve el estado de la bandera. </dd></dl>
+
+</div>
+</div>
+<a id="a1d3402a55fb2b3a40778532dc4f27291"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d3402a55fb2b3a40778532dc4f27291">&#9670;&nbsp;</a></span>mcp2515_getIntTX1IF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mcp2515_getIntTX1IF </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bandera de interrupcion de TX1IF. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Devuelve el estado de la bandera. </dd></dl>
+
+</div>
+</div>
+<a id="a5ad2c3412a5de8aadbd619c234c1cc1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ad2c3412a5de8aadbd619c234c1cc1b">&#9670;&nbsp;</a></span>mcp2515_getIntTX2IF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mcp2515_getIntTX2IF </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bandera de interrupcion de TX2IF. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Devuelve el estado de la bandera. </dd></dl>
+
+</div>
+</div>
+<a id="adab84b04c3e872a779e0b50cd6f939be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adab84b04c3e872a779e0b50cd6f939be">&#9670;&nbsp;</a></span>mcp2515_getStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mcp2515_getStatus </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Obtiene los estados solicitados de lectura. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Devuelve el dato del registro de estados. </dd></dl>
+<div class="dynheader">
+Gráfico de llamadas a esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_adab84b04c3e872a779e0b50cd6f939be_icgraph.png" border="0" usemap="#amcp2515_8c_adab84b04c3e872a779e0b50cd6f939be_icgraph" alt=""/></div>
+<map name="amcp2515_8c_adab84b04c3e872a779e0b50cd6f939be_icgraph" id="amcp2515_8c_adab84b04c3e872a779e0b50cd6f939be_icgraph">
+<area shape="rect" title="Obtiene los estados solicitados de lectura." alt="" coords="232,31,383,57"/>
+<area shape="rect" href="mcp2515_8h.html#a679684df91e2a18e578e81c7be7af67f" title="Chequea la recepcion de los datos." alt="" coords="5,5,184,32"/>
+<area shape="rect" href="mcp2515_8h.html#a98f361e58e9c16ec15a1469172a80547" title="Lee mensaje." alt="" coords="7,56,183,83"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a93c2df6a52fa046c073256f50d96b930"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93c2df6a52fa046c073256f50d96b930">&#9670;&nbsp;</a></span>mcp2515_init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mcp2515_init </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Funciones publicas. </p>
+<p>Inicializa el modulo mcp2515. </p><dl class="section note"><dt>Nota</dt><dd>En esta funcion ya se realiza la inicializacion del modulo de spi. </dd></dl>
+<div class="dynheader">
+Gráfico de llamadas para esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a93c2df6a52fa046c073256f50d96b930_cgraph.png" border="0" usemap="#amcp2515_8c_a93c2df6a52fa046c073256f50d96b930_cgraph" alt=""/></div>
+<map name="amcp2515_8c_a93c2df6a52fa046c073256f50d96b930_cgraph" id="amcp2515_8c_a93c2df6a52fa046c073256f50d96b930_cgraph">
+<area shape="rect" title="Funciones publicas." alt="" coords="5,5,116,32"/>
+<area shape="rect" href="spi_8h.html#ae909944aa85ae98323073c628be541aa" title="Inicializacion del spi." alt="" coords="164,5,233,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a98f361e58e9c16ec15a1469172a80547"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98f361e58e9c16ec15a1469172a80547">&#9670;&nbsp;</a></span>mcp2515_readMessage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_readMessage </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structcan__frame.html">can_frame</a> *&#160;</td>
+          <td class="paramname"><em>frame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Lee mensaje. </p>
+<dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">frame</td><td>lugar donde carga la informacion. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Gráfico de llamadas para esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a98f361e58e9c16ec15a1469172a80547_cgraph.png" border="0" usemap="#amcp2515_8c_a98f361e58e9c16ec15a1469172a80547_cgraph" alt=""/></div>
+<map name="amcp2515_8c_a98f361e58e9c16ec15a1469172a80547_cgraph" id="amcp2515_8c_a98f361e58e9c16ec15a1469172a80547_cgraph">
+<area shape="rect" title="Lee mensaje." alt="" coords="5,31,181,57"/>
+<area shape="rect" href="mcp2515_8c.html#adab84b04c3e872a779e0b50cd6f939be" title="Obtiene los estados solicitados de lectura." alt="" coords="283,5,433,32"/>
+<area shape="rect" href="mcp2515_8c.html#a5a56a5809b74e255e306caa97853dd13" title="Lee mensaje con el buffer indicado." alt="" coords="229,56,487,83"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a5a56a5809b74e255e306caa97853dd13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a56a5809b74e255e306caa97853dd13">&#9670;&nbsp;</a></span>mcp2515_readMessageWithBufferId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_readMessageWithBufferId </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="mcp2515_8h.html#ad89dbe4d5f940ced7b358cb7e8b48d60">RXBn</a>&#160;</td>
+          <td class="paramname"><em>rxbn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct <a class="el" href="structcan__frame.html">can_frame</a> *&#160;</td>
+          <td class="paramname"><em>frame</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Lee mensaje con el buffer indicado. </p>
+<dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">rxbn</td><td>buffer de recepcion. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">frame</td><td>lugar donde carga la informacion. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Gráfico de llamadas a esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a5a56a5809b74e255e306caa97853dd13_icgraph.png" border="0" usemap="#amcp2515_8c_a5a56a5809b74e255e306caa97853dd13_icgraph" alt=""/></div>
+<map name="amcp2515_8c_a5a56a5809b74e255e306caa97853dd13_icgraph" id="amcp2515_8c_a5a56a5809b74e255e306caa97853dd13_icgraph">
+<area shape="rect" title="Lee mensaje con el buffer indicado." alt="" coords="229,5,487,32"/>
+<area shape="rect" href="mcp2515_8h.html#a98f361e58e9c16ec15a1469172a80547" title="Lee mensaje." alt="" coords="5,5,181,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a21cb40a7513567cb455ce296ef0bbe4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21cb40a7513567cb455ce296ef0bbe4b">&#9670;&nbsp;</a></span>mcp2515_reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_reset </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resetea el modulo. </p>
+
+</div>
+</div>
+<a id="a4139b924c04d5aa72c132ccd16f05437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4139b924c04d5aa72c132ccd16f05437">&#9670;&nbsp;</a></span>mcp2515_sendMessage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_sendMessage </td>
+          <td>(</td>
+          <td class="paramtype">const struct <a class="el" href="structcan__frame.html">can_frame</a> *&#160;</td>
+          <td class="paramname"><em>frame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Envio de mensaje. </p>
+<dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">frame</td><td>informacion a transmitir. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4733cdbc41bfeb798df55ab500ba76ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4733cdbc41bfeb798df55ab500ba76ee">&#9670;&nbsp;</a></span>mcp2515_sendMessageWithBufferId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_sendMessageWithBufferId </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="mcp2515_8h.html#a5c0ca376d41833f08d0af6ae04cd04cc">TXBn</a>&#160;</td>
+          <td class="paramname"><em>txbn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const struct <a class="el" href="structcan__frame.html">can_frame</a> *&#160;</td>
+          <td class="paramname"><em>frame</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Envio de mensaje con el buffer. </p>
+<dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">txbn</td><td>Buffer en el que se carga la informacion. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">frame</td><td>informacion a transmitir. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a376a8574dcdafeeac264e1b652333d58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a376a8574dcdafeeac264e1b652333d58">&#9670;&nbsp;</a></span>mcp2515_setBitrate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_setBitrate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="mcp2515_8h.html#a7f502641a3b61ab57fb25ff6ca90e32e">CAN_SPEED</a>&#160;</td>
+          <td class="paramname"><em>canSpeed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="mcp2515_8h.html#a879ed70dbe7d5aa868602ed440f12df6">CAN_CLOCK</a>&#160;</td>
+          <td class="paramname"><em>canClock</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Setea el baud rate. </p>
+<dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">canSpeed</td><td>velocidad en baudios. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">canClock</td><td>velocidad del reloj. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Gráfico de llamadas para esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a376a8574dcdafeeac264e1b652333d58_cgraph.png" border="0" usemap="#amcp2515_8c_a376a8574dcdafeeac264e1b652333d58_cgraph" alt=""/></div>
+<map name="amcp2515_8c_a376a8574dcdafeeac264e1b652333d58_cgraph" id="amcp2515_8c_a376a8574dcdafeeac264e1b652333d58_cgraph">
+<area shape="rect" title="Setea el baud rate." alt="" coords="5,5,159,32"/>
+<area shape="rect" href="mcp2515_8c.html#a0a1c3cc8b486dbd55ff9d2d011694fa6" title="Setea el modo de configuracion." alt="" coords="207,5,393,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a0838ae4e7ae0ec6c7fe78138350c3b11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0838ae4e7ae0ec6c7fe78138350c3b11">&#9670;&nbsp;</a></span>mcp2515_setClkOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_setClkOut </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="mcp2515_8h.html#a67c63428365b799be30ceeae1739adcb">CAN_CLKOUT</a>&#160;</td>
+          <td class="paramname"><em>divisor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hay que ver que hace. </p>
+
+</div>
+</div>
+<a id="a0a1c3cc8b486dbd55ff9d2d011694fa6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a1c3cc8b486dbd55ff9d2d011694fa6">&#9670;&nbsp;</a></span>mcp2515_setConfigMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_setConfigMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Setea el modo de configuracion. </p>
+<div class="dynheader">
+Gráfico de llamadas a esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a0a1c3cc8b486dbd55ff9d2d011694fa6_icgraph.png" border="0" usemap="#amcp2515_8c_a0a1c3cc8b486dbd55ff9d2d011694fa6_icgraph" alt=""/></div>
+<map name="amcp2515_8c_a0a1c3cc8b486dbd55ff9d2d011694fa6_icgraph" id="amcp2515_8c_a0a1c3cc8b486dbd55ff9d2d011694fa6_icgraph">
+<area shape="rect" title="Setea el modo de configuracion." alt="" coords="231,56,417,83"/>
+<area shape="rect" href="mcp2515_8h.html#a00ea2769f7d2b974453b1010f3f4afdb" title="Setea el baud rate." alt="" coords="17,5,171,32"/>
+<area shape="rect" href="mcp2515_8h.html#adb0e9467c52bdc0cef5bb689dd3b996f" title="Se configura el filtro." alt="" coords="23,56,165,83"/>
+<area shape="rect" href="mcp2515_8h.html#a90f5cb446a05dc38476006948acccc7a" title="Setea el filtro y la mascara. Se configuran dichos datos en los registros del propio modulo." alt="" coords="5,107,183,133"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="adb0e9467c52bdc0cef5bb689dd3b996f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb0e9467c52bdc0cef5bb689dd3b996f">&#9670;&nbsp;</a></span>mcp2515_setFilter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_setFilter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="mcp2515_8h.html#a276555e03ed0422889ff43fd9d34e5db">RXF</a>&#160;</td>
+          <td class="paramname"><em>num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>ext</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>ulData</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Se configura el filtro. </p>
+<dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">num</td><td>filtro de rx. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ext</td><td>formato extendido. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ulData</td><td>id. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Gráfico de llamadas para esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_adb0e9467c52bdc0cef5bb689dd3b996f_cgraph.png" border="0" usemap="#amcp2515_8c_adb0e9467c52bdc0cef5bb689dd3b996f_cgraph" alt=""/></div>
+<map name="amcp2515_8c_adb0e9467c52bdc0cef5bb689dd3b996f_cgraph" id="amcp2515_8c_adb0e9467c52bdc0cef5bb689dd3b996f_cgraph">
+<area shape="rect" title="Se configura el filtro." alt="" coords="5,5,148,32"/>
+<area shape="rect" href="mcp2515_8c.html#a0a1c3cc8b486dbd55ff9d2d011694fa6" title="Setea el modo de configuracion." alt="" coords="196,5,383,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a34318296cf509afa4e66aeffdbeb0f6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34318296cf509afa4e66aeffdbeb0f6d">&#9670;&nbsp;</a></span>mcp2515_setFilterMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_setFilterMask </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="mcp2515_8h.html#ae51208c7fd555e7e63cd809a89e4220d">MASK</a>&#160;</td>
+          <td class="paramname"><em>num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>ext</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>ulData</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Setea el filtro y la mascara. Se configuran dichos datos en los registros del propio modulo. </p>
+<dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">num</td><td>mascara. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ext</td><td>formato extendido. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ulData</td><td>id. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Gráfico de llamadas para esta función:</div>
+<div class="dyncontent">
+<div class="center"><img src="mcp2515_8c_a34318296cf509afa4e66aeffdbeb0f6d_cgraph.png" border="0" usemap="#amcp2515_8c_a34318296cf509afa4e66aeffdbeb0f6d_cgraph" alt=""/></div>
+<map name="amcp2515_8c_a34318296cf509afa4e66aeffdbeb0f6d_cgraph" id="amcp2515_8c_a34318296cf509afa4e66aeffdbeb0f6d_cgraph">
+<area shape="rect" title="Setea el filtro y la mascara. Se configuran dichos datos en los registros del propio modulo." alt="" coords="5,5,183,32"/>
+<area shape="rect" href="mcp2515_8c.html#a0a1c3cc8b486dbd55ff9d2d011694fa6" title="Setea el modo de configuracion." alt="" coords="231,5,417,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a24629fc99e83c9f097a0d24629dcae79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24629fc99e83c9f097a0d24629dcae79">&#9670;&nbsp;</a></span>mcp2515_setListenOnlyMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_setListenOnlyMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Setea el modo de solo escucha. </p>
+
+</div>
+</div>
+<a id="a4d44b1c2e0ad790988f8821b12fc8c80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d44b1c2e0ad790988f8821b12fc8c80">&#9670;&nbsp;</a></span>mcp2515_setLoopbackMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_setLoopbackMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Setea el modo de loopback. </p>
+
+</div>
+</div>
+<a id="ab5403fd588f8558b6b3031e9cee0b35e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5403fd588f8558b6b3031e9cee0b35e">&#9670;&nbsp;</a></span>mcp2515_setNormalMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_setNormalMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Setea el modo normal de trabajo. </p>
+
+</div>
+</div>
+<a id="a9eeb6e5089676520f1f243d43b25bd0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9eeb6e5089676520f1f243d43b25bd0b">&#9670;&nbsp;</a></span>mcp2515_setSleepMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mcp2515_8h.html#aecc54e7bb223450c39e49a6b89d7dbd0">ERROR_t</a> mcp2515_setSleepMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Setea el modo sleep. </p>
+
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html">source</a></li><li class="navelem"><a class="el" href="dir_3301b71ef7515db9adf5e98ed585ccdb.html">Source</a></li><li class="navelem"><a class="el" href="mcp2515_8c.html">mcp2515.c</a></li>
+    <li class="footer">Generado por <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+  </ul>
+</div>
+</body>
+</html>

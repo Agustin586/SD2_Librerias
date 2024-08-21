@@ -1,0 +1,6 @@
+<map id="mcp2515_setConfigMode" name="mcp2515_setConfigMode">
+<area shape="rect" id="node1" title="Setea el modo de configuracion." alt="" coords="231,56,417,83"/>
+<area shape="rect" id="node2" href="$mcp2515_8h.html#a00ea2769f7d2b974453b1010f3f4afdb" title="Setea el baud rate." alt="" coords="17,5,171,32"/>
+<area shape="rect" id="node3" href="$mcp2515_8h.html#adb0e9467c52bdc0cef5bb689dd3b996f" title="Se configura el filtro." alt="" coords="23,56,165,83"/>
+<area shape="rect" id="node4" href="$mcp2515_8h.html#a90f5cb446a05dc38476006948acccc7a" title="Setea el filtro y la mascara. Se configuran dichos datos en los registros del propio modulo." alt="" coords="5,107,183,133"/>
+</map>

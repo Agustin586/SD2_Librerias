@@ -1,0 +1,13 @@
+<map id="source/Source/spi.c" name="source/Source/spi.c">
+<area shape="rect" id="node1" title="Libreria del spi para manipular con freertos o con baremetal." alt="" coords="384,5,531,32"/>
+<area shape="rect" id="node2" href="$spi_8h.html" title=" " alt="" coords="7,80,118,107"/>
+<area shape="rect" id="node5" title=" " alt="" coords="143,80,297,107"/>
+<area shape="rect" id="node6" title=" " alt="" coords="321,80,436,107"/>
+<area shape="rect" id="node7" href="$mcp2515_8h.html" title="Liberia del modulo CAN MCP2515, utilizada para la placa de desarrollo KL46Z. Realizada como parte de ..." alt="" coords="460,80,612,107"/>
+<area shape="rect" id="node10" title=" " alt="" coords="637,80,707,107"/>
+<area shape="rect" id="node11" title=" " alt="" coords="731,80,807,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,155,120,181"/>
+<area shape="rect" id="node4" title=" " alt="" coords="386,229,457,256"/>
+<area shape="rect" id="node8" href="$can_8h.html" title=" " alt="" coords="459,155,517,181"/>
+<area shape="rect" id="node9" title=" " alt="" coords="541,155,624,181"/>
+</map>

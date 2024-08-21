@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mcp2515 Example - Documentacion: Fichero Fuente source/Includes/can.h</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">Mcp2515 Example - Documentacion
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generado por Doxygen 1.9.1 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'Buscar','.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','Buscar');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('can_8h_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="headertitle">
+<div class="title">can.h</div>  </div>
+</div><!--header-->
+<div class="contents">
+<a href="can_8h.html">Ir a la documentación de este archivo.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * can.h</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: 4 ago. 2024</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: agustin</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifndef INCLUDES_CAN_H_</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#define INCLUDES_CAN_H_</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="can_8h.html#ab291f552d5fd4d65ac668d6b2b180919">   13</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="can_8h.html#ab291f552d5fd4d65ac668d6b2b180919">__u8</a>;</div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="can_8h.html#ac915988d8c60a3b943f936c25f9eca6e">   14</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> <a class="code" href="can_8h.html#ac915988d8c60a3b943f936c25f9eca6e">__u16</a>;</div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="can_8h.html#a13a2835755bfba96b1790ff492741141">   15</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <a class="code" href="can_8h.html#a13a2835755bfba96b1790ff492741141">__u32</a>;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">/* special address description flags for the CAN_ID */</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="can_8h.html#a5ae55ab3741140024858bd7b8762ea42">   19</a></span>&#160;<span class="preprocessor">#define CAN_EFF_FLAG 0x80000000UL </span><span class="comment">/* EFF/SFF is set in the MSB */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="can_8h.html#af324d65226057755175038a15d9bbd75">   20</a></span>&#160;<span class="preprocessor">#define CAN_RTR_FLAG 0x40000000UL </span><span class="comment">/* remote transmission request */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="can_8h.html#a24df2eae50a2cef0f7f08c73a246a012">   21</a></span>&#160;<span class="preprocessor">#define CAN_ERR_FLAG 0x20000000UL </span><span class="comment">/* error message frame */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">/* valid bits in CAN ID for frame formats */</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="can_8h.html#afe4fc3f9cab58aeeb463861289e8ce93">   24</a></span>&#160;<span class="preprocessor">#define CAN_SFF_MASK 0x000007FFUL </span><span class="comment">/* standard frame format (SFF) */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="can_8h.html#a83b943dca61d0aad5b07ec01c3317572">   25</a></span>&#160;<span class="preprocessor">#define CAN_EFF_MASK 0x1FFFFFFFUL </span><span class="comment">/* extended frame format (EFF) */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="can_8h.html#ad4061a08b8c5aa6de3bb390efd3b6bd6">   26</a></span>&#160;<span class="preprocessor">#define CAN_ERR_MASK 0x1FFFFFFFUL </span><span class="comment">/* omit EFF, RTR, ERR flags */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">/*</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment"> * Controller Area Network Identifier structure</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment"> * bit 0-28 : CAN identifier (11/29 bit)</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment"> * bit 29   : error message frame flag (0 = data frame, 1 = error message)</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment"> * bit 30   : remote transmission request flag (1 = rtr frame)</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment"> * bit 31   : frame format flag (0 = standard 11 bit, 1 = extended 29 bit)</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="can_8h.html#afaddc5a168ebedc163fb6f202267abee">   36</a></span>&#160;<span class="keyword">typedef</span> <a class="code" href="can_8h.html#a13a2835755bfba96b1790ff492741141">__u32</a> <a class="code" href="can_8h.html#afaddc5a168ebedc163fb6f202267abee">canid_t</a>;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="can_8h.html#a7c85404d7b39da634ad02d2fa1e360ad">   38</a></span>&#160;<span class="preprocessor">#define CAN_SFF_ID_BITS     11</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="can_8h.html#af231ed8012bf96cb28eeb0986360660e">   39</a></span>&#160;<span class="preprocessor">#define CAN_EFF_ID_BITS     29</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">/* CAN payload length and DLC definitions according to ISO 11898-1 */</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="can_8h.html#adc209a027ee700faf10461e2417bee50">   42</a></span>&#160;<span class="preprocessor">#define CAN_MAX_DLC 8</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="can_8h.html#af64b4fdfe44fc19065702d1eedb9ab43">   43</a></span>&#160;<span class="preprocessor">#define CAN_MAX_DLEN 8</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="structcan__frame.html">   45</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structcan__frame.html">can_frame</a> {</div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="structcan__frame.html#a50161432ae5cfc4db10be68450fd78d3">   46</a></span>&#160;    <a class="code" href="can_8h.html#afaddc5a168ebedc163fb6f202267abee">canid_t</a> <a class="code" href="structcan__frame.html#a50161432ae5cfc4db10be68450fd78d3">can_id</a>;  <span class="comment">/* 32 bit CAN_ID + EFF/RTR/ERR flags */</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="structcan__frame.html#ad6470388abf34c039575c9008369b0e5">   47</a></span>&#160;    <a class="code" href="can_8h.html#ab291f552d5fd4d65ac668d6b2b180919">__u8</a>    <a class="code" href="structcan__frame.html#ad6470388abf34c039575c9008369b0e5">can_dlc</a>; <span class="comment">/* frame payload length in byte (0 .. CAN_MAX_DLEN) */</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="structcan__frame.html#aae881c299d8d59b5fa109e4a05abb699">   48</a></span>&#160;    <a class="code" href="can_8h.html#ab291f552d5fd4d65ac668d6b2b180919">__u8</a>    data[<a class="code" href="can_8h.html#af64b4fdfe44fc19065702d1eedb9ab43">CAN_MAX_DLEN</a>] <a class="code" href="structcan__frame.html#aae881c299d8d59b5fa109e4a05abb699">__attribute__</a>((aligned(8)));</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;};</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* INCLUDES_CAN_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="acan_8h_html_a13a2835755bfba96b1790ff492741141"><div class="ttname"><a href="can_8h.html#a13a2835755bfba96b1790ff492741141">__u32</a></div><div class="ttdeci">unsigned long __u32</div><div class="ttdef"><b>Definition:</b> can.h:15</div></div>
+<div class="ttc" id="acan_8h_html_ab291f552d5fd4d65ac668d6b2b180919"><div class="ttname"><a href="can_8h.html#ab291f552d5fd4d65ac668d6b2b180919">__u8</a></div><div class="ttdeci">unsigned char __u8</div><div class="ttdef"><b>Definition:</b> can.h:13</div></div>
+<div class="ttc" id="acan_8h_html_ac915988d8c60a3b943f936c25f9eca6e"><div class="ttname"><a href="can_8h.html#ac915988d8c60a3b943f936c25f9eca6e">__u16</a></div><div class="ttdeci">unsigned short __u16</div><div class="ttdef"><b>Definition:</b> can.h:14</div></div>
+<div class="ttc" id="acan_8h_html_af64b4fdfe44fc19065702d1eedb9ab43"><div class="ttname"><a href="can_8h.html#af64b4fdfe44fc19065702d1eedb9ab43">CAN_MAX_DLEN</a></div><div class="ttdeci">#define CAN_MAX_DLEN</div><div class="ttdef"><b>Definition:</b> can.h:43</div></div>
+<div class="ttc" id="acan_8h_html_afaddc5a168ebedc163fb6f202267abee"><div class="ttname"><a href="can_8h.html#afaddc5a168ebedc163fb6f202267abee">canid_t</a></div><div class="ttdeci">__u32 canid_t</div><div class="ttdef"><b>Definition:</b> can.h:36</div></div>
+<div class="ttc" id="astructcan__frame_html"><div class="ttname"><a href="structcan__frame.html">can_frame</a></div><div class="ttdef"><b>Definition:</b> can.h:45</div></div>
+<div class="ttc" id="astructcan__frame_html_a50161432ae5cfc4db10be68450fd78d3"><div class="ttname"><a href="structcan__frame.html#a50161432ae5cfc4db10be68450fd78d3">can_frame::can_id</a></div><div class="ttdeci">canid_t can_id</div><div class="ttdef"><b>Definition:</b> can.h:46</div></div>
+<div class="ttc" id="astructcan__frame_html_aae881c299d8d59b5fa109e4a05abb699"><div class="ttname"><a href="structcan__frame.html#aae881c299d8d59b5fa109e4a05abb699">can_frame::__attribute__</a></div><div class="ttdeci">__u8 data[CAN_MAX_DLEN] __attribute__((aligned(8)))</div></div>
+<div class="ttc" id="astructcan__frame_html_ad6470388abf34c039575c9008369b0e5"><div class="ttname"><a href="structcan__frame.html#ad6470388abf34c039575c9008369b0e5">can_frame::can_dlc</a></div><div class="ttdeci">__u8 can_dlc</div><div class="ttdef"><b>Definition:</b> can.h:47</div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html">source</a></li><li class="navelem"><a class="el" href="dir_6ddf6b4122c4d9c36fe147c7df0de121.html">Includes</a></li><li class="navelem"><a class="el" href="can_8h.html">can.h</a></li>
+    <li class="footer">Generado por <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+  </ul>
+</div>
+</body>
+</html>

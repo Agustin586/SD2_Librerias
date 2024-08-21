@@ -1,9 +1,0 @@
-<map id="main" name="main">
-<area shape="rect" id="node1" title="Application entry point." alt="" coords="5,81,60,108"/>
-<area shape="rect" id="node2" href="$mcp2515_8h.html#a93c2df6a52fa046c073256f50d96b930" title="Funciones publicas." alt="" coords="149,5,260,32"/>
-<area shape="rect" id="node4" href="$mcp2515_8h.html#a21cb40a7513567cb455ce296ef0bbe4b" title="Resetea el modulo." alt="" coords="143,56,266,83"/>
-<area shape="rect" id="node5" href="$mcp2515_8h.html#a00ea2769f7d2b974453b1010f3f4afdb" title="Setea el baud rate." alt="" coords="128,107,281,133"/>
-<area shape="rect" id="node7" href="$mcp2515_8h.html#ab5403fd588f8558b6b3031e9cee0b35e" title="Setea el modo normal de trabajo." alt="" coords="108,157,301,184"/>
-<area shape="rect" id="node3" href="$spi_8h.html#ae909944aa85ae98323073c628be541aa" title="Inicializacion del spi." alt="" coords="408,5,477,32"/>
-<area shape="rect" id="node6" href="$mcp2515_8c.html#a0a1c3cc8b486dbd55ff9d2d011694fa6" title="Setea el modo de configuracion." alt="" coords="349,107,536,133"/>
-</map>
