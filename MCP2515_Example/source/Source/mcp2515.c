@@ -1028,11 +1028,21 @@ static ERROR_t mcp2515_setRegisters(setRegisters_t setRegs)
 	}
 
 	status = spi_write(setRegs.values, setRegs.n);
+
+#if USE_FREERTOS
+
+	__delay_ms(5);
+
+#else
+
 	if (status != kStatus_Success)
 	{
 		endSPI();
 		return ERROR_SPI_WRITE;
 	}
+
+#endif
+
 	endSPI();
 
 	return ERROR_OK;
@@ -1672,10 +1682,11 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 											   const struct can_frame *frame)
 {
 	ERROR_t error;
+
 	struct {
 		REGISTER_t TxBSIDH;
 		REGISTER_t TxBCTRL;
-	}RegistroTx;
+	} RegistroTx;
 
 	switch (txbn)
 	{
@@ -1701,8 +1712,6 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 		return ERROR_FAILTX;
 
 	/* Envia la informacion */
-	const struct TXBn_REGS *txbuf = &TXB[txbn];
-
 	setRegisters_t setRegs;
 
 	setRegs.values[0] = '\0';
@@ -1756,6 +1765,8 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 		.data = 0,
 	};
 
+//#if (!USE_FREERTOS)
+
 	error = mcp2515_readRegister(&readReg);
 	if (error != ERROR_OK)
 		return error;
@@ -1766,6 +1777,8 @@ extern ERROR_t mcp2515_sendMessageWithBufferId(const TXBn txbn,
 	{
 		return ERROR_FAILTX;
 	}
+
+//#endif
 
 	return ERROR_OK;
 }
@@ -1784,8 +1797,6 @@ extern ERROR_t mcp2515_sendMessage(const struct can_frame *frame)
 
 	for (int i = 0; i < N_TXBUFFERS; i++)
 	{
-		const struct TXBn_REGS *txbuf = &TXB[txBuffers[i]];
-
 		ReadReg_t readReg;
 
 //		readReg.reg = txbuf->CTRL;
